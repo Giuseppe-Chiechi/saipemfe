@@ -64,13 +64,14 @@ public static class AppRoles
         { AutoritaEsecutrice, "Autorità Esecutrice (PA)" },
         { AutoritaEmittente, "Autorità Emittente (IA)" },
         { PTWCoordinator, "PTW Coordinator (PTWC)" },
-    { CoordinatoreInEsecuzione, "Coordinatore In Esecuzione (CSE)" },
+        { CoordinatoreInEsecuzione, "Coordinatore In Esecuzione (CSE)" },
         { PersonaAutorizzataTestGas, "Persona Autorizzata Test Gas (AGT)" },
-  { AutoritaOperativa, "Autorità Operativa (OA)" },
+        { AutoritaOperativa, "Autorità Operativa (OA)" },
         { EspertoQualificato, "Esperto Qualificato (EQ)" },
         { AmministratoreSistema, "Amministratore Sistema" },
         { SuperOwner, "Super Owner" },
-      { Visitatore, "Visitatore" },
+        { Visitatore, "Visitatore" },
         { Anonymous, "Anonymous" }
     };
 }
+//todo: rimuovere i ruoli non usati nell'applicazione mock
