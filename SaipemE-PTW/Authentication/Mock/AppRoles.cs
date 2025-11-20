@@ -45,13 +45,13 @@ public static class AppRoles
     {
         AutoritaRichiedente,
         AutoritaEsecutrice,
-    AutoritaEmittente,
+        AutoritaEmittente,
         PTWCoordinator,
         CoordinatoreInEsecuzione,
         PersonaAutorizzataTestGas,
         AutoritaOperativa,
         EspertoQualificato,
-   AmministratoreSistema,
+        AmministratoreSistema,
         SuperOwner,
         Visitatore,
         Anonymous
