@@ -1,0 +1,14 @@
+@* 2025-01-13 - EntraId - Componente per reindirizzare gli utenti non autenticati alla pagina di login *@
+@* Utilizza NavigationManager per effettuare il redirect preservando l'URL di ritorno *@
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@code {
+    // 2025-01-13 - EntraId - OnInitialized viene chiamato quando il componente viene inizializzato
+    // Reindirizza automaticamente l'utente alla pagina di autenticazione
+    protected override void OnInitialized()
+    {
+        // 2025-01-13 - EntraId - Costruisce l'URL di login includendo l'URL corrente come returnUrl
+    // Dopo il login, l'utente verrà reindirizzato alla pagina originale
+Navigation.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+    }
+}

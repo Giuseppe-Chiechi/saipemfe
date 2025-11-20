@@ -1,0 +1,886 @@
+﻿@using SaipemE_PTW.Shared.Models.Auth
+@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+
+<MudTabPanel Text="Parte 1" ToolTip="">
+
+
+    <MudGrid>
+
+        <MudItem xs="12">
+            <MudField Label="Validità" Variant="Variant.Outlined">
+                <MudPaper Class="p-4 mt-4">
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="6" md="3">
+                            @if (_isReadOnlyParte1 || !(userRole.Equals(UserRole.AutoritaRichiedente) || userRole.Equals(UserRole.SuperOwner)))
+                            {
+                                <MudTextField Disabled="@_isReadOnlyParte1" Label="Data Inizio:" @bind-Value="Model.ValiditaDataInizio" />
+                            }
+                            else
+                            {
+                                <MudDatePicker Label="Data inizio:"
+                                               @bind-Date="Model.ValiditaDataInizio" Required="true"></MudDatePicker>
+
+                            }
+
+
+
+
+
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            @if (_isReadOnlyParte1 || !(userRole.Equals(UserRole.AutoritaRichiedente) || userRole.Equals(UserRole.SuperOwner)))
+                            {
+                                <MudTextField Disabled="@_isReadOnlyParte1" Label="Ora Inizio:" @bind-Value="Model.ValiditaOraInizio" />
+                            }
+                            else
+                            {
+                                <MudTimePicker Required="true"
+                                               RequiredError="Obbligatorio" Label="Ora Inizio:" @bind-Time="Model.ValiditaOraInizio" />
+
+                            }
+
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            @if (_isReadOnlyParte1 || !(userRole.Equals(UserRole.AutoritaRichiedente) || userRole.Equals(UserRole.SuperOwner)))
+                            {
+                                <MudTextField Label="Data fine:" @bind-Value="Model.ValiditaDataFine" />
+                            }
+                            else
+                            {
+                                <MudDatePicker Required="true"
+                                               RequiredError="Obbligatorio" Label="Data fine:" @bind-Date="Model.ValiditaDataFine" />
+
+                            }
+
+
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            @if (_isReadOnlyParte1 || !(userRole.Equals(UserRole.AutoritaRichiedente) || userRole.Equals(UserRole.SuperOwner)))
+                            {
+                                <MudTextField Disabled="@_isReadOnlyParte1" Label="Ora fine:" @bind-Value="Model.ValiditaOraFine" />
+                            }
+                            else
+                            {
+                                <MudTimePicker Required="true"
+                                               RequiredError="Obbligatorio" Label="Ora fine:" @bind-Time="Model.ValiditaOraFine" />
+
+                            }
+
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+
+
+                            <MudAutocomplete T="string"
+                                             @bind-Value="Model.ValiditaAreaLavoro"
+                                             Label="Area di lavoro"
+                                             AdornmentIcon="@Icons.Material.Filled.Search"
+                                             Dense="true"
+                                             Disabled="@_isReadOnlyParte1"
+                                             AdornmentColor="Color.Primary"
+                                             SearchFunc="SearchValiditaAreaLavoro"
+                                             ToStringFunc="item => item"
+                                             CoerceText="false"
+                                             Placeholder="Inizia a digitare..."
+                                             ResetValueOnEmptyText="false" />
+
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+
+                            <MudAutocomplete T="string"
+                                             @bind-Value="Model.ValiditaApparecchiatura"
+                                             Label="Item/Apparecchiatura"
+                                             AdornmentIcon="@Icons.Material.Filled.Search"
+                                             Dense="true"
+                                             Disabled="@_isReadOnlyParte1"
+                                             AdornmentColor="Color.Primary"
+                                             SearchFunc="SearchValiditaApparecchiatura"
+                                             ToStringFunc="item => item"
+                                             CoerceText="false"
+                                             Placeholder="Inizia a digitare..."
+                                             ResetValueOnEmptyText="false" />
+
+
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudField>
+        </MudItem>
+
+
+        <!-- DESCRIZIONE ATTIVITÀ -->
+        <MudItem xs="12">
+            <MudField Label="Descrizione Attività" Class="Field" Variant="Variant.Outlined">
+                <MudPaper Class="p-4 mt-4">
+
+                    <MudTextField Disabled="@_isReadOnlyParte1" Label="Descrizione" Lines="4" FullWidth="true" @bind-Value="Model.DescrizioneAttivita" />
+                </MudPaper>
+            </MudField>
+        </MudItem>
+
+        <!-- TIPOLOGIA ATTIVITÀ -->
+        <MudItem xs="12">
+            <MudField Label="Tipologia Attività" Variant="Variant.Outlined">
+
+                <SaipemE_PTW.Components.Forms.MudCheckBoxList _isReadOnlyCheckBox="@_isReadOnlyParte1" Items="TipoAttivitaMapper.GetAll()"
+                                                              SelectedValues="@Model.TipoAttivita"
+                                                              SelectedValuesChanged="@(vals => Model.TipoAttivita = vals)"
+                                                              GetItemValue="@(x => x.Nome)"
+                                                              GetItemLabel="@(x => x.Nome)" />
+
+
+
+                <MudGrid>
+                    <MudItem Xs="12">
+                        @if (!string.IsNullOrEmpty(_attivitaError))
+                        {
+                            <MudText Typo="Typo.caption" Color="Color.Error">@_attivitaError</MudText>
+                        }
+                    </MudItem>
+                </MudGrid>
+
+
+
+
+                @if (Model.TipoAttivita?.Contains("Altro") == true)
+                {
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudTextField Disabled="@_isReadOnlyParte1" Label="Altro (specificare)" @bind-Value="Model.TipoLavoroAltroDescrizione" Color="Color.Primary" />
+                        </MudItem>
+                    </MudGrid>
+                }
+
+
+
+
+
+            </MudField>
+        </MudItem>
+
+
+
+        <!-- Autorità Richiedente (RA) -->
+        <MudItem xs="12">
+            <MudField Label="Autorità Richiedente (RA)" Variant="Variant.Outlined">
+                <MudGrid Class="p-4 mt-4">
+
+                    <MudItem xs="12">
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <SaipemE_PTW.Components.Forms.MudCheckBoxList _isReadOnlyCheckBox="@_isReadOnlyParte1" Items="TipoAutoritaMapper.GetAll().Where(v => v.Id != 3)"
+                                                                              SelectedValues="@Model.TipoAutoritaRichiedente"
+                                                                              SelectedValuesChanged="@(vals => Model.TipoAutoritaRichiedente = vals)"
+                                                                              GetItemValue="@(x => x.Nome)"
+                                                                              GetItemLabel="@(x => x.Nome)" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="6">
+                                <MudSelect @bind-Value="_value"
+                                           Label="Fornitore"
+                                           Dense="true"
+                                           Placeholder="Seleziona">
+                                    @foreach (var state in _states)
+                                    {
+                                        <MudSelectItem Value="state">@state</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+
+                            @code {
+                                private string _value;
+
+                                private readonly string[] _states =
+                                {
+                                                        "Fornitore 1", "Fornitore 2", "Fornitore 3"
+                                                        };
+                            }
+                        </MudGrid>
+
+
+
+
+                        <MudGrid>
+
+                            <MudItem xs="12" sm="12" md="4" lg="4">
+                                <MudTextField Disabled="@_isReadOnlyParte1" Label="Nome" @bind-Value="Model.AutoritaRichiedenteNome" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="4" lg="4">
+                                <MudTextField Disabled="@_isReadOnlyParte1" Label="Cognome" @bind-Value="Model.AutoritaRichiedenteCognome" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="4" lg="4">
+                                <MudTextField Disabled="@_isReadOnlyParte1" Label="Impresa" @bind-Value="Model.AutoritaRichiedenteImpresa" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="2" lg="2">
+                                <MudDatePicker Disabled="@_isReadOnlyParte1" Label="Data" @bind-Date="Model.AutoritaRichiedenteData" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="2" lg="2">
+                                <MudTimePicker Disabled="@_isReadOnlyParte1" Label="Ora" @bind-Time="Model.AutoritaRichiedenteOra" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="8" lg="8">
+                                <MudTextField Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                              AdornmentIcon="@Icons.Material.Filled.BorderColor"
+                                              Disabled="@_isReadOnlyParte1" Label="Firma" @bind-Value="Model.AutoritaRichiedenteFirma" />
+                            </MudItem>
+
+
+                        </MudGrid>
+
+                    </MudItem>
+                </MudGrid>
+            </MudField>
+        </MudItem>
+
+
+        <!-- Autorità Esecutrice (PA)-->
+
+
+
+        <MudItem xs="12">
+            <MudField Label="Autorità Esecutrice (PA)" Variant="Variant.Outlined">
+                <MudGrid Class="p-4 mt-4">
+                    <MudItem xs="12">
+
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+
+                                <SaipemE_PTW.Components.Forms.MudCheckBoxList _isReadOnlyCheckBox="@_isReadOnlyParte1" Items="TipoAutoritaMapper.GetAll()"
+                                                                              SelectedValues="@Model.TipoAutoritaEsecutrice"
+                                                                              SelectedValuesChanged="@(vals => Model.TipoAutoritaEsecutrice = vals)"
+                                                                              GetItemValue="@(x => x.Nome)"
+                                                                              GetItemLabel="@(x => x.Nome)" />
+
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudSelect @bind-Value="_value"
+                                           Label="Fornitore"
+                                           Dense="true"
+                                           Placeholder="Seleziona">
+                                    @foreach (var state in _states)
+                                    {
+                                        <MudSelectItem Value="state">@state</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        </MudGrid>
+
+
+
+
+                        <MudGrid>
+
+                            <MudItem xs="12" sm="12" md="4" lg="4">
+                                <MudTextField Required="true"
+                                              RequiredError="Obbligatorio"
+                                              Disabled="@_isReadOnlyParte1"
+                                              Label="Nome"
+                                              @bind-Value="Model.AutoritaEsecutriceNome" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="4" lg="4">
+                                <MudTextField Required="true"
+                                              RequiredError="Obbligatorio" Disabled="@_isReadOnlyParte1" Label="Cognome" @bind-Value="Model.AutoritaEsecutriceCognome" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="4" lg="4">
+                                <MudTextField Required="true"
+                                              RequiredError="Obbligatorio" Disabled="@_isReadOnlyParte1" Label="Impresa" @bind-Value="Model.AutoritaEsecutriceImpresa" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="4" lg="4">
+                                <MudTextField Required="true"
+                                              RequiredError="Obbligatorio" Disabled="@_isReadOnlyParte1" Label="Contratto" @bind-Value="Model.AutoritaEsecutriceContratto" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="2" lg="2">
+                                <MudDatePicker Required="true"
+                                               RequiredError="Obbligatorio" Disabled="@_isReadOnlyParte1" Label="Data" @bind-Date="Model.AutoritaEsecutriceData" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="2" lg="2">
+                                <MudTimePicker Required="true"
+                                               RequiredError="Obbligatorio" Disabled="@_isReadOnlyParte1" Label="Ora" @bind-Time="Model.AutoritaEsecutriceOra" />
+                            </MudItem>
+
+                            <MudItem xs="12" sm="12" md="4" lg="4">
+                                <MudTextField Required="true"
+                                              RequiredError="Obbligatorio"
+                                              Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                              AdornmentIcon="@Icons.Material.Filled.BorderColor"
+                                              Disabled="@_isReadOnlyParte1" Label="Firma" @bind-Value="Model.AutoritaEsecutriceFirma" />
+                            </MudItem>
+
+
+                        </MudGrid>
+
+                    </MudItem>
+                </MudGrid>
+            </MudField>
+        </MudItem>
+
+
+
+        <!-- Esperto Qualificato (EQ)-->
+        @if (tipoPDL.Equals(TipoPDL.PermessoLavoroAttivitaRadiografica))
+        {
+            <MudItem xs="12">
+                <MudField Label="Esperto Qualificato (EQ)" Variant="Variant.Outlined">
+                    <MudPaper Class="p-4 mt-4">
+
+                        <MudGrid Class="mt-3">
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField Required="true"
+                                              RequiredError="Obbligatorio"
+                                              Disabled="@_isReadOnlyParte1"
+                                              Label="Nome"
+                                              @bind-Value="Model.EspertoQualificatoNome" />
+                            </MudItem>
+
+                            <MudItem xs="12" md="6">
+                                <MudTextField Required="true"
+                                              RequiredError="Obbligatorio" Disabled="@_isReadOnlyParte1" Label="Cognome" @bind-Value="Model.EspertoQualificatoCognome" />
+                            </MudItem>
+
+
+
+                        </MudGrid>
+                    </MudPaper>
+                </MudField>
+            </MudItem>
+        }
+
+
+        <!--   CARATTERISTICHE DELLA STRUMENTAZIONE RADIANTE -->
+        @if (tipoPDL.Equals(TipoPDL.PermessoLavoroAttivitaRadiografica))
+        {
+            <MudItem xs="12">
+                <MudField Label="Caratteristiche della Strumentazione Radiante" Variant="Variant.Outlined">
+                    <MudGrid Class="mt-4">
+                         <MudItem xs="12" md="9">
+                        Tavola di Decadimento Allegata?
+                        </MudItem>
+                        <MudItem xs="12" md="3">
+                            <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
+                                            Value="Model.TavolaDecadimentoAllegata"
+                                            ValueChanged="value => OnValueChanged(value, v => Model.TavolaDecadimentoAllegata = v)"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            Color="Color.Secondary" Size="Size.Small"
+                                            CheckMark
+                                            FixedContent Style="width:200px">
+                                <MudToggleItem T="int" Value=@si Text="Yes" />
+                                <MudToggleItem T="int" Value=@no Text="No" />
+                            </MudToggleGroup>
+
+                        </MudItem>
+
+                        @if (Model.TavolaDecadimentoAllegata.Equals(1))
+                        {
+                    <MudItem xs="12">
+
+                                <MudGrid Class="mt-4">
+                                    <MudItem xs="12">
+
+
+
+                                        <MudTable Items="@Isotopi" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="4">
+
+
+                                           
+
+
+                                            <HeaderContent>
+                                                <MudTh>ISOTOPO RADIOATTIVO</MudTh>
+                                                <MudTh><small>Attivita</small><br />GBq</MudTh>
+                                                <MudTh><small>Attivita</small><br />mSv</MudTh>
+                                            </HeaderContent>
+
+
+                                            <RowTemplate>
+                                                <MudTd DataLabel="Isotopo">@context.Nome</MudTd>
+                                                <MudTd DataLabel="Attività (GBq)">
+                                                    <MudTextField Disabled="@_isReadOnlyParte1" Label="Attività (GBq)" @bind-Value="Model.AltriRequisitiSicurezza" />
+                                                </MudTd>
+                                                <MudTd DataLabel="Dose (mSv)">
+
+                                                    <MudTextField Disabled="@_isReadOnlyParte1" Label="Dose (mSv)" @bind-Value="Model.AltriRequisitiSicurezza" />
+                                                </MudTd>
+                                            </RowTemplate>
+
+                                        </MudTable>
+
+                                    </MudItem>
+                                </MudGrid>
+                        @code {
+
+                            // 1. Definizione della Classe Modello per i Dati
+                            public class Isotopo
+                            {
+                                public string Nome { get; set; }
+                            }
+
+                            // 2. Popolazione della Lista Dati
+                            private List<Isotopo> Isotopi = new List<Isotopo>
+                                                {
+                                                new Isotopo { Nome = "IRIDIO 192" },
+                                                new Isotopo { Nome = "COBALTO 60" },
+                                                new Isotopo { Nome = "CESIO 137" }
+                                                };
+
+                        }
+                    </MudItem>
+                                        }
+
+
+                    <MudItem xs="12">
+
+                        <MudTextField Disabled="@_isReadOnlyParte1" Label="Persone Coinvolte nell'Attività Radiografica" Lines="4" @bind-Value="Model.PersoneCoinvolteAttivitaRadiografica" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Disabled="@_isReadOnlyParte1" Label="Altri requisiti di sicurezza" @bind-Value="Model.AltriRequisitiSicurezza" />
+                    </MudItem>
+                </MudGrid>
+            </MudField>
+        </MudItem>
+                }
+
+        <!-- Misure di Sicurezza -->
+        @if (tipoPDL.Equals(TipoPDL.PermessoLavoroAttivitaRadiografica))
+        {
+            <MudItem xs="12">
+                <MudField Label="Misure di Sicurezza" Variant="Variant.Outlined">
+                    <MudGrid Class="mt-4">
+
+                        <MudItem xs="12" md="9">
+                            Deve essere usato un collimatore?
+                        </MudItem>
+                        <MudItem xs="12" md="3">
+                            <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
+                                            Value="Model.DeveEssereUsatoCollimatore"
+                                            ValueChanged="value => OnValueChanged(value, v => Model.DeveEssereUsatoCollimatore = v)"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            Color="Color.Secondary" Size="Size.Small"
+                                            CheckMark
+                                            FixedContent Style="width:200px">
+                                <MudToggleItem T="int" Value=@si Text="Yes" />
+                                <MudToggleItem T="int" Value=@no Text="No" />
+                            </MudToggleGroup>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudDivider></MudDivider>
+                        </MudItem>
+
+                        <MudItem xs="12" md="9">
+                            Devono essere installate luci lampeggianti attorno all'area?
+                        </MudItem>
+                        <MudItem xs="12" md="3">
+                            <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
+                                            Value="Model.InstallateLuciLampeggiantiAttornoArea"
+                                            ValueChanged="value => OnValueChanged(value, v => Model.InstallateLuciLampeggiantiAttornoArea = v)"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            Color="Color.Secondary" Size="Size.Small"
+                                            CheckMark
+                                            FixedContent Style="width:200px">
+                                <MudToggleItem T="int" Value=@si Text="Yes" />
+                                <MudToggleItem T="int" Value=@no Text="No" />
+                            </MudToggleGroup>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudDivider></MudDivider>
+                        </MudItem>
+
+
+                        <MudItem xs="12" md="9">
+                            Sono stati installate tutte le segnalazioni di sicurezza?
+                        </MudItem>
+                        <MudItem xs="12" md="3">
+                            <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
+                                            Value="Model.InstallateTutteSegnalazioniSicurezza"
+                                            ValueChanged="value => OnValueChanged(value, v => Model.InstallateTutteSegnalazioniSicurezza = v)"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            Color="Color.Secondary" Size="Size.Small"
+                                            CheckMark
+                                            FixedContent Style="width:200px">
+                                <MudToggleItem T="int" Value=@si Text="Yes" />
+                                <MudToggleItem T="int" Value=@no Text="No" />
+                            </MudToggleGroup>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudDivider></MudDivider>
+                        </MudItem>
+
+                        <MudItem xs="12" md="9">
+                            Sono necessarie barriere in piombo?
+                        </MudItem>
+                        <MudItem xs="12" md="3">
+                            <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
+                                            Value="Model.NecessarieBarrierePiombo"
+                                            ValueChanged="value => OnValueChanged(value, v => Model.NecessarieBarrierePiombo = v)"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            Color="Color.Secondary" Size="Size.Small"
+                                            CheckMark
+                                            FixedContent Style="width:200px">
+                                <MudToggleItem T="int" Value=@si Text="Yes" />
+                                <MudToggleItem T="int" Value=@no Text="No" />
+                            </MudToggleGroup>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudDivider></MudDivider>
+                        </MudItem>
+
+                        <MudItem xs="12" md="9">
+                            E' disponibile il piano di emergenza prima dell'inizio dei lavori?
+                        </MudItem>
+                        <MudItem xs="12" md="3">
+                            <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
+                                            Value="Model.DisponibilePianoEmergenzaInizioLavori"
+                                            ValueChanged="value => OnValueChanged(value, v => Model.DisponibilePianoEmergenzaInizioLavori = v)"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            Color="Color.Secondary" Size="Size.Small"
+                                            CheckMark
+                                            FixedContent Style="width:200px">
+                                <MudToggleItem T="int" Value=@si Text="Yes" />
+                                <MudToggleItem T="int" Value=@no Text="No" />
+                            </MudToggleGroup>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudDivider></MudDivider>
+                        </MudItem>
+
+                        <MudItem xs="12" md="9">
+
+                            E' disponibile in sito il numero di emergenza?
+                        </MudItem>
+                        <MudItem xs="12" md="3">
+                            <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
+                                            Value="Model.DisponibileSitoNumeroEmergenza"
+                                            ValueChanged="value => OnValueChanged(value, v => Model.DisponibileSitoNumeroEmergenza = v)"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            Color="Color.Secondary" Size="Size.Small"
+                                            CheckMark
+                                            FixedContent Style="width:200px">
+                                <MudToggleItem T="int" Value=@si Text="Yes" />
+                                <MudToggleItem T="int" Value=@no Text="No" />
+                            </MudToggleGroup>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudDivider></MudDivider>
+                        </MudItem>
+
+
+                        <MudItem xs="12">
+
+                            <MudTextField Disabled="@_isReadOnlyParte1" Label="Altri requisiti" @bind-Value="Model.AltriRequisiti" />
+
+
+                        </MudItem>
+                    </MudGrid>
+                </MudField>
+            </MudItem>
+        }
+
+        <!-- ATTREZZATURE UTILIZZATE -->
+        <MudItem xs="12">
+            <MudField Label="Attrezzature Utilizzate" Variant="Variant.Outlined">
+                <MudPaper Class="p-4 mt-4">
+
+
+                    <SaipemE_PTW.Components.Forms.MudCheckBoxList _isReadOnlyCheckBox="@_isReadOnlyParte1" Items="TipoAttrezzaturaUtilizzataMapper.GetAll()"
+                                                                  SelectedValues="@Model.TipoAttrezzature"
+                                                                  SelectedValuesChanged="@(vals => Model.TipoAttrezzature = vals)"
+                                                                  GetItemValue="@(x => x.Nome)"
+                                                                  GetItemLabel="@(x => x.Nome)" />
+
+
+                    <MudGrid>
+
+
+                        @if (Model.TipoAttrezzature?.Contains("Altro") == true)
+                        {
+                            <MudItem xs="12">
+                                <MudTextField Disabled="@_isReadOnlyParte1" Label="Altro (specificare)" @bind-Value="Model.AttrezzaturaAltro" />
+                            </MudItem>
+                        }
+
+                        <MudItem xs="12">
+                            <MudTextField Disabled="@_isReadOnlyParte1" Label="Attrezzatura Antiscintilla" @bind-Value="Model.AttrezzaturaAntiscintilla" />
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudField>
+        </MudItem>
+
+
+        <!-- PRODOTTI CHIMICI UTILIZZATI -->
+        <MudItem xs="12">
+            <MudField Label="Prodotti Chimici Utilizzati" Variant="Variant.Outlined">
+
+                <MudTextField Lines="4" Disabled="@_isReadOnlyParte1" Label="Descrizione" FullWidth="true" @bind-Value="Model.ProdottiChimiciUtilizzati" />
+            </MudField>
+        </MudItem>
+
+
+        <!-- Misure di Precauzione -->
+        <MudItem xs="12">
+            <MudField Label="Misure di Precauzione" Variant="Variant.Outlined">
+
+
+                <SaipemE_PTW.Components.Forms.MudCheckBoxList _isReadOnlyCheckBox="@_isReadOnlyParte1" Items="TipoMisuraPrecauzioneMapper.GetAll()"
+                                                              SelectedValues="@Model.TipoMisurePrecauzione"
+                                                              SelectedValuesChanged="@(vals => Model.TipoMisurePrecauzione = vals)"
+                                                              GetItemValue="@(x => x.Nome)"
+                                                              GetItemLabel="@(x => x.Nome)" />
+
+
+                <MudGrid>
+
+
+                    @if (Model.TipoMisurePrecauzione?.Contains("Altro") == true)
+                    {
+                        <MudItem xs="12">
+                            <MudTextField Disabled="@_isReadOnlyParte1" Label="Altro (specificare)" Lines="2" FullWidth="true" @bind-Value="Model.AltroProdotti" Class="mt-2" />
+                        </MudItem>
+                    }
+                </MudGrid>
+
+            </MudField>
+
+        </MudItem>
+
+
+
+        <!-- PRESCRIZIONI -->
+        <MudItem xs="12">
+            <MudField Label="Prescrizioni" Variant="Variant.Outlined">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField Disabled="@_isReadOnlyParte1" Lines="4" Label="Descrizione" FullWidth="true" @bind-Value="Model.Prescrizioni" />
+
+                    </MudItem>
+                </MudGrid>
+
+            </MudField>
+        </MudItem>
+
+
+        <!-- DPI -->
+        <MudItem xs="12">
+            <MudField Label="DPI (Protezioni per Testa, Occhi, Corpo e Piedi) – Maschera Escape – Rilevatore H₂S" Variant="Variant.Outlined">
+
+                <SaipemE_PTW.Components.Forms.MudCheckBoxList _isReadOnlyCheckBox="@_isReadOnlyParte1" Items="TipoDPIMapper.GetAll()"
+                                                              SelectedValues="@Model.TipoDPI"
+                                                              SelectedValuesChanged="@(vals => Model.TipoDPI = vals)"
+                                                              GetItemValue="@(x => x.Nome)"
+                                                              GetItemLabel="@(x => x.Nome)" />
+
+
+                <MudGrid>
+
+                    <MudItem Xs="12">
+                        @if (!string.IsNullOrEmpty(_allegatiError))
+                        {
+                            <MudText Typo="Typo.caption" Color="Color.Error">@_allegatiError</MudText>
+                        }
+                    </MudItem>
+
+
+                    @if (Model.TipoDPI?.Contains("Altro") == true)
+                    {
+                        <MudItem xs="12">
+                            <MudTextField Disabled="@_isReadOnlyParte1" Label="Altro (specificare)" @bind-Value="Model.AltriDPI" />
+                        </MudItem>
+                    }
+
+                    <MudItem xs="12" sm="12" md="12">
+                        <MudTextField Disabled="@_isReadOnlyParte1" Label="Misure di protezione collettive" Lines="2" FullWidth="true" @bind-Value="Model.ProtezioneCollettiva" />
+                    </MudItem>
+
+
+                </MudGrid>
+            </MudField>
+        </MudItem>
+
+
+        <!-- GAS TEST -->
+        <MudItem xs="12">
+            <MudField Label="Gas Test (Certificato Allegato)" Variant="Variant.Outlined">
+                <MudGrid Class="mb-3 mt-4">
+
+
+                    <MudItem xs="12">
+                        @* @bind-SelectedValue="Model.GasIsolamento" *@
+
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4">
+                            Richiesto il Gas Test?
+                        </MudText>
+
+                        <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
+                                        Value="Model.GasIsolamento"
+                                        ValueChanged="value => OnValueChanged(value, v => Model.GasIsolamento = v)"
+                                        SelectionMode="SelectionMode.SingleSelection"
+                                        Color="Color.Secondary" Size="Size.Small"
+                                        CheckMark
+                                        FixedContent Style="width:200px">
+                            <MudToggleItem T="int" Value=@si Text="Yes" />
+                            <MudToggleItem T="int" Value=@no Text="No" />
+                        </MudToggleGroup>
+
+
+
+                    </MudItem>
+
+                    <MudItem xs="12">
+
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4">
+                            Frequenza
+                        </MudText>
+
+
+                        <MudRadioGroup Disabled="@_isReadOnlyParte1" T="TipoFrequenza?" @bind-Value="Model.GasTestFrequenza">
+
+                            @foreach (var item in TipoFrequenzaMapper.GetAll())
+                            {
+                                <MudRadio T="TipoFrequenza?" Value="@((TipoFrequenza?)item.Id)" Color="Color.Secondary">@item.Nome</MudRadio>
+                            }
+
+                        </MudRadioGroup>
+
+                    </MudItem>
+                </MudGrid>
+            </MudField>
+        </MudItem>
+
+
+        <MudItem xs="12">
+            <MudField Label="Certificato d'Isolamento da Fonti Energetiche" Variant="Variant.Outlined">
+
+
+
+                <MudGrid>
+                    <MudItem xs="12" Class="mt-4">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4">
+                            Richiesto Certificato Isolamento da fonti energetiche?
+                        </MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="3">
+
+
+                        @*  ValueChanged="OnIsolamentoChanged" *@
+
+                        <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
+                                        Value="Model.IsolamentoFontiEnergetiche"
+                                        ValueChanged="value => OnValueChanged(value, v => Model.IsolamentoFontiEnergetiche = v)"
+                                        SelectionMode="SelectionMode.SingleSelection"
+                                        Color="Color.Secondary" Size="Size.Small"
+                                        CheckMark
+                                        FixedContent Style="width:200px">
+                            <MudToggleItem T="int" Value=@si Text="Yes" />
+                            <MudToggleItem T="int" Value=@no Text="No" />
+                        </MudToggleGroup>
+
+
+                    </MudItem>
+
+
+                    <MudItem xs="12" sm="6" Class="d-flex flex-column">
+                        <MudTextField Disabled="@_isReadOnlyParte1" Label="Certificato n°" @bind-Value="Model.CertificatoNumero" />
+                    </MudItem>
+                    <MudItem xs="12" sm="3" Class="d-flex flex-column">
+
+                        <MudDatePicker Disabled="@_isReadOnlyParte1" Label="Data" @bind-Date="Model.DataCertificato" />
+                    </MudItem>
+                </MudGrid>
+
+
+                @if (Model.IsolamentoFontiEnergetiche.Equals(1))
+                {
+
+                    <MudGrid Class="mb-4 mt-4" Style="padding:24px">
+                        <MudItem xs="12" Class="d-flex flex-column" Style="background-color:#ebebeb;padding:10px">
+                            <SaipemE_PTW.Components.Workflow.Certificati.CertificatoIsolamentoEnergetico></SaipemE_PTW.Components.Workflow.Certificati.CertificatoIsolamentoEnergetico>
+                        </MudItem>
+                    </MudGrid>
+                }
+
+
+            </MudField>
+        </MudItem>
+
+        <!-- NOTE FINALI -->
+        <MudItem xs="12">
+            <MudField Label=" Note finali" Variant="Variant.Outlined">
+
+                <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mt-4">
+                    Una copia del presente permesso di lavoro, insieme a tutti gli allegati, deve essere tenuta nell’area di lavoro.
+                    Tutto il personale deve indossare i DPI indicati. L’autorità esecutrice deve effettuare un Toolbox Talk
+                    e il controllo delle barriere attraverso lo strumento SWC, prima dell’inizio delle attività.
+                </MudAlert>
+            </MudField>
+        </MudItem>
+
+    </MudGrid>
+
+</MudTabPanel>
+
+
+@code {
+    [Parameter] public PermessoLavoroModel Model { get; set; } = new PermessoLavoroModel();
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+
+    [Parameter] public bool _isReadOnlyParte1 { get; set; }
+    private string _attivitaError = String.Empty;
+    private string _allegatiError = String.Empty;
+
+
+    private Task<IEnumerable<string>> SearchValiditaAreaLavoro(string value, CancellationToken token)
+    {
+        IEnumerable<string> result = Array.Empty<string>();
+        IEnumerable<string>? list = TipoValiditaAreaLavoroMapper.GetAll().Select(v => v.Nome);
+
+        if (list != null)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                result = list;
+            else
+                result = list.Where(x => x is not null && x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+            //result = list.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+
+        }
+
+
+        return Task.FromResult(result);
+    }
+
+    private Task<IEnumerable<string>> SearchValiditaApparecchiatura(string value, CancellationToken token)
+    {
+        IEnumerable<string> result = Array.Empty<string>();
+
+        //var list = TipoValiditapparecchiaturaMapper.GetAll().Select(v => v.Nome);
+        // Fix: Cast to non-nullable string, filter out nulls
+        var list = TipoValiditapparecchiaturaMapper.GetAll()
+            .Select(v => v.Nome)
+            .Where(x => x != null)
+            .Cast<string>();
+
+
+        if (string.IsNullOrWhiteSpace(value))
+            result = list;
+        else
+            result = list.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+
+        return Task.FromResult(result);
+    }
+
+
+
+}

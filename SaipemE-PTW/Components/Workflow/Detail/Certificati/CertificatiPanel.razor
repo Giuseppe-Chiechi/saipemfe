@@ -1,0 +1,49 @@
+﻿@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@using SaipemE_PTW.Shared.Models.PWT
+
+<MudExpansionPanel Text="Certificati">
+
+    <MudItem xs="12">
+        <MudPaper Class="p-4 mt-4">
+
+
+
+            <SaipemE_PTW.Components.Forms.MudCheckBoxList _isReadOnlyCheckBox="@_isReadOnlyCertificati" Items="TipoCertificatoMapper.GetAll()"
+                                                          SelectedValues="@Model.TipoCertificati"
+                                                          SelectedValuesChanged="@(vals => Model.TipoCertificati = vals)"
+                                                          GetItemValue="@(x => x.Nome)"
+                                                          GetItemLabel="@(x => x.Nome)" />
+
+
+
+            <MudGrid>
+              
+
+                <MudItem xs="12" sm="12" md="12" lg="12">
+
+                    <MudTextField Disabled="@_isReadOnlyCertificati" Label="Altro (specificare)" @bind-Value="Model.CertificatiAltroDescrizione" Color="Color.Primary" />
+                </MudItem>
+
+            </MudGrid>
+
+
+            <MudGrid Class="mb-4 mt-4" Style="padding:24px">
+                <MudItem xs="12" Class="d-flex flex-column" Style="background-color:#ebebeb;padding:10px">
+                    <CertificatoGestione _isReadOnlyCertificato="@_isReadOnlyCertificati" Model="@Model" />
+                </MudItem>
+            </MudGrid>
+
+
+
+        </MudPaper>
+    </MudItem>
+</MudExpansionPanel>
+
+@code {
+    [Parameter] public PermessoLavoroModel Model { get; set; } = new PermessoLavoroModel();
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlyCertificati { get; set; } = false;
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+
+    private string? _allegatiError = String.Empty;
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SaipemE-PTW</title>
+    <base href="/" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <!--<link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />-->
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/custom.css?v=4" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <!--<link href="SaipemE-PTW.styles.css" rel="stylesheet" />-->
+    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+
+    <!-- Carica come script classico per esporre le funzioni su window prima dell'avvio Blazor -->
+    <script src="js/langCookie.js"></script>
+    <!-- Data: 2025-01-14 - Script gestore errori JavaScript per logging centralizzato -->
+    <script src="js/errorHandler.js"></script>
+    <!-- Data: 2025-10-20 - Script storage token mock OIDC -->
+    <script src="js/authStorage.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <!--<div class="loading-progress-text"></div>-->
+        <div class="loading-progress-text" style="font-family:Arial; font-size:30px !important; color:#fff !important">Saipem</div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+ <span class="dismiss">x</span>
+    </div>
+    <!-- Data: 2025-01-15 - Script per gestione storage token JWT -->
+    <!--<script src="js/authStorage.js"></script>-->
+  <script src="_content/Microsoft.Authentication.WebAssembly.Msal/AuthenticationService.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+</body>
+
+</html>

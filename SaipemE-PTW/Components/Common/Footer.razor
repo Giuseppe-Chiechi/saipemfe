@@ -1,0 +1,58 @@
+﻿@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+<MudGrid Class="mt-6 d-flex justify-space-between bg-blu footer px-4 py-2">
+        <MudItem xs="12" sm="6">
+            © @DateTime.Now.Year - Saipem - E-PTW
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudLink Href="#">Manuale d'uso</MudLink>
+        </MudItem>
+</MudGrid>
+
+   
+
+
+<div class="help-button" @onclick="OpenHelpDialog">
+    <MudIcon Icon="@Icons.Material.Filled.HelpOutline" Size="Size.Small" />
+</div>
+
+@code {
+    private void OpenHelpDialog()
+    {
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true
+        };
+
+        var parameters = new DialogParameters
+        {
+
+        };
+
+        DialogService.ShowAsync<SaipemE_PTW.Components.Common.HelpDialog>(
+                "Aiuto",
+                parameters,
+                options
+            );
+
+        //DialogService.Show<SaipemE_PTW.Components.Common.HelpDialog>("Aiuto");
+    }
+}
+
+<style>
+    .help-button {
+        position: fixed;
+        top: 80%;
+        right: 0;
+        transform: translateY(-50%);
+        background-color: #33363a;
+        color: white;
+        padding: 5px;
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        cursor: pointer;
+        z-index: 1000;
+    }
+</style>

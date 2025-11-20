@@ -1,0 +1,81 @@
+﻿@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+
+@if (Model != null)
+{
+    <MudTabPanel Text="Sospensione" ToolTip="Sospensione">
+        <MudGrid Class="mt-4">
+            <MudItem xs="12">
+
+                <MudGrid Class="mb-3 ">
+                    <MudItem xs="12">
+
+                        <MudTable T="ListaSospensione" Items="Model.ListaSospensione"
+                                  Bordered="true" Striped="true"
+                                  Dense="true" Hover="true" Class="w-100">
+                            <HeaderContent>
+                                <MudTh>Data inizio Sospensione</MudTh>
+                                <MudTh>Motivo della sospensione</MudTh>
+                                <MudTh>Autorizzante</MudTh>
+                                <MudTh>Data/Ora riavvio</MudTh>
+                                <MudTh>Autorizzante riavvio</MudTh>
+                                <MudTh>Note</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Data inizio sospensione">@context.DataInizioSospensione</MudTd>
+                                <MudTd DataLabel="Motivo">@context.Motivo</MudTd>
+                                <MudTd DataLabel="Autorizzante sospensione">@context.AutorizzanteSospensione</MudTd>
+                                <MudTd DataLabel="Data riavvio">@context.DataRiavvio</MudTd>
+                                <MudTd DataLabel="Autorizzante riavvio">@context.AutorizzanteRiavvio</MudTd>
+                                <MudTd DataLabel="Note">@context.Note</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+
+                    </MudItem>
+                </MudGrid>
+
+
+                <MudGrid Class="mb-3 ">
+                    <MudItem xs="12" sm="3">
+
+                        <MudDatePicker Disabled="@_isReadOnlySospensione" Label="Data inizio sospensione (*):"
+                                       @bind-Date="Model.DataInizioSospensione" />
+
+
+                    </MudItem>
+
+                    <MudItem xs="12" sm="5">
+                        <MudTextField Disabled="@_isReadOnlySospensione" Label="Motivo sospensione" @bind-Value="Model.MotivoSospensione" />
+                    </MudItem>
+
+
+                    <MudItem xs="12" sm="4">
+                        <MudTextField Disabled="@_isReadOnlySospensione" Label="Autorizzante" @bind-Value="Model.AutorizzanteSospensione" />
+                    </MudItem>
+
+
+
+
+
+                </MudGrid>
+
+
+                <MudGrid Class="mb-3 justify-end">
+                    <MudItem>
+                        <MudButton Disabled="@_isReadOnlySospensione" StartIcon="@Icons.Material.Filled.AssignmentTurnedIn" Color="Color.Success" Variant="Variant.Filled">Conferma</MudButton>
+                    </MudItem>
+                </MudGrid>
+
+            </MudItem>
+
+        </MudGrid>
+    </MudTabPanel>
+}
+
+@code {
+    [Parameter] public PermessoLavoroModel? Model { get; set; }
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlySospensione { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+}

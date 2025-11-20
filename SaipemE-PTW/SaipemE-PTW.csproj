@@ -1,0 +1,126 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Components\Activity\**" />
+    <Compile Remove="Components\Auth\**" />
+    <Compile Remove="Components\Monitoring\**" />
+    <Compile Remove="Components\Security\**" />
+    <Compile Remove="Pages\Activity\Certificati\**" />
+    <Compile Remove="Pages\Monitoring\PWT\Caldo\**" />
+    <Compile Remove="Pages\Monitoring\PWT\Freddo\**" />
+    <Compile Remove="Validators\Administrator\**" />
+    <Compile Remove="Validators\Attivita\**" />
+    <Compile Remove="Validators\Monitoring\**" />
+    <Compile Remove="wwwroot\lib\**" />
+    <Content Remove="Components\Activity\**" />
+    <Content Remove="Components\Auth\**" />
+    <Content Remove="Components\Monitoring\**" />
+    <Content Remove="Components\Security\**" />
+    <Content Remove="Pages\Activity\Certificati\**" />
+    <Content Remove="Pages\Monitoring\PWT\Caldo\**" />
+    <Content Remove="Pages\Monitoring\PWT\Freddo\**" />
+    <Content Remove="Validators\Administrator\**" />
+    <Content Remove="Validators\Attivita\**" />
+    <Content Remove="Validators\Monitoring\**" />
+    <Content Remove="wwwroot\lib\**" />
+    <EmbeddedResource Remove="Components\Activity\**" />
+    <EmbeddedResource Remove="Components\Auth\**" />
+    <EmbeddedResource Remove="Components\Monitoring\**" />
+    <EmbeddedResource Remove="Components\Security\**" />
+    <EmbeddedResource Remove="Pages\Activity\Certificati\**" />
+    <EmbeddedResource Remove="Pages\Monitoring\PWT\Caldo\**" />
+    <EmbeddedResource Remove="Pages\Monitoring\PWT\Freddo\**" />
+    <EmbeddedResource Remove="Validators\Administrator\**" />
+    <EmbeddedResource Remove="Validators\Attivita\**" />
+    <EmbeddedResource Remove="Validators\Monitoring\**" />
+    <EmbeddedResource Remove="wwwroot\lib\**" />
+    <None Remove="Components\Activity\**" />
+    <None Remove="Components\Auth\**" />
+    <None Remove="Components\Monitoring\**" />
+    <None Remove="Components\Security\**" />
+    <None Remove="Pages\Activity\Certificati\**" />
+    <None Remove="Pages\Monitoring\PWT\Caldo\**" />
+    <None Remove="Pages\Monitoring\PWT\Freddo\**" />
+    <None Remove="Validators\Administrator\**" />
+    <None Remove="Validators\Attivita\**" />
+    <None Remove="Validators\Monitoring\**" />
+    <None Remove="wwwroot\lib\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Pages\Workflow\PWT\PermessoLavoroAttivitaRadiograficaView.razor.cs" />
+    <Compile Remove="Pages\Workflow\PWT\PermessoLavoroFreddoView.razor.cs" />
+    <Compile Remove="Pages\Workflow\PWT\PermessoLavoroGenericoCaldoView.razor.cs" />
+    <Compile Remove="Pages\Workflow\PWT\PermessoLavoroGenericoCaldoView.razor.RoleSwitch.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Components\Forms\CheckboxSearch.razor" />
+    <Content Remove="Components\Forms\SearchableMultiSelect.razor" />
+    <Content Remove="Layout\NavMenu.razor" />
+    <Content Remove="Pages\Auth\MockLogin.razor" />
+    <Content Remove="Pages\Monitoring\ListaCertificatiScavoLista.razor" />
+    <Content Remove="Pages\Monitoring\PermessiLavoroAttivitaRadiografiaLista.razor" />
+    <Content Remove="Pages\Monitoring\PermessiLavoroFreddoLista.razor" />
+    <Content Remove="Pages\Monitoring\PermessiLavoroGenericiCaldoView.razor" />
+    <Content Remove="Pages\Workflow\PWT\PermessiLavoroLista.razor" />
+    <Content Remove="Pages\Workflow\PWT\PermessoLavoroAttivitaRadiograficaView.razor" />
+    <Content Remove="Pages\Workflow\PWT\PermessoLavoroFreddoView.razor" />
+    <Content Remove="Pages\Workflow\PWT\PermessoLavoroGenericoCaldoView.razor" />
+    <Content Remove="Shared\LoginDisplay.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Authentication\Mock\GUIDA_RAPIDA.md" />
+    <None Remove="Authentication\Mock\README.md" />
+    <None Remove="Authentication\Mock\RIEPILOGO_IMPLEMENTAZIONE.md" />
+    <None Remove="Authentication\Mock\START_HERE.md" />
+    <None Remove="AVVIO_RAPIDO_DOPO_FIX.md" />
+    <None Remove="CHECKLIST_ENTRA_ID.md" />
+    <None Remove="ENTRA_ID_SETUP.md" />
+    <None Remove="FIX_HTTPCLIENT_COMPILATION_ERRORS.md" />
+    <None Remove="FIX_HTTPCLIENT_QUICK.md" />
+    <None Remove="FIX_IAUTHSERVICE.md" />
+    <None Remove="FIX_IAUTHSERVICE_QUICK.md" />
+    <None Remove="FIX_ITOKENSTORAGESERVICE.md" />
+    <None Remove="FIX_ITOKENSTORAGESERVICE_QUICK.md" />
+    <None Remove="FIX_MUDBLAZOR_DIALOGSERVICE.md" />
+    <None Remove="FIX_MUDBLAZOR_QUICK.md" />
+    <None Remove="Layout\NavMenu.razor.css" />
+    <None Remove="QUICK_START_ENTRA_ID.md" />
+    <None Remove="TROUBLESHOOTING_DEBUG_PROXY.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="9.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.*" />
+    <PackageReference Include="MudBlazor" Version="8.14.0" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
+    <PackageReference Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SaipemE-PTW.Services\SaipemE-PTW.Services.csproj" />
+    <ProjectReference Include="..\SaipemE-PTW.Shared\SaipemE-PTW.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+</Project>

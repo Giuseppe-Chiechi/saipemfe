@@ -1,0 +1,234 @@
+﻿@page "/activity/radiographic/list"
+@using System.Globalization
+@using SaipemE_PTW.Components.Workflow.List
+@using SaipemE_PTW.Shared
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@inject IPermessoLavoroService PermissiService
+
+
+<PageTitle>@_pageTitle @Localization.GetString("SiteName")</PageTitle>
+
+<SaipemE_PTW.Components.Common.Alert Tipo="@AlertTipo" Message="@AlertMessage" Visible="@AlertShow" VisibleChanged="@(v => AlertShow = v)"></SaipemE_PTW.Components.Common.Alert>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+    <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+    <MudGrid Spacing="3" Class="TitleBox">
+        <MudItem>
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                @_pageTitle
+            </MudText>
+        </MudItem>
+    </MudGrid>
+
+
+    <SaipemE_PTW.Components.Workflow.List.DataList @ref="_listaComponentRef"
+                                                   ServerReload="ServerReload"
+                                                   OnSearch="OnSearch"
+                                                   OnReset="OnReset"
+                                                   PWTtype="PWTtype.PermessoLavoroGenericoCaldo"
+                                                   OnViewClick="HandleListClick"
+                                                   Stato="Chiuso" />
+
+</MudContainer>
+
+@code {
+
+    private SaipemE_PTW.Components.Workflow.List.DataList? _listaComponentRef;
+
+
+    private SearchFilters? _currentFilters;
+    private IEnumerable<PermessoLavoroModel> pagedData = Enumerable.Empty<PermessoLavoroModel>();
+    private int totalItems;
+
+    protected override async Task OnInitializedCoreAsync()
+    {
+        try
+        {
+            _pageTitle = "Lista dei Permessi/Certificati Aperti";
+
+            SetBreadcrumb(
+                new BreadcrumbItem("⬅ Back", href: "javascript:history.back()"),
+                new BreadcrumbItem(Localization.GetString("Home.Dashboard"), href: "/"),
+                new BreadcrumbItem(_pageTitle, href: null, disabled: true)
+            );
+        }
+        catch (Exception ex)
+        {
+            ShowErrorAlert($"Errore durante l'inizializzazione: {ex.Message}");
+        }
+        await Task.CompletedTask;
+
+    }
+
+    private async Task OnReset()
+    {
+        _currentFilters = null;
+
+        // ✅ Usa il riferimento al componente figlio
+        if (_listaComponentRef != null)
+        {
+            await _listaComponentRef.ReloadDataAsync();
+        }
+    }
+
+    private async Task OnSearch(SearchFilters filters)
+    {
+        _currentFilters = filters;
+        await Task.CompletedTask;
+    }
+
+    private async Task<TableData<PermessoLavoroModel>> ServerReload(TableState state, CancellationToken token)
+    {
+        var data = await PermissiService.GetPermessiAsync(token);
+
+        // Filtra per ruolo
+        // data = userRole switch
+        // {
+        //     Shared.Models.Auth.UserRole.AutoritaRichiedente => data.Where(c =>
+        //         c.Stato.Nome.Equals("In Lavorazione RA") ||
+        //         c.Stato.Nome.Contains("Rigettato") ||
+        //         c.Stato.Nome.Contains("Chiuso") ||
+        //         c.Stato.Nome.Contains("Riattivato") ||
+        //         c.Stato.Nome.Contains("Rinnovato") ||
+        //         c.Stato.Nome.Contains("Autorizzato")),
+
+        //     Shared.Models.Auth.UserRole.AutoritaEsecutrice => data.Where(c =>
+        //         c.Stato.Nome.Equals("In Lavorazione PA") ||
+        //         c.Stato.Nome.Contains("Rigettato") ||
+        //         c.Stato.Nome.Contains("Chiuso") ||
+        //         c.Stato.Nome.Contains("Riattivato") ||
+        //         c.Stato.Nome.Contains("Rinnovato") ||
+        //         c.Stato.Nome.Contains("Autorizzato")),
+
+        //     Shared.Models.Auth.UserRole.PTWCoordinator => data.Where(c =>
+        //         c.Stato.Nome.Equals("In Lavorazione PTWC") ||
+        //         c.Stato.Nome.Contains("Rigettato") ||
+        //         c.Stato.Nome.Contains("Chiuso") ||
+        //         c.Stato.Nome.Contains("Riattivato") ||
+        //         c.Stato.Nome.Contains("Rinnovato") ||
+        //         c.Stato.Nome.Contains("Autorizzato")),
+
+        //     Shared.Models.Auth.UserRole.AutoritaEmittente => data.Where(c =>
+        //         c.Stato.Nome.Equals("In Lavorazione IA") ||
+        //         c.Stato.Nome.Contains("Rigettato") ||
+        //         c.Stato.Nome.Contains("Chiuso") ||
+        //         c.Stato.Nome.Contains("Riattivato") ||
+        //         c.Stato.Nome.Contains("Rinnovato") ||
+        //         c.Stato.Nome.Contains("Autorizzato")),
+
+        //     Shared.Models.Auth.UserRole.CoordinatoreInEsecuzioneCSE => data.Where(c =>
+        //         c.Stato.Nome.Equals("In Lavorazione CSE") ||
+        //         c.Stato.Nome.Contains("Rigettato") ||
+        //         c.Stato.Nome.Contains("Chiuso") ||
+        //         c.Stato.Nome.Contains("Riattivato") ||
+        //         c.Stato.Nome.Contains("Rinnovato") ||
+        //         c.Stato.Nome.Contains("Autorizzato")),
+
+        //     Shared.Models.Auth.UserRole.PersonaAutorizzataTestGas => data.Where(c =>
+        //         c.Stato.Nome.Equals("In Lavorazione AGT") ||
+        //         c.Stato.Nome.Contains("Rigettato") ||
+        //         c.Stato.Nome.Contains("Chiuso") ||
+        //         c.Stato.Nome.Contains("Riattivato") ||
+        //         c.Stato.Nome.Contains("Rinnovato") ||
+        //         c.Stato.Nome.Contains("Autorizzato")),
+
+        //     Shared.Models.Auth.UserRole.AutoritaOperativa => data.Where(c =>
+        //         c.Stato.Nome.Equals("In Approvazione OA") ||
+        //         c.Stato.Nome.Contains("Rigettato") ||
+        //         c.Stato.Nome.Contains("Chiuso") ||
+        //         c.Stato.Nome.Contains("Riattivato") ||
+        //         c.Stato.Nome.Contains("Rinnovato") ||
+        //         c.Stato.Nome.Contains("Autorizzato")),
+
+        //     _ => data // AmministratoreSistema, SuperOwner vedono tutto
+        // };
+
+        // Applica filtri di ricerca se presenti
+        if (_currentFilters != null)
+        {
+            // Filtro testo generico
+            if (!string.IsNullOrWhiteSpace(_currentFilters.SearchText))
+            {
+                data = data.Where(x =>
+                    (x.pdl?.Contains(_currentFilters.SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (x.DescrizioneAttivita?.Contains(_currentFilters.SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (x.AutoritaEsecutriceImpresa?.Contains(_currentFilters.SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (x.ValiditaAreaLavoro?.Contains(_currentFilters.SearchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    $"{x.id}".Contains(_currentFilters.SearchText)
+                );
+            }
+
+            // Filtro Impresa Esecutrice
+            if (!string.IsNullOrWhiteSpace(_currentFilters.ImpresaEsecutrice))
+            {
+                data = data.Where(x => x.AutoritaEsecutriceImpresa?.Equals(_currentFilters.ImpresaEsecutrice, StringComparison.OrdinalIgnoreCase) ?? false);
+            }
+
+            // Filtro Area Lavoro
+            if (!string.IsNullOrWhiteSpace(_currentFilters.AreaLavoro))
+            {
+                data = data.Where(x => x.ValiditaAreaLavoro?.Equals(_currentFilters.AreaLavoro, StringComparison.OrdinalIgnoreCase) ?? false);
+            }
+
+            // Filtro Apparecchiatura
+            if (!string.IsNullOrWhiteSpace(_currentFilters.Apparecchiatura))
+            {
+                data = data.Where(x => x.ValiditaApparecchiatura?.Equals(_currentFilters.Apparecchiatura, StringComparison.OrdinalIgnoreCase) ?? false);
+            }
+
+            // Filtro Stato
+            if (!string.IsNullOrWhiteSpace(_currentFilters.Stato))
+            {
+                data = data.Where(x => x.Stato?.Nome?.Equals(_currentFilters.Stato, StringComparison.OrdinalIgnoreCase) ?? false);
+            }
+
+            // Filtro Parte
+            if (!string.IsNullOrWhiteSpace(_currentFilters.Parte))
+            {
+                data = data.Where(x => x.Parte?.Nome?.Equals(_currentFilters.Parte, StringComparison.OrdinalIgnoreCase) ?? false);
+            }
+
+            // Filtro Richiedente - confronta con nome e cognome
+            if (!string.IsNullOrWhiteSpace(_currentFilters.Richiedente))
+            {
+                data = data.Where(x =>
+                    (x.AutoritaRichiedenteNome?.Contains(_currentFilters.Richiedente, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (x.AutoritaRichiedenteCognome?.Contains(_currentFilters.Richiedente, StringComparison.OrdinalIgnoreCase) ?? false));
+            }
+
+            // Filtro Data Inizio From
+            if (_currentFilters.DataInizioFrom.HasValue)
+            {
+                data = data.Where(x => x.ValiditaDataInizio >= _currentFilters.DataInizioFrom.Value);
+            }
+
+            // Filtro Data Inizio To
+            if (_currentFilters.DataInizioTo.HasValue)
+            {
+                data = data.Where(x => x.ValiditaDataInizio <= _currentFilters.DataInizioTo.Value);
+            }
+        }
+
+        totalItems = data.Count();
+
+        // Ordinamento
+        data = state.SortLabel switch
+        {
+            "PDL" => data.OrderByDirection(state.SortDirection, o => o.pdl),
+            "DataInizioLavoro" => data.OrderByDirection(state.SortDirection, o => o.ValiditaDataInizio),
+            "DescrizioneAttivita" => data.OrderByDirection(state.SortDirection, o => o.DescrizioneAttivita),
+            "ImpresaEsecuzione" => data.OrderByDirection(state.SortDirection, o => o.AutoritaEsecutriceImpresa),
+            "AreaLavoro" => data.OrderByDirection(state.SortDirection, o => o.ValiditaAreaLavoro),
+            "Stato" => data.OrderByDirection(state.SortDirection, o => o.Stato.Nome),
+            "Parte" => data.OrderByDirection(state.SortDirection, o => o.Parte.Nome),
+            _ => data
+        };
+
+        pagedData = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<PermessoLavoroModel> { TotalItems = totalItems, Items = pagedData };
+    }
+
+
+}

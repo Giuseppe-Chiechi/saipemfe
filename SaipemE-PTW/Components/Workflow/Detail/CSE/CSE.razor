@@ -1,0 +1,60 @@
+﻿@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+
+@if (Model != null)
+{
+    <MudTabPanel Text="CSE" ToolTip="Il CSE (Coordinatore per la Sicurezza in Esecuzione) che rappresenta il cliente o il suo delegato prende visione delle parti 1 e 2 e firma la relativa sezione CSE di assumendo il ruolo di coordinatore del lavoro. ">
+        <MudGrid Class="mt-4">
+            <MudItem xs="12">
+                <MudField Label="CSE o suo Delegato" Variant="Variant.Outlined">
+                 
+
+
+                    <MudGrid Class="mt-4">
+                        <!-- Etichetta CSE o suo Delegato -->
+                        <MudItem xs="12" sm="6">
+                            <MudTextField Disabled="@_isReadOnlyParteCSE" Label="Nome" @bind-Value="Model.CSENome" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudTextField Disabled="@_isReadOnlyParteCSE" Label="Cognome" @bind-Value="Model.CSENome" />
+                        </MudItem>
+
+
+                        <MudItem xs="12" sm="8">
+                            <MudTextField Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                          AdornmentIcon="@Icons.Material.Filled.BorderColor"
+                                          Disabled="@_isReadOnlyParteCSE" Label="Firma" @bind-Value="Model.CSEFirma" />
+                        </MudItem>
+
+                        <MudItem xs="6" sm="2">
+                            <MudDatePicker Disabled="@_isReadOnlyParteCSE" Label="Data" @bind-Date="Model.CSEFirmaData" />
+                        </MudItem>
+
+
+                        <MudItem xs="6" sm="2">
+                            <MudTimePicker Disabled="@_isReadOnlyParteCSE" Label="Ora" @bind-Value="Model.CSEFirmaOra" />
+                        </MudItem>
+
+                    </MudGrid>
+
+                </MudField>
+
+
+
+            </MudItem>
+        </MudGrid>
+
+
+    </MudTabPanel>
+
+}
+
+
+@code {
+    [Parameter] public PermessoLavoroModel? Model { get; set; }
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlyParteCSE { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+}

@@ -1,0 +1,178 @@
+@page "/test/user-role-debug"
+@using SaipemE_PTW.Shared.Models.Auth
+@using System.Security.Claims
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+<PageTitle>Debug User Role</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h4" GutterBottom="true">?? Debug User Role</MudText>
+
+
+        <MudDivider Class="my-4" />
+
+        @if (currentUser?.Identity?.IsAuthenticated == true)
+        {
+            <MudAlert Severity="Severity.Success" Class="mb-4">
+                ? Utente autenticato: <strong>@currentUser.Identity.Name</strong>
+            </MudAlert>
+
+            <MudText Typo="Typo.h6" Class="mt-4 mb-2">?? Ruolo Caricato</MudText>
+            <MudChip T="string" Color="@GetRoleColor()" Size="Size.Large">
+                @userRole.ToString() (@((int)userRole))
+            </MudChip>
+
+            <MudText Typo="Typo.h6" Class="mt-4 mb-2">?? Tutti i Claims Disponibili</MudText>
+            <MudSimpleTable Dense="true" Hover="true" Bordered="true" Striped="true">
+                <thead>
+                    <tr>
+                        <th>Claim Type</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var claim in currentUser.Claims.OrderBy(c => c.Type))
+                    {
+                        <tr>
+                            <td>
+                                <MudText Typo="Typo.body2">
+                                    <strong>@GetFriendlyClaimType(claim.Type)</strong>
+                                    @if (IsRoleClaim(claim.Type))
+                                    {
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Primary">ROLE</MudChip>
+                                    }
+                                </MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">@claim.Type</MudText>
+                            </td>
+                            <td>
+                                <MudText Typo="Typo.body2">@claim.Value</MudText>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+
+            <MudText Typo="Typo.h6" Class="mt-4 mb-2">?? Test Parsing Codici Ruolo</MudText>
+            <MudSimpleTable Dense="true" Hover="true" Bordered="true">
+                <thead>
+                    <tr>
+                        <th>Codice</th>
+                        <th>Display Name</th>
+                        <th>Parsing OK?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var roleCode in GetTestCodes())
+                    {
+                        var canParse = UserRoleHelper.TryParse(roleCode, out var role);
+                        <tr>
+                            <td><MudText Typo="Typo.body2"><text>&lt;code&gt;@roleCode&lt;/code&gt;</text></MudText></td>
+                            <td>@(canParse? UserRoleHelper.ToDisplayName(role) : "-")</td>
+                            <td>
+                                @if (canParse)
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Small" />
+                                }
+                                else
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" Size="Size.Small" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+
+            <MudAlert Severity="Severity.Info" Class="mt-4">
+                <strong>?? Suggerimento:</strong> Se il ruolo non viene caricato correttamente, verifica che nei claims
+                sia presente uno dei seguenti claim types: <text>&lt;code&gt;role&lt;/code&gt;</text>, <text>&lt;code&gt;roles&lt;/code&gt;</text>, o
+                <text>&lt;code&gt;http://schemas.microsoft.com/ws/2008/06/identity/claims/role&lt;/code&gt;</text>
+            </MudAlert>
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Warning">
+                ?? Utente non autenticato. Effettua il login per vedere i dettagli.
+            </MudAlert>
+        }
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="Typo.h6" Class="mb-2">?? Informazioni Componente</MudText>
+        <MudList T="string" Dense="true">
+            <MudListItem T="string">
+                <strong>Local Area:</strong> @(_localArea ?? "N/A")
+            </MudListItem>
+            <MudListItem T="string">
+                <strong>Sub Local Area:</strong> @(_sublocalArea ?? "N/A")
+            </MudListItem>
+            <MudListItem T="string">
+                <strong>Lingua Corrente:</strong> @_lang
+            </MudListItem>
+            <MudListItem T="string">
+                <strong>Loading:</strong> @IsLoading
+            </MudListItem>
+        </MudList>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    protected override async Task OnInitializedCoreAsync()
+    {
+        _pageTitle = "Debug User Role";
+        await Task.CompletedTask;
+    }
+
+    private Color GetRoleColor()
+    {
+        return userRole switch
+        {
+            UserRole.Anonymous => Color.Default,
+            UserRole.Visitatore => Color.Info,
+            UserRole.AutoritaRichiedente => Color.Primary,
+            UserRole.AutoritaEsecutrice => Color.Secondary,
+            UserRole.AutoritaEmittente => Color.Tertiary,
+            UserRole.PTWCoordinator => Color.Success,
+            UserRole.AmministratoreSistema => Color.Error,
+            UserRole.SuperOwner => Color.Warning,
+            _ => Color.Default
+        };
+    }
+
+    private string GetFriendlyClaimType(string claimType)
+    {
+        return claimType switch
+        {
+            ClaimTypes.NameIdentifier => "User ID",
+            ClaimTypes.Name => "Name",
+            ClaimTypes.Email => "Email",
+            ClaimTypes.Role => "Role (Standard)",
+            "role" => "Role (Azure AD)",
+            "roles" => "Roles (Azure AD)",
+            "preferred_username" => "Username",
+            "oid" => "Object ID",
+            "tid" => "Tenant ID",
+            "groups" => "Groups",
+            _ => claimType.Split('/').LastOrDefault() ?? claimType
+        };
+    }
+
+    private bool IsRoleClaim(string claimType)
+    {
+        return claimType == ClaimTypes.Role
+        || claimType == "role"
+      || claimType == "roles"
+       || claimType.EndsWith("/role", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private List<string> GetTestCodes()
+    {
+        return new List<string>
+    {
+    "RA", "PA", "IA", "PTWC", "CSE", "AGT", "OA", "EQ",
+            "ADMIN", "SUPER_OWNER", "VISITOR", "ANONYMOUS",
+          "InvalidCode", "TEST", ""
+        };
+    }
+}

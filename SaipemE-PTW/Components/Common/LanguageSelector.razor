@@ -1,0 +1,109 @@
+﻿@using System.Globalization
+
+
+<MudButtonGroup Class="language-selector bg-white" Variant="Variant.Text" Color="Color.Transparent">
+    @foreach (var culture in LanguageService.GetSupportedCultures())
+    {
+        var isActive = LanguageService.GetCurrentLanguageCode() == culture.Name;
+        //var color = isActive ? Color.Warning : Color.Default;
+        var colorClass = isActive ? "bg-orange text-white" : "bg-white text-blu";
+
+        <MudButton Size="Size.Small"  Class="@colorClass"
+                   Disabled="@isActive" 
+                   OnClick="@(async () => await ChangeLanguageAsync(culture))">
+                    <MudStack Direction="Row" Spacing="1">
+                        <MudText Typo="Typo.body2">
+                    @culture.TwoLetterISOLanguageName.ToUpperInvariant()
+                        </MudText>
+                    </MudStack>
+        </MudButton>
+    }
+</MudButtonGroup>
+ 
+@code {
+
+    [Inject] private SaipemE_PTW.Services.ILanguageService LanguageService { get; set; } = default!;
+    [Inject] private SaipemE_PTW.Services.ILoggingService Logger { get; set; } = default!;
+
+
+    private async Task ChangeLanguageAsync(CultureInfo culture)
+    {
+        try
+        {
+            // Data: 2025-01-19 - Validazione input per sicurezza
+            if (culture == null)
+            {
+                Logger.Warning("ChangeLanguageAsync called with null culture");
+                return;
+            }
+
+            if (!LanguageService.IsCultureSupported(culture.Name))
+            {
+                Logger.Warning("Attempted to select unsupported culture: " + culture.Name);
+                return;
+            }
+
+            // Data: 2025-01-19 - Esegui cambio lingua (aggiorna UI e cookie)
+            await LanguageService.SetLanguageAsync(culture);
+
+            Logger.Info("Language changed to " + culture.Name + " by user action");
+        }
+        catch (Exception ex)
+        {
+            // Data: 2025-01-19 - Gestione errore con logging sicuro
+            Logger.Error(ex, "Error changing language to " + (culture?.Name ?? "null"));
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    // Data: 2025-01-19 - Restituisce emoji bandiera per accessibilità
+    private string GetFlag(CultureInfo culture)
+    {
+        return culture.TwoLetterISOLanguageName.ToLowerInvariant() switch
+        {
+            "it" => "🇮🇹",
+            "en" => "🇬🇧",
+            "fr" => "🇫🇷",
+            "de" => "🇩🇪",
+            "es" => "🇪🇸",
+            _ => "🌐"
+        };
+    }
+
+    // Data: 2025-01-19 - Label accessibile per screen reader
+    private string GetFlagLabel(CultureInfo culture)
+    {
+        return culture.TwoLetterISOLanguageName.ToLowerInvariant() switch
+        {
+            "it" => "Italian flag",
+            "en" => "British flag",
+            "fr" => "French flag",
+            "de" => "German flag",
+            "es" => "Spanish flag",
+            _ => "Flag"
+        };
+    }
+
+    // Data: 2025-01-19 - Label completa per accessibilità WCAG 2.2
+    private string GetLanguageLabel(CultureInfo culture)
+    {
+        var langName = culture.TwoLetterISOLanguageName.ToLowerInvariant() switch
+        {
+            "it" => "Italian",
+            "en" => "English",
+            "fr" => "French",
+            "de" => "German",
+            "es" => "Spanish",
+            _ => culture.DisplayName
+        };
+
+        return $"Switch to {langName}";
+    }
+
+    
+}
+
+

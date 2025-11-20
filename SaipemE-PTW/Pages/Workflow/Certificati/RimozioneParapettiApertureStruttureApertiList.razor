@@ -1,0 +1,67 @@
+﻿@page "/workflow/certificate-removal-parapets-floor-openings/list"
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@using SaipemE_PTW.Shared.Models
+@implements IDisposable
+
+<PageTitle>@_pageTitle @Localization.GetString("SiteName")</PageTitle>
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+    <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+    <MudGrid Spacing="3">
+        <MudItem>
+
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+
+                @_pageTitle
+            </MudText>
+
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3">
+        <MudItem xs="12">
+            <MudCard Class="mud-width-full">
+                <MudCardContent>
+
+                    <MudGrid Class="mt-4">
+                        <MudItem Style="min-height:500px">
+                            Certificati di Rimozione Parapetti e Aperture nel piano di calpestio delle Strutture Aperti: questa funzionalità permetterà di visualizzare la lista dei Certificati di Rimozione Parapetti e Aperture nel piano di calpestio delle Strutture in qualsiasi stato e la possibilità di visualizzare il dettaglio dei Certificati relativi;
+                        </MudItem>
+                    </MudGrid>
+
+                </MudCardContent>
+            </MudCard>
+
+        </MudItem>
+    </MudGrid>
+
+</MudContainer>
+
+@code {
+
+    protected override async Task OnInitializedCoreAsync()
+    {
+        try
+        {
+            _pageTitle = "Certificati di Rimozione Parapetti e Aperture nel piano di calpestio delle Strutture Aperti";
+
+            SetBreadcrumb(
+                     new BreadcrumbItem("⬅ Back", href: "javascript:history.back()"),
+                     new BreadcrumbItem(Localization.GetString("Home.Dashboard"), href: "/"),
+                     new BreadcrumbItem(_pageTitle, href: null, disabled: true)
+                 );
+
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Errore durante il caricamento dati dashboard");
+        }
+        finally
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+
+}

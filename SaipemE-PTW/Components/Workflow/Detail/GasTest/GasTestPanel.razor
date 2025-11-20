@@ -1,0 +1,203 @@
+﻿@using SaipemE_PTW.Shared.Models.PWT
+<MudExpansionPanel Text="Gas Test">
+    <MudStack Direction="Row" Spacing="2">
+
+        <MudGrid Class="mt-3 mb-3">
+            <MudItem xs="12" sm="6">
+                <MudDatePicker @bind-Date="_dataTest" Label="Data test" PickerVariant="PickerVariant.Inline" Disabled="@_isReadOnlyGasTest" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudTimePicker @bind-Time="_oraTest" Label="Ora test" PickerVariant="PickerVariant.Inline" Disabled="@_isReadOnlyGasTest" />
+            </MudItem>
+        </MudGrid>
+
+        <MudGrid>
+            @{
+                var tipiGas = TipoGasMapper.GetAll().ToList();
+                for (int i = 0; i < tipiGas.Count; i++)
+                {
+                    var index = i;
+                    var item = tipiGas[index];
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudTextField T="string"
+                                      Label="@item.Nome"
+                                      @bind-Value="_gasValues[index]"
+                                      Disabled="@_isReadOnlyGasTest" />
+                    </MudItem>
+                }
+            }
+        </MudGrid>
+
+        <MudGrid>
+            <MudItem xs="12" sm="12">
+                <MudTextField T="string" Label="Altro..." @bind-Value="_altro" Disabled="@_isReadOnlyGasTest" />
+            </MudItem>
+        </MudGrid>
+
+        <!-- Bottone Aggiungi Gas Test -->
+        <MudGrid Class="mb-3">
+            <MudItem xs="12" Class="d-flex justify-end">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="AggiungiGasTest"
+                           Disabled="@(_isReadOnlyGasTest || !IsFormValid())">
+                    Aggiungi Gas Test
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+
+        <!-- Tabella Gas Test -->
+        <MudGrid Class="mb-3">
+            <MudItem Xs="12">
+                <MudTable Items="@Model?.gasTest" Hover="true" Bordered="true" Striped="true" Elevation="0" Dense="true" Class="w-100">
+                    <HeaderContent>
+                        <MudTh>DATA</MudTh>
+                        <MudTh>Ora</MudTh>
+                        <MudTh>OSSIGENO (O₂)<br /><small>19 - 21%</small></MudTh>
+                        <MudTh>ANIDRIDE SOLFOROSA (H₂S)<br /><small>ppm</small></MudTh>
+                        <MudTh>COMBUSTIBILE<br />(LEL)</MudTh>
+                        <MudTh>MONOSSIDO DI<br />CARBONIO (CO)</MudTh>
+                        <MudTh>ALTRO</MudTh>
+                        
+                            <MudTh>AZIONI</MudTh>
+                                            </HeaderContent>
+
+                    <RowTemplate>
+                        <MudTd DataLabel="Data">@context.DataTest?.ToString("dd/MM/yyyy")</MudTd>
+                        <MudTd DataLabel="Ora">@context.OraTest?.ToString(@"hh\:mm")</MudTd>
+                        <MudTd DataLabel="Ossigeno">@(context.tipoGas?.Count > 0 ? context.tipoGas[0].Value : "")</MudTd>
+                        <MudTd DataLabel="Anidride Solforosa">@(context.tipoGas?.Count > 1 ? context.tipoGas[1].Value : "")</MudTd>
+                        <MudTd DataLabel="Combustibile">@(context.tipoGas?.Count > 2 ? context.tipoGas[2].Value : "")</MudTd>
+                        <MudTd DataLabel="Monossido di Carbonio">@(context.tipoGas?.Count > 3 ? context.tipoGas[3].Value : "")</MudTd>
+                        <MudTd DataLabel="Altro">@(context.tipoGas?.Count > 4 ? context.tipoGas[4].Value : "")</MudTd>
+                        
+                            <MudTd DataLabel="Azioni">
+                                <MudIconButton Disabled="@_isReadOnlyGasTest" Icon="@Icons.Material.Filled.Delete"
+                                               Color="Color.Error"
+                                               Size="Size.Small"
+                                               OnClick="@(() => RimuoviGasTest(context))" />
+                            </MudTd>
+                                            </RowTemplate>
+
+                    <NoRecordsContent>
+                        <MudText Typo="Typo.body2" Align="Align.Center" Class="pa-4">
+                            Nessun gas test inserito
+                        </MudText>
+                    </NoRecordsContent>
+                </MudTable>
+            </MudItem>
+        </MudGrid>
+
+    </MudStack>
+</MudExpansionPanel>
+
+@code {
+    [Parameter] public PermessoLavoroModel? Model { get; set; }
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlyGasTest { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+
+    private string? _allegatiError = String.Empty;
+
+    // Campi per il nuovo gas test
+    private DateTime? _dataTest = DateTime.Now;
+    private TimeSpan? _oraTest = DateTime.Now.TimeOfDay;
+    private string[] _gasValues = new string[4]; // Array per i 4 tipi di gas principali
+    private string? _altro;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        // Inizializza la lista gasTest se null
+        if (Model != null && Model.gasTest == null)
+        {
+            Model.gasTest = new List<GasTest>();
+        }
+
+        // Inizializza l'array dei valori gas
+        ResetGasValues();
+    }
+
+    private void ResetGasValues()
+    {
+        _gasValues = new string[4];
+        _altro = string.Empty;
+        _dataTest = DateTime.Now;
+        _oraTest = DateTime.Now.TimeOfDay;
+    }
+
+    private bool IsFormValid()
+    {
+        // Valida che almeno data e ora siano impostati
+        return _dataTest.HasValue && _oraTest.HasValue;
+    }
+
+    private async Task AggiungiGasTest()
+    {
+        if (Model == null || !IsFormValid())
+            return;
+
+        // Inizializza la lista se necessario
+        if (Model.gasTest == null)
+        {
+            Model.gasTest = new List<GasTest>();
+        }
+
+        // Crea la lista dei tipi di gas con i valori inseriti
+        var tipiGas = TipoGasMapper.GetAll().ToList();
+        var gasTestTipoGas = new List<TipoGasDto>();
+
+        for (int i = 0; i < tipiGas.Count && i < _gasValues.Length; i++)
+        {
+            gasTestTipoGas.Add(new TipoGasDto
+            {
+                Id = tipiGas[i].Id,
+                Nome = tipiGas[i].Nome,
+                Value = _gasValues[i] ?? string.Empty
+            });
+        }
+
+        // Aggiungi "Altro" se presente
+        if (!string.IsNullOrWhiteSpace(_altro))
+        {
+            gasTestTipoGas.Add(new TipoGasDto
+            {
+                Id = tipiGas.Count + 1,
+                Nome = "Altro",
+                Value = _altro
+            });
+        }
+
+        // Crea il nuovo gas test
+        var nuovoGasTest = new GasTest
+        {
+            DataTest = _dataTest,
+            OraTest = _oraTest,
+            tipoGas = gasTestTipoGas
+        };
+
+        // Aggiungi alla lista
+        Model.gasTest.Add(nuovoGasTest);
+
+        // Notifica il cambio del modello
+        await ModelChanged.InvokeAsync(Model);
+
+        // Reset dei campi
+        ResetGasValues();
+
+        StateHasChanged();
+    }
+
+    private async Task RimuoviGasTest(GasTest gasTest)
+    {
+        if (Model?.gasTest != null && gasTest != null)
+        {
+            Model.gasTest.Remove(gasTest);
+            await ModelChanged.InvokeAsync(Model);
+            StateHasChanged();
+        }
+    }
+}

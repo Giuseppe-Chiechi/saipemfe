@@ -1,0 +1,119 @@
+﻿@using MudBlazor
+@inherits LayoutComponentBase 
+
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+<MudThemeProvider Theme="@_customTheme" />
+  
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Transparent" >
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Style="background-color:#fff" Color="Color.Dark" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+         <MudSpacer />
+        <MudHeader></MudHeader>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" Color="Color.Transparent" Style="padding:6px">
+       <MudSideBar></MudSideBar>
+    </MudDrawer>
+    <MudMainContent id="unique_id_scroll_section">
+        @* 202251120 Color="Color.Transparent" *@
+        @Body
+
+        <MudScrollToTop TopOffset="100" OnScroll="OnScroll">
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ArrowUpward" >Go to top</MudButton>
+        </MudScrollToTop>
+
+    </MudMainContent>
+</MudLayout>
+<SaipemE_PTW.Components.Common.Footer></SaipemE_PTW.Components.Common.Footer>
+
+
+@code {
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    Color Color = Color.Success;
+    private void OnScroll(ScrollEventArgs e)
+    {
+        Color = (e.FirstChildBoundingClientRect.Top * -1) switch
+        {
+            var x when x < 500 => Color.Primary,
+            var x when x < 1500 => Color.Secondary,
+            var x when x < 2500 => Color.Tertiary,
+            _ => Color.Error
+        };
+    }
+
+     
+}
+            
+
+@code {
+  
+    private MudTheme _customTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#33363a",        // Blu Saipem principale
+            Secondary = "#f38a00",      // Arancione Saipem
+            AppbarBackground = "#33363a",
+            DrawerBackground = "#33363a",
+            DrawerText = "#33363a",
+            Success = "#4CAF50",
+            Info = "#2196F3",
+            Warning = "#FF9800",
+            Error = "#F44336",
+            Dark = "#33363a",
+            TextPrimary = "#33363a",
+            TextSecondary = "#F37021",
+            
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = "#33363a",
+            Secondary = "#f38a00",
+            AppbarBackground = "#33363a",
+            Background = "#33363a",
+            Surface = "#33363a",
+            DrawerBackground = "#33363a"
+        }
+    };
+
+    // private readonly MudTheme _customTheme = new MudTheme()
+    // {
+    //     PaletteLight  = new PaletteLight()
+    //     {
+    //         Primary = "#33363a",           // mudSaibemBGorange
+           
+
+    //         Secondary = "#f38a00",         // mudSaibemBGblue
+    //         Tertiary = "#ccc",
+    //         TextPrimary = "#33363a",       // mudSaibemTextblue
+    //         TextSecondary = "#f38a00",     // mudSaibemTextorange
+           
+    //         Background = "#33363a",
+    //         AppbarBackground = "#33363a",
+    //         DrawerBackground = "#33363a",
+    //     }
+    // };
+}
+@* <div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div> *@

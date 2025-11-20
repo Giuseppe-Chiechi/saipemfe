@@ -1,0 +1,101 @@
+﻿@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+
+
+<MudTabPanel Text="Riattivazione" ToolTip="Riattivazione">
+    <MudGrid Class="mt-4">
+        <MudItem xs="12">
+
+            <MudGrid Class="mb-3 ">
+                <MudItem xs="12">
+
+                    <MudTable T="ListaRiattivazione" Items="Model.ListaRiattivazione"
+                              Bordered="true" Striped="true"
+                              Dense="true" Hover="true" Class="w-100">
+                        <HeaderContent>
+                            <MudTh>Data inizio Sospensione</MudTh>
+                            <MudTh>Motivo della sospensione</MudTh>
+                            <MudTh>Autorizzante</MudTh>
+                            <MudTh>Data/Ora riavvio</MudTh>
+                            <MudTh>Autorizzante riavvio</MudTh>
+                            <MudTh>Note</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Data inizio">12/12/2024</MudTd>
+                            <MudTd DataLabel="Data fine">Esempio motivo</MudTd>
+                            <MudTd>Esempio autorizzazione</MudTd>
+                            <MudTd></MudTd>
+                            <MudTd></MudTd>
+                            <MudTd></MudTd>
+                        </RowTemplate>
+                    </MudTable>
+
+                </MudItem>
+            </MudGrid>
+
+
+            <MudGrid Class="mb-3 ">
+
+                <MudItem xs="12">
+                    <MudText  Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4">
+                        Ripristinare condizioni di sicurezza e/o salute?
+                    </MudText>
+                </MudItem>
+
+
+                <MudItem xs="12" sm="12">
+
+
+
+                    <MudToggleGroup Disabled="@_isReadOnlyRiattivazione" T="int"
+                                    Value="Model.RipristinareCondizioniSicurezzaSalute"
+                                    ValueChanged="value => OnValueChanged(value, v => Model.RipristinareCondizioniSicurezzaSalute = v)"
+                                    SelectionMode="SelectionMode.SingleSelection"
+                                    Color="Color.Secondary" Size="Size.Small"
+                                    CheckMark
+                                    FixedContent Style="width:200px">
+                        <MudToggleItem T="int" Value=@si Text="Yes" />
+                        <MudToggleItem T="int" Value=@no Text="No" />
+                    </MudToggleGroup>
+
+                </MudItem>
+
+                <MudItem xs="12" sm="3">
+
+                    <MudDatePicker Disabled="@_isReadOnlyRiattivazione" Label="Data riavvio (*):"
+                                   @bind-Date="Model.DataRiattivazione" />
+
+
+                </MudItem>
+                <MudItem xs="12" sm="2">
+                    <MudTimePicker Disabled="@_isReadOnlyRiattivazione" Label="Ora riavvio (*):" @bind-Time="Model.OraRiattivazione" />
+                </MudItem>
+
+
+                <MudItem xs="12" sm="7">
+                    <MudTextField Disabled="@_isReadOnlyRiattivazione" Label="Autorizzante riavvio" @bind-Value="Model.AutorizzanteRiattivazione" />
+                </MudItem>
+
+                <MudItem xs="12" sm="12">
+                    <MudTextField Disabled="@_isReadOnlyRiattivazione" Label="Note" @bind-Value="Model.NoteRiattivazione" />
+                </MudItem>
+
+            </MudGrid>
+
+            <MudGrid Class="mb-3 justify-end">
+                <MudItem>
+                    <MudButton Disabled="@_isReadOnlyRiattivazione" StartIcon="@Icons.Material.Filled.AssignmentTurnedIn" Color="Color.Success" Variant="Variant.Filled">Conferma</MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+    </MudGrid>
+</MudTabPanel>
+
+@code {
+    [Parameter] public PermessoLavoroModel Model { get; set; } = new PermessoLavoroModel();
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlyRiattivazione { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+}

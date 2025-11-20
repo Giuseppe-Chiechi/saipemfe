@@ -1,0 +1,125 @@
+﻿@using SaipemE_PTW.Shared.Models.Auth
+@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+
+@if(Model != null)
+{
+    <MudTabPanel Text="Chiusura" ToolTip="Chiusura">
+        <MudGrid Class="mt-4">
+            <MudItem xs="12">
+
+                <MudGrid Class="mb-3 ">
+
+                    <MudItem xs="12">
+                        <MudText  Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4">
+                            Necessaria conferma preliminare alla chiusura?
+                        </MudText>
+
+                        <MudToggleGroup Disabled="@_isReadOnlyChiusura" T="int"
+                                        Value="Model.ConfermaPreliminareChiusura"
+                                        ValueChanged="value => OnValueChanged(value, v => Model.ConfermaPreliminareChiusura = v)"
+                                        SelectionMode="SelectionMode.SingleSelection"
+                                        Color="Color.Secondary" Size="Size.Small"
+                                        CheckMark
+                                        FixedContent Style="width:200px">
+                            <MudToggleItem T="int" Value=@si Text="Yes" />
+                            <MudToggleItem T="int" Value=@no Text="No" />
+                        </MudToggleGroup>
+
+                    </MudItem>
+
+                    <MudItem xs="12" sm="3">
+
+                        <MudDatePicker Disabled="@_isReadOnlyChiusura" Label="Data di Fine Lavori Giornaliera:"
+                                       @bind-Date="Model.DataFineLavoriGiornaliera" />
+
+
+                    </MudItem>
+
+
+
+                    <MudItem xs="12" sm="9">
+                        <MudTextField Disabled="@_isReadOnlyChiusura" Label="Note" @bind-Value="Model.NoteChiusura" />
+                    </MudItem>
+
+
+
+
+                </MudGrid>
+
+                @if (userRole.Equals(UserRole.AutoritaEsecutrice) || userRole.Equals(UserRole.SuperOwner))
+                {
+                    <MudGrid Class="mt-3">
+
+                        <MudItem xs="12">
+                            <MudText 
+                                     Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4">
+                                Il lavoro è stato completato e l'area è stata ripulita ed in sicurezza?
+                            </MudText>
+
+
+
+
+                            <MudToggleGroup Disabled="@_isReadOnlyChiusura" T="int"
+                                            Value="Model.LavoroCompletatoAreaRipulita"
+                                            ValueChanged="value => OnValueChanged(value, v => Model.LavoroCompletatoAreaRipulita = v)"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            Color="Color.Secondary" Size="Size.Small"
+                                            CheckMark
+                                            FixedContent Style="width:200px">
+                                <MudToggleItem T="int" Value=@si Text="Yes" />
+                                <MudToggleItem T="int" Value=@no Text="No" />
+                            </MudToggleGroup>
+                        </MudItem>
+                    </MudGrid>
+                }
+
+                @if (userRole.Equals(UserRole.AutoritaOperativa) || userRole.Equals(UserRole.SuperOwner))
+                {
+                    <MudGrid Class="mt-3">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4">
+                                L'area è stata verificata e il lavoro è stato accettato?
+                            </MudText>
+
+
+
+
+                            <MudToggleGroup Disabled="@_isReadOnlyChiusura" T="int"
+                                            Value="Model.AreaVerificataLavoroAccettato"
+                                            ValueChanged="value => OnValueChanged(value, v => Model.AreaVerificataLavoroAccettato = v)"
+                                            SelectionMode="SelectionMode.SingleSelection"
+                                            Color="Color.Secondary" Size="Size.Small"
+                                            CheckMark
+                                            FixedContent Style="width:200px">
+                                <MudToggleItem T="int" Value=@si Text="Yes" />
+                                <MudToggleItem T="int" Value=@no Text="No" />
+                            </MudToggleGroup>
+                        </MudItem>
+                    </MudGrid>
+                }
+                <MudGrid Class="mt-4 justify-end">
+                    <MudItem>
+                        @if (Model.ConfermaPreliminareChiusura.Equals(1) && (Model.AreaVerificataLavoroAccettato.Equals(1) || Model.LavoroCompletatoAreaRipulita.Equals(1)))
+                        {
+                            <MudButton Disabled="@_isReadOnlyChiusura" StartIcon="@Icons.Material.Filled.AssignmentTurnedIn" Color="Color.Success" Variant="Variant.Filled">Conferma</MudButton>
+                        }
+
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+
+
+
+        </MudGrid>
+    </MudTabPanel>
+}
+
+
+@code {
+    [Parameter] public PermessoLavoroModel? Model { get; set; }
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlyChiusura { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+}

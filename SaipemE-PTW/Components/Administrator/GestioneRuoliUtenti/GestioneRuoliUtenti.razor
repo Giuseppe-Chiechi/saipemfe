@@ -1,0 +1,109 @@
+﻿@using SaipemE_PTW.Shared.Models.Auth
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudList T="string"
+                 MultiSelection="true"
+                 SelectedValues="_selectedRoles"
+                 SelectedValuesChanged="@(v => _selectedRoles = v is HashSet<string> hs ? hs : new HashSet<string>(v))">
+            @foreach (var ruolo in _assignedRoles)
+            {
+                <MudListItem Value="@ruolo.Nome">@ruolo.Nome</MudListItem>
+            }
+        </MudList>
+    </MudItem>
+
+    <MudItem xs="12" Class="d-flex gap-1 mt-2">
+        <MudIconButton Icon="@Icons.Material.Filled.Add"
+                       Color="Color.Primary"
+                       OnClick="OpenRolePicker" />
+        <MudIconButton Icon="@Icons.Material.Filled.Remove"
+                       Color="Color.Warning"
+                       OnClick="RemoveSelectedRoles" /> @* Disabled="@(!_selectedRoles.Any())" *@
+        <MudIconButton Icon="@Icons.Material.Filled.ClearAll"
+                       Color="Color.Error"
+                       OnClick="ClearAllRoles"
+                       Disabled="@(!_assignedRoles.Any())" />
+    </MudItem>
+</MudGrid>
+
+
+
+@code {
+    [Parameter] public List<UserRoleDto> AvailableRoles { get; set; } = new();
+    [Parameter] public List<UserRoleDto> AssignedRoles { get; set; } = new();
+    [Parameter] public EventCallback<List<UserRoleDto>> AssignedRolesChanged { get; set; }
+
+    // Valori visualizzati e gestiti
+    private List<UserRoleDto> _assignedRoles = new();
+
+    // Selezione multipla visibile
+    private HashSet<string> _selectedRoles = new();
+
+    // [Inject] public IDialogService DialogService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        _assignedRoles = new List<UserRoleDto>(AssignedRoles);
+    }
+
+    private async Task OpenRolePicker()
+    {
+        var disponibili = AvailableRoles
+            .Where(r => !_assignedRoles.Any(a => a.Nome == r.Nome))
+            .ToList();
+
+        var parameters = new DialogParameters
+        {
+            ["AvailableRoles"] = disponibili
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<RolePickerDialog>(
+                 "Seleziona Ruoli",
+                 parameters,
+                 options
+             );
+
+        // var dialog = DialogService.ShowAsync<RolePickerDialog>("Seleziona Ruoli", parameters, options);
+        var result = await dialog.Result;
+
+
+        if (result != null && !result.Canceled && result.Data is UserRoleDto selected)
+        {
+            if (!_assignedRoles.Any(r => r.Nome == selected.Nome))
+            {
+                _assignedRoles.Add(selected);
+                await AssignedRolesChanged.InvokeAsync(_assignedRoles);
+            }
+        }
+    }
+
+    private async Task RemoveSelectedRoles()
+    {
+        _assignedRoles = _assignedRoles
+            .Where(r => !_selectedRoles.Contains(r.Nome))
+            .ToList();
+
+        _selectedRoles.Clear();
+
+        await AssignedRolesChanged.InvokeAsync(_assignedRoles);
+        StateHasChanged();
+    }
+
+    private async Task ClearAllRoles()
+    {
+        _assignedRoles.Clear();
+        _selectedRoles.Clear();
+
+        await AssignedRolesChanged.InvokeAsync(_assignedRoles);
+        StateHasChanged();
+    }
+}

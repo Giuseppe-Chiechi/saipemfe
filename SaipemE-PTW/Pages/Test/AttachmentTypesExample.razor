@@ -1,0 +1,87 @@
+@page "/_example/attachment-types"
+
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@using SaipemE_PTW.Shared.Http
+@using SaipemE_PTW.Shared.Models.PWT
+@inject SaipemE_PTW.Services.Http.ApiService Api
+
+
+<!-- Data:2025-11-10 - Esempio pagina che richiama API protetta AttachmentTypes con JWT automatico. -->
+<PageTitle>Attachment Types</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4 mx-auto px-2">
+    <MudGrid Spacing="3" Class="TitleBox">
+        <MudItem>
+            <MudText Typo="Typo.h5" Class="text-slate-800 font-bold">Attachment Types (demo)</MudText>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Class="mt-2">
+        <MudItem xs="12" sm="6">
+            <MudSelect T="string" @bind-Value="_lang" Label="Language" Dense="true">
+                <MudSelectItem Value="@_langIT">Italiano</MudSelectItem>
+                <MudSelectItem Value="@_langEN">English</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="LoadData" aria-label="Carica dati">Carica</MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <MudPaper Class="p-3 mt-3" Elevation="1">
+        <MudTable Items="_items">
+            <HeaderContent>
+                <MudTh>Id</MudTh>
+                <MudTh>Code</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Description</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Code">@context.Code</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private string _langIT = "it";
+    private string _langEN = "en";
+    //private string? _lang = "it"; // Data:2025-11-10 - default di sicurezza
+    private List<AttachmentTypeDto> _items = new();
+
+    protected override Task OnInitializedCoreAsync()
+    {
+        try
+        {
+            SetBreadcrumb(
+            new BreadcrumbItem("? Back", href: "javascript:history.back()"),
+            new BreadcrumbItem(Localization.GetString("Home.Dashboard"), href: "/"),
+            new BreadcrumbItem("Attachment Types", href: null, disabled: true)
+            );
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, ex.Message);
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            var res = await Api.GetAttachmentTypesAsync(_lang);
+            if (res.Success && res.Data is not null)
+                _items = res.Data.ToList();
+            else
+                _items.Clear();
+        }
+        catch (Exception ex) 
+        {
+            Logger.Error(ex, ex.Message);
+        }
+    }
+}

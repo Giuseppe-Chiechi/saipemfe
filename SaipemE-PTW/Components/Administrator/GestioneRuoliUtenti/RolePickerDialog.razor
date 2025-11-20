@@ -1,0 +1,30 @@
+﻿@using SaipemE_PTW.Shared.Models.Auth
+
+
+<MudDialog>
+    <DialogContent>
+        <MudSelect T="UserRoleDto"
+                   Label="Ruoli disponibili"
+                   @bind-Value="_selected"
+                   ToStringFunc="r => r?.Nome"
+                   Dense="true"
+                   Style="min-height: 100px; max-height: 200px; overflow-y: auto;">
+            @foreach (var role in AvailableRoles)
+            {
+                <MudSelectItem Value="@role">@role.Nome</MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => MudDialog.Close(DialogResult.Ok(_selected)))" Color="Color.Primary">Conferma</MudButton>
+        <MudButton OnClick="@(() => MudDialog.Cancel())" Color="Color.Secondary">Annulla</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public List<UserRoleDto> AvailableRoles { get; set; } = new();
+
+    private UserRoleDto? _selected;
+}

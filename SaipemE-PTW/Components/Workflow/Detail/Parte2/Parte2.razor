@@ -1,0 +1,151 @@
+﻿@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+<MudTabPanel Text="Parte 2" ToolTip="La Parte 2 del Permesso di Lavoro ">
+
+    <MudGrid Class="mt-4">
+        <MudItem xs="12">
+            <MudField Label="Certificato d'Isolamento da Fonti Energetiche" Variant="Variant.Outlined">
+
+
+
+                <MudGrid>
+                    <MudItem xs="12" Class="mt-4">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4">
+                            Richiesto Certificato Isolamento da fonti energetiche?
+                        </MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="3">
+
+
+                        @*  ValueChanged="OnIsolamentoChanged" *@
+
+                        <MudToggleGroup Disabled="@_isReadOnlyParte2" T="int"
+                                        Value="Model.IsolamentoFontiEnergetiche"
+                                        ValueChanged="value => OnValueChanged(value, v => Model.IsolamentoFontiEnergetiche = v)"
+                                        SelectionMode="SelectionMode.SingleSelection"
+                                        Color="Color.Secondary" Size="Size.Small"
+                                        CheckMark
+                                        FixedContent Style="width:200px">
+                            <MudToggleItem T="int" Value=@si Text="Yes" />
+                            <MudToggleItem T="int" Value=@no Text="No" />
+                        </MudToggleGroup>
+
+
+                    </MudItem>
+
+
+                    <MudItem xs="12" sm="6" Class="d-flex flex-column">
+                        <MudTextField Disabled="@_isReadOnlyParte2" Label="Certificato n°" @bind-Value="Model.CertificatoNumero" />
+                    </MudItem>
+                    <MudItem xs="12" sm="3" Class="d-flex flex-column">
+
+                        <MudDatePicker Disabled="@_isReadOnlyParte2" Label="Data" @bind-Date="Model.DataCertificato" />
+                    </MudItem>
+                </MudGrid>
+
+
+                @if (Model.IsolamentoFontiEnergetiche.Equals(1))
+                {
+
+                    <MudGrid Class="mb-4 mt-4" Style="padding:24px">
+                        <MudItem xs="12" Class="d-flex flex-column" Style="background-color:#ebebeb;padding:10px">
+                            <SaipemE_PTW.Components.Workflow.Certificati.CertificatoIsolamentoEnergetico></SaipemE_PTW.Components.Workflow.Certificati.CertificatoIsolamentoEnergetico>
+                        </MudItem>
+                    </MudGrid>
+                }
+
+
+            </MudField>
+        </MudItem>
+        <MudItem xs="12">
+            <MudField Label="Rischi d'Area Particolari e Prescrizioni Appaltatore" Variant="Variant.Outlined">
+
+                <MudGrid Class="mt-4">
+                    <MudItem xs="12">
+                        <MudTextField Disabled="@_isReadOnlyParte2"
+                                      Placeholder="L’operatore è invitato a indicare pericoli specifici dell'area e relative istruzioni."
+                                      Label="Descrizione"
+                                      Lines="4"
+                                      @bind-Value="Model.RischiPrescrizioni" FullWidth="true" />
+                    </MudItem>
+                </MudGrid>
+
+                <MudGrid Class="mt-4">
+                    <MudItem xs="12">
+                        <!-- Disclaimer -->
+                        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Dense="true" Elevation="0" Class="mb-4">
+                            L’AUTORITÀ EMITTENTE HA LA RESPONSABILITÀ DI VERIFICARE LE CONDIZIONI DI SICUREZZA DURANTE LE OPERAZIONI COSÌ COME PER LA PREVENZIONE DELL’INQUINAMENTO AMBIENTALE.
+                        </MudAlert>
+                    </MudItem>
+                </MudGrid>
+
+
+
+                <MudGrid Class="mt-4">
+                    <MudItem xs="12" sm="4">
+                        <MudTextField Disabled="@_isReadOnlyParte2" Label="Autorità Emittente - Nome" @bind-Value="Model.AutoritaEmittenteNome" />
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudTextField Disabled="@_isReadOnlyParte2" Label="Autorità Emittente - Cognome" @bind-Value="Model.AutoritaEmittenteNome" />
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudTextField Adornment="Adornment.End"
+                                      AdornmentIcon="@Icons.Material.Filled.BorderColor"
+                                      Disabled="@_isReadOnlyParte2"
+                                      Label="Firma" @bind-Value="Model.AutoritaEmittenteFirma" />
+                    </MudItem>
+                    <MudItem xs="6" sm="2">
+                        <MudDatePicker Disabled="@_isReadOnlyParte2" Label="Data" @bind-Date="Model.AutoritaEmittenteFirmaData" />
+                    </MudItem>
+                    <MudItem xs="6" sm="2">
+                        <MudTimePicker Disabled="@_isReadOnlyParte2" Label="Ora" @bind-Value="Model.AutoritaEmittenteFirmaOra" />
+
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudTextField Disabled="@_isReadOnlyParte2" Label="Telefono Assuntore" @bind-Value="Model.AutoritaEmittenteAssuntore" />
+                    </MudItem>
+
+                    <MudItem xs="12" sm="4">
+                        <MudTextField Disabled="@_isReadOnlyParte2" Label="Telefono HSE" @bind-Value="Model.AutoritaEmittenteHSE" />
+                    </MudItem>
+
+                </MudGrid>
+            </MudField>
+        </MudItem>
+        <MudItem xs="12">
+            <MudField Label="Numeri emergenza" Variant="Variant.Outlined">
+
+                <MudGrid Class="mb-3 mt-3">
+
+
+
+
+                    <MudItem xs="12" sm="3" Class="emergency-box">
+                        <MudIcon Icon="@Icons.Material.Filled.Phone" Title="Phone" /> 3000 Emergenza Incendio
+                    </MudItem>
+                    <MudItem xs="12" sm="3" Class="emergency-box">
+                        <MudIcon Icon="@Icons.Material.Filled.Phone" Title="Phone" /> 4000 Emergenza fuga di Gas
+                    </MudItem>
+                    <MudItem xs="12" sm="3" Class="emergency-box">
+                        <MudIcon Icon="@Icons.Material.Filled.Phone" Title="Phone" /> 3020 Emergenza Medica
+                    </MudItem>
+                    <MudItem xs="12" sm="3" Class="emergency-box">
+                        <MudIcon Icon="@Icons.Material.Filled.Phone" Title="Phone" /> 6000 Emergenza Security
+                    </MudItem>
+                </MudGrid>
+            </MudField>
+
+        </MudItem>
+    </MudGrid>
+
+
+</MudTabPanel>
+
+@code {
+    [Parameter] public PermessoLavoroModel Model { get; set; } = new PermessoLavoroModel();
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlyParte2 { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+}

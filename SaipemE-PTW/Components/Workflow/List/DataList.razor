@@ -1,0 +1,505 @@
+@using System.Globalization
+@using MudBlazor
+@using SaipemE_PTW.Shared.Models.Auth
+@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+<MudItem xs="12">
+    <MudCard Class="mud-width-full">
+        <MudCardContent>
+
+
+            <MudField Label="Filtri" Variant="Variant.Outlined">
+                <MudGrid Spacing="3" Class="mt-2">
+                    <MudItem xs="12" sm="4">
+                        <MudStack Style="margin-top:-16px">
+                            <MudDateRangePicker @bind-DateRange="@_dateRange"
+                                                HelperText="@HelperText" Clearable="true" 
+                                PickerVariant="PickerVariant.Inline"
+                                                Label="Data inizio lavori" />
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudSelect @bind-Value="@_selectedImpresaEsecutrice"
+                                   Placeholder="Impresa esecutrice" T="string"
+                                   HelperText="Impresa esecutrice"
+                                   Clearable="true"
+                                   CloseIcon="@Icons.Material.Filled.Flag"
+                                   AdornmentColor="Color.Tertiary">
+                            @foreach (var s in AnagraficaImpresaEsecutriceMapper.GetAll())
+                            {
+                                <MudSelectItem Value="@(s.Nome ?? string.Empty)" />
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudSelect @bind-Value="@_selectedAreaLavoro"
+                                   Placeholder="Area Lavoro" T="string"
+                                   HelperText="Area Lavoro"
+                                   Clearable="true"
+                                   CloseIcon="@Icons.Material.Filled.Flag"
+                                   AdornmentColor="Color.Tertiary">
+                            @foreach (var s in AnagraficaImpresaEsecutriceMapper.GetAll())
+                            {
+                                <MudSelectItem Value="@(s.Nome ?? string.Empty)" />
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="4">
+                        <MudSelect @bind-Value="@_selectedApparecchiatura"
+                                   Placeholder="Apparecchiature" T="string"
+                                   HelperText="Apparecchiature"
+                                   Clearable="true"
+                                   CloseIcon="@Icons.Material.Filled.Flag"
+                                   AdornmentColor="Color.Tertiary">
+                            @foreach (var s in AnagraficaImpresaEsecutriceMapper.GetAll())
+                            {
+                                <MudSelectItem Value="@(s.Nome ?? string.Empty)" />
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudSelect @bind-Value="@_selectedStato"
+                                   Placeholder="Stato" T="string"
+                                   HelperText="Stato"
+                                   Clearable="true"
+                                   CloseIcon="@Icons.Material.Filled.Flag"
+                                   AdornmentColor="Color.Tertiary">
+                            @foreach (var s in TipoStatoPermessoLavoroMapper.GetAll())
+                            {
+                                <MudSelectItem Value="@(s.Nome ?? string.Empty)" />
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudSelect @bind-Value="@_selectedParte"
+                                   Placeholder="Parte" T="string"
+                                   HelperText="Parte"
+                                   Clearable="true"
+                                   CloseIcon="@Icons.Material.Filled.Flag"
+                                   AdornmentColor="Color.Tertiary">
+                            @foreach (var s in TipoParteMapper.GetAll())
+                            {
+                                <MudSelectItem Value="@(s.Nome ?? string.Empty)" />
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="4">
+                        <MudSelect @bind-Value="@_selectedRichiedente"
+                                   Placeholder="Richiedente" T="string"
+                                   HelperText="Richiedente"
+                                   Clearable="true"
+                                   CloseIcon="@Icons.Material.Filled.Flag"
+                                   AdornmentColor="Color.Tertiary">
+                            @foreach (var s in TipoUnitaAutorizzantiMapper.GetAll())
+                            {
+                                <MudSelectItem Value="@(s.Nome ?? string.Empty)" />
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudTextField @bind-Value="@_searchText"
+                                      T="string" Clearable="true" 
+                                      Placeholder="Search"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Search"
+                                      IconSize="Size.Medium"
+                                      Class="mt-0" />
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudButtonGroup Variant="Variant.Filled">
+                            <MudButton StartIcon="@Icons.Material.Filled.Clear" Variant="Variant.Filled" OnClick="OnResetClicked">Reset</MudButton>
+                            <MudButton StartIcon="@Icons.Material.Filled.Search" Color="Color.Success" Class="bg-orange" OnClick="OnSearchClicked">Cerca</MudButton>
+                        </MudButtonGroup>
+                    </MudItem>
+
+
+                </MudGrid>
+            </MudField>
+
+
+            <MudGrid Spacing="3">
+                <MudItem xs="12">
+
+                    <MudTable ServerData="@ServerReload"
+                              Bordered="true"
+                              Striped="true"
+                              Dense="true"
+                              Hover="true"
+                              @ref="_table"
+                              Clickable="true">
+
+                        <ToolBarContent>
+                            <MudSpacer />
+                        </ToolBarContent>
+
+                        <HeaderContent>
+                            <MudTh><MudTableSortLabel SortLabel="PDL" T="PermessoLavoroModel">PDL</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortLabel="DataInizioLavoro" T="PermessoLavoroModel">Data Inizio Lavori</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortLabel="DescrizioneAttivita" T="PermessoLavoroModel">Descrizione attività</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortLabel="ImpresaEsecuzione" T="PermessoLavoroModel">Impresa esecuzione</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortLabel="AreaLavoro" T="PermessoLavoroModel">Area Lavoro</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortLabel="Apparecchiature" T="PermessoLavoroModel">Apparecchiature</MudTableSortLabel></MudTh>
+
+                            <MudTh><MudTableSortLabel SortLabel="Stato" T="PermessoLavoroModel">Stato</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortLabel="Parte" T="PermessoLavoroModel">Parte</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortLabel="Richiedente" T="PermessoLavoroModel">Richiedente</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortLabel="" T="PermessoLavoroModel"></MudTableSortLabel></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="PDL">@context.pdl</MudTd>
+                            <MudTd DataLabel="DataInizioLavoro">@(context.ValiditaDataInizio?.ToShortDateString())</MudTd>
+                            <MudTd DataLabel="DescrizioneAttivita">@context.DescrizioneAttivita</MudTd>
+                            <MudTd DataLabel="ImpresaEsecuzione">@context.AutoritaEsecutriceImpresa</MudTd>
+                            <MudTd DataLabel="AreaLavoro">@context.ValiditaAreaLavoro</MudTd>
+                            <MudTd DataLabel="Apparecchiature">
+                                @context.ValiditaApparecchiatura
+
+                            </MudTd>
+
+                            <MudTd DataLabel="Stato">@* @context.Stato?.Nome *@  @Stato</MudTd>
+                            <MudTd DataLabel="Parte">@context.Parte?.Nome</MudTd>
+                            <MudTd DataLabel="Richiedente">@context.AutoritaRichiedenteNome @context.AutoritaRichiedenteCognome</MudTd>
+                            <MudTd DataLabel="">
+
+
+                                <MudButtonGroup Variant="Variant.Filled">
+                                    <MudTooltip Text=@($"Dettaglio {context.pdl}")>
+                                        <MudIconButton Size="Size.Small"
+                                                       Icon="@Icons.Material.Filled.ContentPasteSearch"
+                                                       Color="Color.Secondary"
+                                                       aria-label="Dettaglio"
+                                                       OnClick="@(() => OnViewClick.InvokeAsync(context.id))" />
+                                    </MudTooltip>
+                                    @if (_localArea != null && (_localArea.Equals("workflow") || _localArea.Equals("monitoring")))
+                                    {
+                                        <MudTooltip Text=@($"Sospensione {context.pdl}")>
+                                            <MudIconButton Size="Size.Small"
+                                                           Icon="@Icons.Material.Filled.Pause"
+                                                           Color="Color.Info"
+                                                           aria-label="Sospensione"
+                                                           OnClick="@(() => OpenSospensioneDialog(context))" />
+                                        </MudTooltip>
+
+
+                                        @if (userRole.Equals(UserRole.PersonaAutorizzataTestGas) || userRole.Equals(UserRole.SuperOwner))
+                                        {
+                                            <MudTooltip Text=@($"Gas Checked {context.pdl}")>
+                                                <MudIconButton Size="Size.Small"
+                                                               Icon="@Icons.Material.Filled.GasMeter"
+                                                               Color="Color.Default"
+                                                               aria-label="Dettaglio"
+                                                               OnClick="@(() => OpenGasTestDialog(context))" />
+                                            </MudTooltip>
+                                        }
+
+
+                                        <MudTooltip Text=@($"Riattiva {context.pdl}")>
+                                            <MudIconButton Size="Size.Small"
+                                                           Icon="@Icons.Material.Filled.FactCheck"
+                                                           Color="Color.Default"
+                                                           aria-label="Riattiva"
+                                                           OnClick="@(() => OpenRiattivaDialog(context))" />
+                                        </MudTooltip>
+
+                                        <MudTooltip Text=@($"Rinnovo {context.pdl}")>
+                                            <MudIconButton Size="Size.Small"
+                                                           Icon="@Icons.Material.Filled._360"
+                                                           Color="Color.Default"
+                                                           aria-label="Dettaglio"
+                                                           OnClick="@(() => OpenRinnovoDialog(context))" />
+                                        </MudTooltip>
+
+
+                                    }
+
+                                    <MudTooltip Text=@($"Chiusura {context.pdl}")>
+                                        <MudIconButton Size="Size.Small"
+                                                       Icon="@Icons.Material.Filled.SkipNext"
+                                                       Color="Color.Default"
+                                                       aria-label="Chiusura"
+                                                       OnClick="@(() => OpenChiusuraDialog(context))" />
+                                    </MudTooltip>
+
+
+                                </MudButtonGroup>
+                            </MudTd>
+                        </RowTemplate>
+                        <NoRecordsContent>
+                            <MudText>No matching records found</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Loading...</MudText>
+                        </LoadingContent>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+
+
+                </MudItem>
+            </MudGrid>
+
+
+        </MudCardContent>
+    </MudCard>
+</MudItem>
+
+@code {
+    private MudTable<PermessoLavoroModel>? _table;
+
+    [Parameter] public string? Stato { get; set; }
+
+    [Parameter] public Func<TableState, CancellationToken, Task<TableData<PermessoLavoroModel>>>? ServerReload { get; set; }
+
+
+    [Parameter] public Func<CultureInfo, string>? ConvertFunc { get; set; }
+
+    [Parameter] public string? SearchStato { get; set; }
+    [Parameter] public EventCallback<string?> SearchStatoChanged { get; set; }
+
+    [Parameter] public string? SearchImpresaEsecutrice { get; set; }
+    [Parameter] public EventCallback<string?> SearchImpresaEsecutriceChanged { get; set; }
+
+    [Parameter] public string? SearchParte { get; set; }
+    [Parameter] public EventCallback<string?> SearchParteChanged { get; set; }
+
+    [Parameter] public EventCallback<SearchFilters> OnSearch { get; set; }
+    [Parameter] public EventCallback OnReset { get; set; }
+    [Parameter] public EventCallback<int?> OnViewClick { get; set; }
+
+
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+
+    // Filter properties
+    private string? _selectedImpresaEsecutrice { get; set; }
+    private string? _selectedAreaLavoro { get; set; }
+    private string? _selectedApparecchiatura { get; set; }
+    private string? _selectedStato { get; set; }
+    private string? _selectedParte { get; set; }
+    private string? _selectedRichiedente { get; set; }
+    private string? _searchText { get; set; }
+
+    private DateRange? _dateRange { get; set; }
+    private DateTime _minDate = DateTime.Now.Date;
+    private DateTime _maxDate = DateTime.Now.Date.AddMonths(1);
+
+    private string HelperText => $"Range: {_minDate:M} to {_maxDate:M}";
+
+    #region sospensione, riattivazione, chiusura dialog
+
+    private async Task OpenSospensioneDialog(PermessoLavoroModel row)
+    {
+        var options = new MudBlazor.DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MudBlazor.MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var parameters = new MudBlazor.DialogParameters
+        {
+            ["Pdl"] = row.pdl,
+            ["PermessoId"] = row.id
+
+        };
+
+
+       
+
+        var dialog = await DialogService.ShowAsync<SospensioneDialog>(
+                $"Richiesta Sospensione {row.pdl}",
+                parameters,
+                options
+            );
+
+        //var dialogRef = DialogService.Show<SospensioneDialog>($"Richiesta Sospensione {row.pdl}", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            // Facoltativo: gestisci l'esito (result.Data) es. salvataggio, snackbar, ecc.
+        }
+    }
+
+    private async Task OpenChiusuraDialog(PermessoLavoroModel row)
+    {
+        var options = new MudBlazor.DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MudBlazor.MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var parameters = new MudBlazor.DialogParameters
+        {
+            ["Pdl"] = row.pdl,
+            ["PermessoId"] = row.id
+        };
+
+       
+
+        var dialog = await DialogService.ShowAsync<ChiusuraDialog>(
+                $"Chiusura {row.pdl}",
+                parameters,
+                options
+            );
+        // var dialogRef = DialogService.Show<ChiusuraDialog>($"Chiusura {row.pdl}", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            // Facoltativo: gestisci l'esito (result.Data) es. salvataggio, snackbar, ecc.
+        }
+    }
+
+    private async Task OpenRinnovoDialog(PermessoLavoroModel row)
+    {
+        var options = new MudBlazor.DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MudBlazor.MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var parameters = new MudBlazor.DialogParameters
+        {
+            ["Pdl"] = row.pdl,
+            ["PermessoId"] = row.id
+        };
+
+        
+
+        var dialog = await DialogService.ShowAsync<RinnovoDialog>(
+                $"Rinnovo {row.pdl}",
+                parameters,
+                options
+            );
+
+
+       // var dialogRef = DialogService.Show<RinnovoDialog>($"Rinnovo {row.pdl}", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            // Facoltativo: gestisci l'esito (result.Data) es. salvataggio, snackbar, ecc.
+        }
+    }
+
+    private async Task OpenRiattivaDialog(PermessoLavoroModel row)
+    {
+        var options = new MudBlazor.DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MudBlazor.MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var parameters = new MudBlazor.DialogParameters
+        {
+            ["Pdl"] = row.pdl,
+            ["PermessoId"] = row.id
+        };
+
+        var dialog = await DialogService.ShowAsync<RinnovoDialog>(
+               $"Riattiva {row.pdl}",
+               parameters,
+               options
+           );
+
+        //var dialogRef = DialogService.Show<RiattivaDialog>($"Riattiva {row.pdl}", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            // Facoltativo: gestisci l'esito (result.Data) es. salvataggio, snackbar, ecc.
+        }
+    }
+
+    private async Task OpenGasTestDialog(PermessoLavoroModel row)
+    {
+        var options = new MudBlazor.DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MudBlazor.MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var parameters = new MudBlazor.DialogParameters
+        {
+            ["Pdl"] = row.pdl,
+            ["PermessoId"] = row.id
+        };
+
+        
+
+        var dialog = await DialogService.ShowAsync<GasTestDialog>(
+                $"Gas Test {row.pdl}",
+                parameters,
+                options
+            );
+
+        //var dialogRef = DialogService.Show<GasTestDialog>($"Gas Test {row.pdl}", parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            // Facoltativo: gestisci l'esito (result.Data) es. salvataggio, snackbar, ecc.
+        }
+    }
+    #endregion
+
+    /// <summary>
+    /// Metodo pubblico per forzare il reload della tabella dal componente parent
+    /// </summary>
+    public async Task ReloadDataAsync()
+    {
+        if (_table != null)
+        {
+            await _table.ReloadServerData();
+        }
+    }
+
+    /// <summary>
+    /// Handler per il click del bottone Cerca - raccoglie tutti i filtri e chiama OnSearch
+    /// </summary>
+    private async Task OnSearchClicked()
+    {
+        var filters = new SearchFilters
+        {
+            SearchText = _searchText,
+            ImpresaEsecutrice = _selectedImpresaEsecutrice,
+            AreaLavoro = _selectedAreaLavoro,
+            Apparecchiatura = _selectedApparecchiatura,
+            Stato = _selectedStato,
+            Parte = _selectedParte,
+            Richiedente = _selectedRichiedente,
+            DataInizioFrom = _dateRange?.Start,
+            DataInizioTo = _dateRange?.End
+        };
+
+        await OnSearch.InvokeAsync(filters);
+        await ReloadDataAsync();
+    }
+
+    /// <summary>
+    /// Handler per il click del bottone Reset - resetta tutti i filtri
+    /// </summary>
+    private async Task OnResetClicked()
+    {
+        // Reset dei filtri
+        _searchText = null;
+        _selectedImpresaEsecutrice = null;
+        _selectedAreaLavoro = null;
+        _selectedApparecchiatura = null;
+        _selectedStato = null;
+        _selectedParte = null;
+        _selectedRichiedente = null;
+        _dateRange = null;
+
+        await OnReset.InvokeAsync();
+        await ReloadDataAsync();
+    }
+}

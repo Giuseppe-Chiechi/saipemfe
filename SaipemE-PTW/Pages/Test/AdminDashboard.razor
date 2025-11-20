@@ -1,0 +1,244 @@
+@page "/admin/dashboard"
+@using SaipemE_PTW.Authentication.Mock
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "SUPER_OWNER,ADMIN")]
+@inject AuthenticationStateProvider AuthStateProvider
+
+@* 2025-01-15 - Mock Auth - Esempio di pagina protetta accessibile solo a SuperOwner e ADMIN *@
+@* Dimostra come implementare autorizzazioni basate su ruoli *@
+
+<PageTitle>Dashboard Amministratore - e-PTW</PageTitle>
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+          <h2>
+  <i class="bi bi-speedometer2 me-2"></i>
+     Dashboard Amministratore
+     </h2>
+    @if (MockAuthConfig.UseMockAuthentication)
+              {
+   <span class="badge bg-warning text-dark fs-6">
+<i class="bi bi-exclamation-triangle me-1"></i>
+    Modalità Mock
+         </span>
+    }
+            </div>
+   <p class="text-muted">
+       Questa pagina è accessibile solo a <strong>Super Owner</strong> e <strong>Amministratori di Sistema</strong>
+  </p>
+        </div>
+    </div>
+
+    @* 2025-01-15 - Mock Auth - Card di benvenuto *@
+    <div class="row mb-4">
+  <div class="col-12">
+   <div class="alert alert-success" role="alert">
+     <h4 class="alert-heading">
+    <i class="bi bi-check-circle-fill me-2"></i>
+           Accesso Autorizzato
+    </h4>
+     <p>Benvenuto nella dashboard amministrativa. Hai i privilegi necessari per accedere a questa sezione.</p>
+     <hr>
+      <p class="mb-0">
+     <strong>Il tuo ruolo:</strong>
+@foreach (var role in _userRoles)
+   {
+         <span class="badge bg-primary ms-1">@AppRoles.RoleDescriptions.GetValueOrDefault(role, role)</span>
+      }
+            </p>
+   </div>
+        </div>
+    </div>
+
+    @* 2025-01-15 - Mock Auth - Statistiche di esempio *@
+    <div class="row g-4 mb-4">
+ <div class="col-md-3">
+  <div class="card bg-primary text-white shadow">
+     <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+       <div>
+      <h6 class="card-title mb-0">Utenti Totali</h6>
+     <h2 class="mt-2">@MockUserRepository.Users.Count</h2>
+    </div>
+    <div>
+  <i class="bi bi-people-fill fs-1 opacity-50"></i>
+    </div>
+         </div>
+        </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+     <div class="card bg-success text-white shadow">
+  <div class="card-body">
+       <div class="d-flex justify-content-between align-items-center">
+         <div>
+            <h6 class="card-title mb-0">Permessi Attivi</h6>
+        <h2 class="mt-2">42</h2>
+       </div>
+      <div>
+    <i class="bi bi-file-text-fill fs-1 opacity-50"></i>
+         </div>
+       </div>
+       </div>
+     </div>
+ </div>
+
+     <div class="col-md-3">
+  <div class="card bg-warning text-dark shadow">
+     <div class="card-body">
+ <div class="d-flex justify-content-between align-items-center">
+   <div>
+      <h6 class="card-title mb-0">In Attesa</h6>
+       <h2 class="mt-2">7</h2>
+   </div>
+       <div>
+      <i class="bi bi-clock-fill fs-1 opacity-50"></i>
+        </div>
+       </div>
+      </div>
+   </div>
+  </div>
+
+        <div class="col-md-3">
+   <div class="card bg-danger text-white shadow">
+       <div class="card-body">
+   <div class="d-flex justify-content-between align-items-center">
+    <div>
+<h6 class="card-title mb-0">Scaduti</h6>
+        <h2 class="mt-2">3</h2>
+         </div>
+     <div>
+     <i class="bi bi-exclamation-triangle-fill fs-1 opacity-50"></i>
+      </div>
+         </div>
+      </div>
+      </div>
+     </div>
+    </div>
+
+    @* 2025-01-15 - Mock Auth - Tabella utenti mock *@
+    <div class="row">
+      <div class="col-12">
+   <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">
+      <i class="bi bi-table me-2"></i>
+          Gestione Utenti Mock
+</h5>
+    </div>
+    <div class="card-body">
+     <div class="table-responsive">
+    <table class="table table-hover">
+             <thead>
+<tr>
+        <th>Nome</th>
+       <th>Email</th>
+       <th>ID Utente</th>
+       <th>Ruoli</th>
+       <th>Gruppi</th>
+       <th>Azioni</th>
+       </tr>
+      </thead>
+        <tbody>
+        @foreach (var user in MockUserRepository.Users)
+       {
+   <tr>
+    <td>
+<i class="bi bi-person-circle text-primary me-2"></i>
+      <strong>@user.Name</strong>
+       </td>
+     <td>@user.Email</td>
+       <td><code class="small">@user.Sub</code></td>
+     <td>
+   @foreach (var role in user.Roles)
+   {
+    <span class="badge bg-primary me-1 mb-1">@role</span>
+     }
+     </td>
+       <td>
+        <span class="badge bg-secondary">@user.Groups.Count gruppi</span>
+     </td>
+     <td>
+      <button class="btn btn-sm btn-outline-primary" title="Modifica">
+      <i class="bi bi-pencil"></i>
+       </button>
+       <button class="btn btn-sm btn-outline-danger ms-1" title="Elimina">
+        <i class="bi bi-trash"></i>
+    </button>
+      </td>
+      </tr>
+       }
+  </tbody>
+    </table>
+      </div>
+     </div>
+      </div>
+  </div>
+    </div>
+
+    @* 2025-01-15 - Mock Auth - Sezione configurazione *@
+    <div class="row mt-4">
+ <div class="col-12">
+   <div class="card shadow">
+                <div class="card-header bg-info text-white">
+           <h5 class="mb-0">
+      <i class="bi bi-gear-fill me-2"></i>
+       Configurazione Sistema
+    </h5>
+     </div>
+    <div class="card-body">
+        <div class="row g-3">
+        <div class="col-md-6">
+     <div class="form-check form-switch">
+         <input class="form-check-input" type="checkbox" id="mockAuthSwitch" 
+      checked="@MockAuthConfig.UseMockAuthentication" disabled>
+       <label class="form-check-label" for="mockAuthSwitch">
+      <strong>Autenticazione Mock</strong>
+     <br>
+        <small class="text-muted">
+     Attualmente: @(MockAuthConfig.UseMockAuthentication ? "Abilitata" : "Disabilitata")
+  </small>
+        </label>
+       </div>
+    </div>
+       <div class="col-md-6">
+ <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="autoLoginSwitch" 
+     checked="@MockAuthConfig.EnableAutoLogin" disabled>
+    <label class="form-check-label" for="autoLoginSwitch">
+     <strong>Auto-Login</strong>
+      <br>
+       <small class="text-muted">
+        Login automatico: @(MockAuthConfig.EnableAutoLogin ? "Abilitato" : "Disabilitato")
+ </small>
+   </label>
+</div>
+       </div>
+    </div>
+      <div class="alert alert-warning mt-3 mb-0">
+         <i class="bi bi-exclamation-triangle me-2"></i>
+      <strong>Nota:</strong> Per modificare queste impostazioni, edita il file 
+         <code>Authentication/Mock/MockAuthConfig.cs</code>
+      </div>
+</div>
+            </div>
+  </div>
+    </div>
+</div>
+
+@code {
+    // 2025-01-15 - Mock Auth - Lista dei ruoli dell'utente corrente
+    private List<string> _userRoles = new();
+
+    // 2025-01-15 - Mock Auth - Inizializza il componente caricando i ruoli
+    protected override async Task OnInitializedAsync()
+    {
+ var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+   _userRoles = authState.User.FindAll(System.Security.Claims.ClaimTypes.Role)
+            .Select(c => c.Value)
+ .ToList();
+    }
+}

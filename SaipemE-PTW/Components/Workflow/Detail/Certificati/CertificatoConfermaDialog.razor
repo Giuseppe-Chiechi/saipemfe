@@ -1,0 +1,48 @@
+﻿<MudDialog>
+    <DialogContent>
+
+        <MudGrid>
+            <MudItem xs="12" >
+                <MudSelect @bind-Value="@_selectedTipo"
+                           Placeholder="Tipo Certificato" T="string"
+                         
+                           Clearable="true"
+                           CloseIcon="@Icons.Material.Filled.Flag"
+                           AdornmentColor="Color.Tertiary">
+                    @foreach (var s in TipoCertificatoMapper.GetAll())
+                    {
+                        <MudSelectItem Value="@(s.Nome ?? string.Empty)" />
+                    }
+                </MudSelect>
+
+            </MudItem>
+
+           
+        </MudGrid>
+
+
+
+        <MudText Typo="Typo.body1">@Messaggio</MudText>
+
+
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="() => MudDialog?.Close(DialogResult.Ok(true))">Conferma</MudButton>
+        <MudButton Color="Color.Secondary" OnClick="() => MudDialog?.Cancel()">Annulla</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    
+    [Parameter] 
+    public List<string>? TipoCertificati { get; set; }
+
+    [CascadingParameter]
+    private IMudDialogInstance? MudDialog { get; set; }
+
+    [Parameter] public string? Messaggio { get; set; }
+
+    private string? _selectedTipo { get; set; }
+}

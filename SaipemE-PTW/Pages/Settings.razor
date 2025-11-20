@@ -1,0 +1,272 @@
+﻿@page "/settings"
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@using System.Security.Claims
+@using SaipemE_PTW.Authentication.Mock
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>@_pageTitle</PageTitle>
+
+<SaipemE_PTW.Components.Common.Alert Tipo="@AlertTipo" Message="@AlertMessage" Visible="@AlertShow" VisibleChanged="@(v => AlertShow = v)"></SaipemE_PTW.Components.Common.Alert>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+    <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+    <MudGrid Spacing="3" Class="TitleBox">
+        <MudItem>
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                @_pageTitle  @if (MockAuthConfig.UseMockAuthentication)
+                {
+
+                    <b> - Modalità Mock</b>
+
+                }
+            </MudText>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3">
+        <MudItem xs="12">
+            <MudCard Class="mud-width-full">
+                <MudCardContent>
+                    @if (IsLoading)
+                    {
+                        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                        <MudText Typo="Typo.body2" Class="mt-2">@Localization.GetString("Common.Loading")</MudText>
+                    }
+                    @*  else if (!_isAuthenticated)
+                    {
+                        <MudAlert Severity="Severity.Warning">
+                            @Localization.GetString("Settings.NotAuthenticatedMessage")
+                        </MudAlert>
+                    } *@
+                    else
+                    {
+                        <MudGrid Spacing="3">
+                            <!-- Sezione Avatar e Info Principali -->
+                            <MudItem xs="12" md="4">
+                                <MudPaper Class="pa-4 text-center" Elevation="0">
+                                    <MudAvatar Size="Size.Large"
+                                               Color="Color.Primary"
+                                               Class="mx-auto mb-3"
+                                               Style="width: 120px; height: 120px; font-size: 3rem;">
+                                        @*  @_avatarInitial *@
+                                    </MudAvatar>
+                                    <MudText Typo="Typo.h5" Class="mb-1">@_authState.User.Identity.Name</MudText>
+
+                                    @{
+                                        var roles = _authState.User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+                                    }
+                                    @if (roles.Any())
+                                    {
+                                        @foreach (var role in roles)
+                                        {
+                                            <MudChip T="string" Color="Color.Secondary" Size="Size.Small">@AppRoles.RoleDescriptions.GetValueOrDefault(role, role) @role</MudChip>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <MudChip T="string" Color="Color.Primary" Size="Size.Small">Nessun ruolo</MudChip>
+                                    }
+
+                                  
+
+                                </MudPaper>
+                            </MudItem>
+
+                            <!-- Sezione Dettagli Utente -->
+                            <MudItem xs="12" md="8">
+                                <MudText Typo="Typo.h6" Class="mb-3">
+                                    <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-2" />
+                                    @Localization.GetString("Settings.PersonalInfo")
+                                </MudText>
+                                <MudDivider Class="mb-3" />
+
+                                <MudGrid Spacing="2">
+                                    <MudItem xs="12" sm="6">
+                                        @*  <MudTextField Label="@Localization.GetString("Settings.FirstName")"
+                                                      Value="@_givenName"
+                                                      ReadOnly="true"
+                                                      Variant="Variant.Outlined"
+                                                      Adornment="Adornment.Start"
+                                                      AdornmentIcon="@Icons.Material.Filled.Badge" /> *@
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6">
+                                        @*  <MudTextField Label="@Localization.GetString("Settings.LastName")"
+                                                      Value="@_surname"
+                                                      ReadOnly="true"
+                                                      Variant="Variant.Outlined"
+                                                      Adornment="Adornment.Start"
+                                                      AdornmentIcon="@Icons.Material.Filled.Badge" /> *@
+                                    </MudItem>
+
+                                    <MudItem xs="12">
+                                        @* <MudTextField Label="@Localization.GetString("Settings.Email")"
+                                                      Value="@_email"
+                                                      ReadOnly="true"
+                                                      Variant="Variant.Outlined"
+                                                      Adornment="Adornment.Start"
+                                                      AdornmentIcon="@Icons.Material.Filled.Email" /> *@
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6">
+                                        @* <MudTextField Label="@Localization.GetString("Settings.UserId")"
+                                                      Value="@_userId"
+                                                      ReadOnly="true"
+                                                      Variant="Variant.Outlined"
+                                                      Adornment="Adornment.Start"
+                                                      AdornmentIcon="@Icons.Material.Filled.Fingerprint" /> *@
+                                    </MudItem>
+
+                                    <MudItem xs="12" sm="6">
+                                        @* <MudTextField Label="@Localization.GetString("Settings.Role")"
+                                                      Value="@_displayRole"
+                                                      ReadOnly="true"
+                                                      Variant="Variant.Outlined"
+                                                      Adornment="Adornment.Start"
+                                                      AdornmentIcon="@Icons.Material.Filled.AdminPanelSettings" /> *@
+                                    </MudItem>
+                                </MudGrid>
+                            </MudItem>
+
+
+
+                            }
+                            else
+                            {
+
+                            <b>Caricamento informazioni utente...</b>
+
+                            }
+
+                            <!-- Sezione Claims Aggiuntivi -->
+                            <MudItem xs="12">
+                                <MudExpansionPanels>
+                                    <MudExpansionPanel Text="Gruppi di Appartenenza">
+                                        <MudSimpleTable Dense="true" Hover="true" Striped="true">
+                                            <thead>
+                                                <tr>
+                                                    <th>xxx</th>
+                                                    <th>xxxx</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    var groups = _authState.User.FindAll("groups").Select(c => c.Value).ToList();
+                                                }
+                                                @if (groups.Any())
+                                                {
+                                                    foreach (var group in groups)
+                                                    {
+
+
+                                                        <tr>
+                                                            <td><code>@group</code></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </MudSimpleTable>
+                                    </MudExpansionPanel>
+                                    <MudExpansionPanel Text="Test Autorizzazioni per Ruolo">
+                                        <MudSimpleTable Dense="true" Hover="true" Striped="true">
+                                            <thead>
+                                                <tr>
+                                                    <th>xxx</th>
+                                                    <th>xxxx</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var role in AppRoles.AllRoles)
+                                                {
+                                                    var hasRole = _authState.User.IsInRole(role);
+
+                                                    <tr>
+                                                        <td><code>@AppRoles.RoleDescriptions.GetValueOrDefault(role, role)</code></td>
+                                                        <td></td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </MudSimpleTable>
+                                    </MudExpansionPanel>
+                                    <MudExpansionPanel Text="Claims">
+                                       
+
+
+
+                                        <MudSimpleTable Dense="true" Hover="true" Striped="true">
+                                            <thead>
+                                                <tr>
+                                                    <th>@Localization.GetString("Settings.ClaimType")</th>
+                                                    <th>@Localization.GetString("Settings.ClaimValue")</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var claim in _authState.User.Claims.OrderBy(c => c.Type))
+                                                {
+                                                    <tr>
+                                                        <td><code>@claim.Type</code></td>
+                                                        <td>@claim.Value</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </MudSimpleTable>
+
+                                    </MudExpansionPanel>
+                                </MudExpansionPanels>
+                            </MudItem>
+
+                            <!-- Sezione Azioni -->
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h6" Class="mb-3">
+                                    <MudIcon Icon="@Icons.Material.Filled.Settings" Class="mr-2" />
+                                    @Localization.GetString("Settings.QuickActions")
+                                </MudText>
+                                <MudDivider Class="mb-3" />
+                                <MudStack Row="true" Spacing="2">
+                                    @* <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               StartIcon="@Icons.Material.Filled.VpnKey"
+                                               OnClick="@(() => ShowAlert(Localization.GetString("Common.ComingSoon"), "Info"))">
+                                        @Localization.GetString("Settings.ChangePassword")
+                                    </MudButton> *@
+
+                                    <MudButton Variant="Variant.Outlined"
+                                               Color="Color.Error"
+                                               StartIcon="@Icons.Material.Filled.Logout"
+                                               Href="/logout">
+                                        @Localization.GetString("Settings.SignOut")
+                                    </MudButton>
+                                </MudStack>
+                            </MudItem>
+                        </MudGrid>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+</MudContainer>
+
+
+
+@code {
+    // 2025-01-15 - Mock Auth - Stato di autenticazione corrente
+    private AuthenticationState? _authState;
+
+    // 2025-01-15 - Mock Auth - Inizializza il componente caricando lo stato di autenticazione
+    protected override async Task OnInitializedAsync()
+    {
+        _authState = await AuthStateProvider.GetAuthenticationStateAsync();
+    }
+
+    // 2025-01-15 - Mock Auth - Helper per ottenere il valore di un claim
+    private string GetClaimValue(string claimType)
+    {
+        return _authState?.User.FindFirst(claimType)?.Value ?? "N/A";
+    }
+}

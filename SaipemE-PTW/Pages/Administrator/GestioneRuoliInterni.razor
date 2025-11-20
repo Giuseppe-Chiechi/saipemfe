@@ -1,0 +1,172 @@
+﻿@page "/administrator/gestione-ruoli-interni"
+@using SaipemE_PTW.Services.Administrator
+@using SaipemE_PTW.Shared.Models.Auth
+@attribute [Authorize(Roles = "SUPER_OWNER,ADMIN")]
+
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+
+<PageTitle>@_pageTitle</PageTitle>
+
+
+<SaipemE_PTW.Components.Common.Alert Tipo="@AlertTipo" Message="@AlertMessage" Visible="@AlertShow" VisibleChanged="@(v => AlertShow = v)"></SaipemE_PTW.Components.Common.Alert>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+    <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+    <MudGrid Spacing="3" Class="TitleBox">
+        <MudItem>
+
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                @_pageTitle
+            </MudText>
+
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3">
+    <MudItem xs="12">
+        <MudCard Class="mud-width-full">
+            <MudCardContent>
+
+                    <MudGrid Class="mt-4">
+        <MudItem Style="min-height:500px;width:100%">
+
+                            <MudTextField T="string"
+                                          @bind-Value="SearchText"
+                                          Placeholder="Cerca utente"
+                                          Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search"
+                                          Immediate="true"
+                                          Class="mb-4" />
+
+                          
+
+                            <MudTable Items="_filteredItems" T="AnagraficaUtentiInterniDto" Bordered="true" Striped="true"
+                                      Dense="true" Hover="true">
+                                <HeaderContent>
+                                    <MudTh>
+                                        <MudTableSortLabel SortLabel="Matricola" T="AnagraficaUtentiInterniDto">
+                                            Matricola
+                                        </MudTableSortLabel>
+                                    </MudTh>
+                                    <MudTh>
+                                        <MudTableSortLabel SortLabel="Nome" T="AnagraficaUtentiInterniDto">
+                                            Nome
+                                        </MudTableSortLabel>
+                                    </MudTh>
+                                    <MudTh>
+                                        <MudTableSortLabel SortLabel="Cognome" T="AnagraficaUtentiInterniDto">
+                                            Cognome
+                                        </MudTableSortLabel>
+                                    </MudTh>
+                                    <MudTh>Email</MudTh>
+                                    <MudTh>Gruppi associati</MudTh>
+                                   
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Matricola">@context.Matricola</MudTd>
+                                    <MudTd DataLabel="Nome">@context.Nome</MudTd>
+                                    <MudTd DataLabel="Cognome">@context.Cognome</MudTd>
+                                    <MudTd DataLabel="Email">@context.Email</MudTd>
+                                    <MudTd DataLabel="Gruppiassociati">
+
+                                        <SaipemE_PTW.Components.Administrator.GestioneRuoliUtenti.GestioneRuoliUtenti AvailableRoles="@UserRoleMapper.GetAll().ToList()"
+                                                                                                                        AssignedRoles="@context.Ruoli"
+                                                                                                                        AssignedRolesChanged="@((r) => context.Ruoli = r)" />
+
+
+
+                                    </MudTd>
+                                   
+                                </RowTemplate>
+                                <NoRecordsContent>
+                                    <MudAlert Severity="Severity.Info" Elevation="0">
+                                        <MudIcon Icon="@Icons.Material.Filled.Info" Class="me-2" />
+                                        @* No members match the current filters *@
+                                        Nessun membro corrisponde ai filtri attuali.
+                                    </MudAlert>
+                                </NoRecordsContent>
+                            </MudTable>
+    
+    @* @if (string.IsNullOrWhiteSpace(_searchText))
+    {
+        <MudText>No search performed yet.</MudText>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Info" Elevation="0">
+            <MudIcon Icon="@Icons.Material.Filled.Info" Class="me-2" />
+            No members match the current filters.
+        </MudAlert>
+    } *@
+
+
+
+        </MudItem>
+    </MudGrid>
+
+    </MudCardContent>
+    </MudCard>
+
+    </MudItem>
+    </MudGrid>
+
+
+
+</MudContainer>
+@code {
+    [Inject] private IUtentiInterniService UtentiInterniService { get; set; } = default!;
+    private IEnumerable<AnagraficaUtentiInterniDto> _filteredItems = Enumerable.Empty<AnagraficaUtentiInterniDto>();
+    private string _searchText = "";
+
+    protected override async Task OnInitializedCoreAsync()
+    {
+
+        try
+        {
+            _pageTitle = "Gestione Ruoli utenti interni";
+            SetBreadcrumb(
+                 new BreadcrumbItem("⬅ Back", href: "javascript:history.back()"),
+                    new BreadcrumbItem(Localization.GetString("Home.Dashboard"), href: "/"),
+                    new BreadcrumbItem(@_pageTitle, href: null, disabled: true)
+                );
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Errore durante il caricamento dati gestione ruoli interni");
+        }
+        finally
+        {
+            await Task.CompletedTask;
+        }
+    }
+
+    
+    
+
+
+    private async Task OnSearchChanged(string value)
+    {
+        _searchText = value;
+
+        if (string.IsNullOrWhiteSpace(value))
+            _filteredItems = Enumerable.Empty<AnagraficaUtentiInterniDto>();
+        else
+            _filteredItems = await UtentiInterniService.GetUtentiAsync(value);
+
+        StateHasChanged();
+    }
+
+    private string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            _searchText = value;
+            _ = OnSearchChanged(value); // ora è valido
+        }
+    }
+}
+

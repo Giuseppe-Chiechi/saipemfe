@@ -1,0 +1,46 @@
+@using SaipemE_PTW.Authentication.Mock
+
+@* 2025-01-13 - EntraId - CascadingAuthenticationState fornisce lo stato di autenticazione a tutti i componenti figli *@
+@* Permette a qualsiasi componente nell'albero di accedere alle informazioni dell'utente autenticato *@
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            @* 2025-01-13 - EntraId - AuthorizeRouteView gestisce l'autorizzazione delle route *@
+            @* Reindirizza gli utenti non autenticati alla pagina di login quando necessario *@
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    @* 2025-01-13 - EntraId - Messaggio mostrato quando l'utente non è autorizzato *@
+                    @if (context.User.Identity?.IsAuthenticated != true)
+                    {
+
+                        @if (MockAuthConfig.UseMockAuthentication)
+                        {
+                            <MockRedirectToLogin />
+                        }
+                        else
+                        {
+                            <RedirectToLogin />
+                        }
+                    }
+                    else
+                    {
+                        <p role="alert">Non sei autorizzato ad accedere a questa risorsa.</p>
+                    }
+                </NotAuthorized>
+                <Authorizing>
+
+                    <p>Autenticazione in corso...</p>
+                </Authorizing>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+
+

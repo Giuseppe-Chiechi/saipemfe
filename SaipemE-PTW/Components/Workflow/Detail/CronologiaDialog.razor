@@ -1,0 +1,142 @@
+﻿@using MudBlazor
+@using SaipemE_PTW.Services.Workflow.Common
+@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+@inject ICronologiaPermessoLavoroService CronologiaService
+
+<CascadingValue Value="this">
+    <MudDialog>
+        <DialogContent>
+
+            <MudStack Spacing="2">
+               @*  <MudText Typo="Typo.h6">Permesso di Lavoro</MudText> *@
+
+                <MudTextField @bind-Value="_searchText"
+                              Placeholder="Cerca su tutte le colonne..."
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              Clearable="true"
+                              Immediate="true"
+                              Dense="true"
+                              Variant="Variant.Outlined" />
+
+                <MudPaper Class="pa-2">
+                    <MudTable Items="_rows"
+                              Filter="FilterFunc"
+                              Hover="true"
+                              Bordered="true"
+                              Dense="true"
+                              FixedHeader="true"
+                              Elevation="0"
+                              RowsPerPage="10"
+                              Breakpoint="Breakpoint.Sm" 
+                              Loading="_loadingCronologia">
+                        <HeaderContent>
+                            <MudTh>Id</MudTh>
+                            <MudTh>Azione</MudTh>
+                            <MudTh>Nome</MudTh>
+                            <MudTh>Cognome</MudTh>
+                            <MudTh>Data</MudTh>
+                            <MudTh>Ora</MudTh>
+                            <MudTh>Email</MudTh>
+                            
+                            <MudTh>Ruolo</MudTh>
+                            <MudTh>Note</MudTh> 
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Id">@context.Id</MudTd>
+                            <MudTd DataLabel="Azione">@context.Azione</MudTd>
+                            <MudTd DataLabel="Nome">@context.Nome</MudTd>
+                            <MudTd DataLabel="Cognome">@context.Cognome</MudTd>
+                            <MudTd DataLabel="Data">@context.Data.ToString()</MudTd>
+                            <MudTd DataLabel="Ora">@context.Ora.ToString()</MudTd>
+                            <MudTd DataLabel="Email">@context.Email</MudTd>
+                            
+                            <MudTd DataLabel="Ruolo">@context.Ruolo?.Nome</MudTd>
+                            <MudTd>
+                                <MudTextField T="string" ></MudTextField>
+                            </MudTd>
+
+                         <MudTd>
+                                <MudButton Color="Color.Primary"
+                                           Variant="Variant.Filled"
+                                           Size="Size.Small" Disabled="@_isReadOnly">
+                                    Salva
+                                </MudButton>
+                            </MudTd> 
+                            </RowTemplate>
+                        <NoRecordsContent>
+                            <MudAlert Severity="Severity.Info" Dense="true">Nessun elemento trovato.</MudAlert>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudProgressCircular Indeterminate="true" />
+                        </LoadingContent>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new int[]{5,10,20,50}" />
+                        </PagerContent>
+                    </MudTable>
+                </MudPaper>
+            </MudStack>
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="Cancel">Chiudi</MudButton>
+        </DialogActions>
+    </MudDialog>
+</CascadingValue>
+
+@code
+{
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    // [Parameter]
+    // public bool _isReadOnlyCronologia { get; set; }
+
+    // [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
+
+    private IEnumerable<CronologiaPermessoLavoro> _rows = Array.Empty<CronologiaPermessoLavoro>();
+    private bool _loadingCronologia = true;
+    private string? _searchText;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _loadingCronologia = true;
+            _rows = await CronologiaService.GetCronologiaAsync();
+        }
+        finally
+        {
+            _loadingCronologia = false;
+        }
+    }
+
+    private bool FilterFunc(CronologiaPermessoLavoro row)
+    {
+        if (string.IsNullOrWhiteSpace(_searchText))
+            return true;
+
+        var term = _searchText.Trim();
+        return Matches(row.Id, term)
+            || Matches(row.Azione, term)
+            || Matches(row.Nome, term)
+            || Matches(row.Cognome, term)
+            || Matches(row.Email, term)
+            || Matches(row.Matricola, term)
+            || Matches(row.Ruolo?.Nome, term)
+            || Matches(row.Data.ToString(), term)
+            || Matches(row.Ora.ToString(), term);
+    }
+
+    private static bool Matches(object? value, string term)
+        => (value?.ToString() ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase);
+
+    private void SelectRow(CronologiaPermessoLavoro row)
+        => MudDialog.Close(DialogResult.Ok(row));
+
+    private void Cancel()
+        => MudDialog.Cancel();
+}

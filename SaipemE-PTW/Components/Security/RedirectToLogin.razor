@@ -1,0 +1,27 @@
+@* 
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
+@inject ILogger<SaipemE_PTW.Components.Security.RedirectToLogin> Logger
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            var state = await AuthStateTask;
+            var isAuth = state.User?.Identity?.IsAuthenticated == true;
+            if (!isAuth)
+            {
+                Nav.NavigateTo("/login", forceLoad: false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Errore durante redirect a /login");
+        }
+    }
+}
+ *@

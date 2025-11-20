@@ -1,0 +1,70 @@
+﻿<!-- Barra di ricerca -->
+<MudTextField @bind-Value="_searchText"
+              Placeholder="Cerca ..."
+              Adornment="Adornment.Start"
+              AdornmentIcon="@Icons.Material.Filled.Search"
+              Immediate="true"
+              Class="mb-3"
+              Variant="Variant.Outlined" />
+
+<!-- Contenitore scrollabile -->
+<MudPaper Class="p-2" Style="max-height:250px; overflow-y:auto;">
+
+    <MudGrid GutterSize="1">
+        @foreach (var item in FilteredItems)
+        {
+            try
+            {
+                <MudItem xs="12" sm="6" @key="item.Label">
+                    <MudCheckBox T="bool"
+                                 Label="@item.Label"
+                                 @bind-Checked="item.Selected" />
+                    @item.Label
+                </MudItem>
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+
+    </MudGrid>
+
+</MudPaper>
+
+<!-- Riepilogo -->
+@*     <MudDivider Class="my-3" />
+    <MudText Typo="Typo.subtitle2">Selezionati:</MudText>
+    <ul>
+        @foreach (var s in Items.Where(i => i.Selected))
+        {
+            <li>@s.Label</li>
+        }
+    </ul> *@
+
+@code {
+    private string _searchText = "";
+
+    public class ItemModel
+    {
+        public string Label { get; set; } = "";
+        public bool Selected { get; set; }
+    }
+
+    private List<ItemModel> Items = new()
+    {
+        new() { Label = "Gru" },
+        new() { Label = "Autogru" },
+        new() { Label = "Carrelli elevatori" },
+        new() { Label = "Saldatrici" },
+        new() { Label = "Paranchi manuali" },
+        new() { Label = "Trabattelli" },
+        new() { Label = "Lampade portatili" }
+    };
+
+    private IEnumerable<ItemModel> FilteredItems =>
+        string.IsNullOrWhiteSpace(_searchText)
+            ? Items
+            : Items.Where(i => i.Label.Contains(_searchText, StringComparison.OrdinalIgnoreCase));
+}

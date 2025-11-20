@@ -1,0 +1,48 @@
+@page "/error"
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@attribute [Microsoft.AspNetCore.Authorization.AllowAnonymous]
+@inject NavigationManager Nav
+
+@code {
+    private string? _id;
+    private string? _msg;
+
+    protected override void OnInitialized()
+    {
+        var query = new Uri(Nav.Uri).Query;
+        if (string.IsNullOrEmpty(query)) return;
+        foreach (var pair in query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var kv = pair.Split('=', 2);
+            var key = Uri.UnescapeDataString(kv[0]);
+            var value = kv.Length > 1 ? Uri.UnescapeDataString(kv[1]) : string.Empty;
+            if (string.Equals(key, "id", StringComparison.OrdinalIgnoreCase)) _id = value;
+            if (string.Equals(key, "msg", StringComparison.OrdinalIgnoreCase)) _msg = value;
+        }
+    }
+
+    private void GoHome() => Nav.NavigateTo("/");
+}
+
+<MudPaper Class="p-6 mt-6">
+    <MudText Typo="Typo.h6">Si è verificato un errore</MudText>
+    <MudText Class="mt-2">
+        Si è verificato un errore imprevisto nell'interfaccia utente.
+        @if (!string.IsNullOrWhiteSpace(_msg))
+        {
+            <span> Dettagli: @_msg</span>
+        }
+    </MudText>
+
+    @if (!string.IsNullOrWhiteSpace(_id))
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-3">
+            Correlation Id: <b>@_id</b>
+        </MudAlert>
+    }
+
+    <MudStack Class="mt-4" Row="true" Spacing="2">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GoHome">Torna alla home</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@(() => Nav.NavigateTo(Nav.Uri, true))">Riprova</MudButton>
+    </MudStack>
+</MudPaper>

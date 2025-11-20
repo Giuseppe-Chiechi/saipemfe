@@ -1,0 +1,57 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@inject SaipemE_PTW.Services.IErrorHandlingService ErrorHandling
+@inject NavigationManager Nav
+
+<ErrorBoundary @ref="errorBoundary">
+    <ChildContent>
+        @ChildContent
+    </ChildContent>
+    <ErrorContent Context="exception">
+        @LogAndRedirectOnce(exception)
+        <div class="min-h-[120px] p-4 bg-rose-50 border border-rose-200 rounded">
+            <div class="text-rose-700 text-sm">
+                Si è verificato un errore imprevisto nell'interfaccia utente.
+            </div>
+            @if (ShowErrorDetails && exception is not null)
+            {
+                <pre class="mt-2 text-xs text-rose-700 whitespace-pre-wrap overflow-auto">@exception.ToString()</pre>
+            }
+            <div class="mt-3">
+                <button class="btn bg-indigo-500 hover:bg-indigo-600 text-white" @onclick="Recover">
+                    Riprova
+                </button>
+            </div>
+        </div>
+    </ErrorContent>
+</ErrorBoundary>
+
+@code {
+    private ErrorBoundary? errorBoundary;
+    private bool _handled;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool ShowErrorDetails { get; set; }
+
+    private void Recover()
+    {
+        _handled = false;
+        errorBoundary?.Recover();
+    }
+
+    private RenderFragment LogAndRedirectOnce(Exception? exception) => builder =>
+    {
+        if (exception is null || _handled)
+            return;
+
+        _handled = true;
+        var props = new Dictionary<string, object?>
+        {
+            ["Uri"] = Nav.Uri
+        };
+        ErrorHandling.HandleGlobal(exception, "Unexpected UI error", props);
+    };
+}

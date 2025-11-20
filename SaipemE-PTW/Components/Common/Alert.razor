@@ -1,0 +1,84 @@
+﻿@using MudBlazor
+@if (Visible && !string.IsNullOrWhiteSpace(Message))
+{
+    <MudGrid Class="alert-overlay">
+        <MudItem Class="centered-alert">
+            <MudAlert Severity="@AlertSeverity"
+                      Elevation="0"
+                      Dense="true"
+                      Variant="Variant.Outlined"
+                      Class="my-2"
+                      Closeable="true"
+                      ShowCloseIcon="true"
+                      OnClose="CloseAlert"
+                      CloseIconClicked="(() => CloseAlert())">
+                @((MarkupString)Message)
+
+            </MudAlert>
+        </MudItem>
+    </MudGrid>
+   @*  <div class="alert-overlay">
+        <div class="centered-alert">
+           
+        </div>
+    </div> *@
+}
+
+@code {
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public string? Tipo { get; set; } // "Success", "Warning", "Error"
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+    [Parameter] public int? AutoCloseSeconds { get; set; } = 10;// opzionale
+
+
+    private Severity AlertSeverity => Tipo switch
+    {
+        "Success" => Severity.Success,
+        "Warning" => Severity.Warning,
+        "Error" => Severity.Error,
+        _ => Severity.Info
+    };
+
+    private async Task CloseAlert()
+    {
+        if (Visible)
+        {
+            Visible = false;
+            await VisibleChanged.InvokeAsync(false);
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Visible && AutoCloseSeconds.HasValue)
+        {
+            await Task.Delay(AutoCloseSeconds.Value * 1000);
+            await CloseAlert();
+        }
+    }
+}
+<style>
+    .alert-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .centered-alert {
+        background-color: white;
+        border-radius: 4px;
+        padding: 1rem;
+        min-width: 300px;
+        max-width: 90%;
+        z-index: 2000;
+    }
+</style>

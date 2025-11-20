@@ -1,0 +1,48 @@
+﻿@using MudBlazor
+@using SaipemE_PTW.Shared.Models.PWT
+
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="2">
+           @*  <MudText Typo="Typo.subtitle1">Inserisci i dettagli della sospensione</MudText> *@
+            @* <MudTextField @bind-Value="_text"
+                          Label="Motivazione"
+                          Variant="Variant.Outlined"
+                          Lines="3"
+                          FullWidth="true" /> *@
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Default" StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Text" OnClick="Cancel">Annulla</MudButton>
+        <MudButton Color="Color.Success" StartIcon="@Icons.Material.Filled.Save" Variant="Variant.Filled" OnClick="Confirm">Conferma</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public IMudDialogInstance MudDialog { get; set; } = default!;
+     [Parameter] public string? Pdl { get; set; }
+     [Parameter] public int PermessoId { get; set; }
+    // [Parameter] public PermessoLavoroModel rowselected { get; set; }
+    
+
+    private string _text = string.Empty;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Confirm()
+        => MudDialog.Close(DialogResult.Ok(new SospensioneDialogResult
+        {
+            Pdl = Pdl,
+            PermessoId = PermessoId,
+            Note = _text
+            // permessoLavoroModel = rowselected
+        }));
+
+    public sealed class SospensioneDialogResult
+    {
+        // public PermessoLavoroModel permessoLavoroModel { get; set; }
+        public string? Pdl { get; set; }
+        public int PermessoId { get; set; }
+        public string? Note { get; set; }
+    }
+}

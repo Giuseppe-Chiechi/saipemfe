@@ -1,0 +1,74 @@
+﻿@page "/administrator/gestione-imprese"
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@attribute [Authorize(Roles = "SUPER_OWNER,ADMIN")]
+
+<PageTitle> @_pageTitle</PageTitle>
+
+
+<SaipemE_PTW.Components.Common.Alert Tipo="@AlertTipo" Message="@AlertMessage" Visible="@AlertShow" VisibleChanged="@(v => AlertShow = v)"></SaipemE_PTW.Components.Common.Alert>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+    <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+    <MudGrid Spacing="3" Class="TitleBox">
+        <MudItem>
+
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                @_pageTitle
+            </MudText>
+
+        </MudItem>
+    </MudGrid>
+
+
+
+    <MudGrid Spacing="3">
+        <MudItem xs="12">
+            <MudCard Class="mud-width-full">
+                <MudCardContent>
+
+                    <MudGrid Class="mt-4">
+                        <MudItem Style="min-height:500px">
+                            @_pageTitle
+                        </MudItem>
+                    </MudGrid>
+
+                </MudCardContent>
+            </MudCard>
+
+        </MudItem>
+    </MudGrid>
+
+
+
+</MudContainer>
+@code {
+
+    protected override async Task OnInitializedCoreAsync()
+    {
+
+        try
+        {
+            _pageTitle = "Gestioni imprese";
+
+            SetBreadcrumb(
+                 new BreadcrumbItem("⬅ Back", href: "javascript:history.back()"),
+                    new BreadcrumbItem(Localization.GetString("Home.Dashboard"), href: "/"),
+                    new BreadcrumbItem("Gestioni imprese", href: null, disabled: true)
+                );
+
+
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, ex.Message);
+        }
+        finally
+        {
+            await Task.CompletedTask;
+        }
+    }
+
+}
+

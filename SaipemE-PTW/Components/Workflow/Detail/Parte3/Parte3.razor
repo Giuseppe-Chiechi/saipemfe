@@ -1,0 +1,194 @@
+﻿@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+<MudTabPanel Text="Parte 3" >
+    <MudGrid Class="mt-4">
+        <MudItem xs="12">
+
+
+            <MudGrid Class="mb-3 ">
+                <MudItem xs="12">
+                    <MudField Label="Gas Test (Certificato allegato)" Variant="Variant.Outlined">
+                       
+
+                        <MudGrid Class="mt-4">
+                            <MudItem xs="12">
+
+                                <MudText Typo="Typo.subtitle1" Align="Align.Left" Class="mb-4">
+                                    Richiesto Gas Test?
+                                </MudText>
+
+
+                          
+                                <MudToggleGroup Disabled="@_isReadOnlyParte3" T="int"
+                                                Value="Model.GasIsolamentoCertificato"
+                                                SelectionMode="SelectionMode.SingleSelection"
+                                                ValueChanged="value => OnValueChanged(value, v => Model.GasIsolamentoCertificato = v)"
+                                                Color="Color.Secondary" Size="Size.Small"
+                                                CheckMark
+                                                FixedContent Style="width:200px">
+                                    <MudToggleItem T="int" Value=@si Text="Yes" />
+                                    <MudToggleItem T="int" Value=@no Text="No" />
+                                </MudToggleGroup>
+
+
+
+                            </MudItem>
+
+                            @if (Model.GasIsolamentoCertificato.Equals(1))
+                            {
+                                <MudItem xs="12" Class="mb-3">
+                                    <MudTextField Disabled="@_isReadOnlyParte3" Label="Frequenza" Lines="4" @bind-Value="Model.Frequenza" FullWidth="true" /></MudItem>
+
+                            }
+                        </MudGrid>
+                    </MudField>
+                </MudItem>
+            </MudGrid>
+
+
+            <MudGrid Class="mb-3">
+
+                <MudItem xs="12">
+                    <MudField Label="Persona Autorizzata ai Test dei Gas (AGT)" Variant="Variant.Outlined">
+
+                       
+
+                        <MudGrid Class="mt-4">
+                            <MudItem xs="12" sm="4">
+                                <MudTextField Disabled="@_isReadOnlyParte3" Label="Nome e Cognome" @bind-Value="Model.PersonaAutorizzataTestGasNome" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField Disabled="@_isReadOnlyParte3" Label="Impresa" @bind-Value="Model.PersonaAutorizzataTestGasImpresa" />
+                            </MudItem>
+                            <MudItem xs="12" sm="4">
+                                <MudTextField Adornment="Adornment.End" AdornmentColor="Color.Info"  
+                                              AdornmentIcon="@Icons.Material.Filled.BorderColor" 
+                                              Disabled="@_isReadOnlyParte3" Label="Firma" @bind-Value="Model.PersonaAutorizzataTestGasFirma" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudField>
+                </MudItem>
+
+            </MudGrid>
+
+            <MudGrid Class="mb-3">
+
+                <MudItem xs="12">
+                     <MudField Label="Persona Autorizzata ai Test dei Gas (AGT)" Variant="Variant.Outlined">
+
+                  
+
+                <MudGrid Class="mt-4">
+                <MudItem xs="12">
+                    <MudText Typo="Typo.caption" Align="Align.Center" Class="mb-4">
+                        In carico all'Autorità Operativa, essendo consapevole di essere responsabile della verifica dell'area di lavoro, dovrà dichiarare che tutte le precauzioni indicate sono state implementate
+                    </MudText>
+                </MudItem>
+
+                <MudItem xs="12" sm="4">
+                    <MudTextField Disabled="@_isReadOnlyParte3" Label="Autorità Operativa Nome e Cognome" @bind-Value="Model.PrecauzioniNome" />
+                </MudItem>
+                <MudItem xs="12" sm="2">
+                    <MudDatePicker Disabled="@_isReadOnlyParte3" Label="Data inizio turno" @bind-Value="Model.PrecauzioniDataInizio" />
+                </MudItem>
+                <MudItem xs="12" sm="2">
+                    <MudTimePicker Disabled="@_isReadOnlyParte3" Label="Ora inizio turno" @bind-Value="Model.PrecauzioniOraInizio" />
+                </MudItem>
+
+                <MudItem xs="12" sm="2">
+                    <MudDatePicker Disabled="@_isReadOnlyParte3" Label="Data fine turno" @bind-Value="Model.PrecauzioniDataFine" />
+                </MudItem>
+
+                <MudItem xs="12" sm="2">
+                    <MudTimePicker Disabled="@_isReadOnlyParte3" Label="Ora fine turno" @bind-Value="Model.PrecauzioniOraFine" />
+                </MudItem>
+
+                <MudItem xs="12">
+                                <MudTextField Adornment="Adornment.End" AdornmentColor="Color.Info"  
+                                              AdornmentIcon="@Icons.Material.Filled.BorderColor" 
+                                              Disabled="@_isReadOnlyParte3" Label="Note" @bind-Value="Model.PersonaAutorizzataTestGasFirma" />
+                </MudItem>
+                        </MudGrid>
+                    </MudField>
+                    </MudItem>
+            </MudGrid>
+
+            <MudGrid Class="mb-3 mt-6">
+
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.body2" Style="min-height:100px">
+                        <strong>In quanto Autorità Operativa</strong>, sono consapevole di essere responsabile della verifica dell'area di lavoro.
+                        Con la presente dichiaro che tutte le precauzioni sopracitate sono state messe in atto e che il lavoro può iniziare.
+                    </MudText>
+
+
+                    <MudTextField Disabled="@_isReadOnlyParte3" @bind-Value="Model.AutoritaOperativaFirmaInizio"
+                                  Label="Autorità Operativa (nome e firma)"
+                                  Variant="Variant.Text" Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                  AdornmentIcon="@Icons.Material.Filled.BorderColor"   
+                                  Placeholder="" 
+                                  HelperText="Firma Inizio Lavori"
+
+                                  Class="form-line-field w-100 " />
+                </MudItem>
+
+
+                <MudItem xs="12" sm="6">
+                    <MudText Typo="Typo.body2" Style="min-height:100px">
+                        <strong>In quanto Autorità Esecutrice</strong>, sono consapevole di essere responsabile della sicurezza del mio gruppo di lavoro.
+                        Ho compreso tutte le precauzioni da mettere in atto e le mie responsabilità al riguardo.
+                    </MudText>
+
+                    <MudTextField Disabled="@_isReadOnlyParte3" @bind-Value="Model.AutoritaEsecutriceFirmaInizio"
+                                  Label="Autorità Esecutrice (nome e firma)"
+                                  Variant="Variant.Text" Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                  AdornmentIcon="@Icons.Material.Filled.BorderColor"  
+                                  Placeholder="" 
+                                  HelperText="Firma Inizio Lavori" 
+                                  Class="form-line-field w-100 " />
+                </MudItem>
+            </MudGrid>
+            <MudGrid Class="mb-3">
+
+
+                <MudItem xs="12" sm="6">
+                   
+
+                     <MudTextField Disabled="@_isReadOnlyParte3" @bind-Value="Model.AutoritaEsecutriceFirmaFine"
+                                  Label="Autorità Esecutrice (nome e firma)"
+                                  Variant="Variant.Text" Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                  AdornmentIcon="@Icons.Material.Filled.BorderColor"  
+                                  Placeholder=""
+                                  HelperText="Firma Fine Lavori - Il lavoro è stato completato e l’area è stata ripulita ed in sicurezza"
+                                  Class="form-line-field w-100 " />
+                </MudItem>
+
+
+                <MudItem xs="12" sm="6">
+                  
+
+                   
+                    <MudTextField Disabled="@_isReadOnlyParte3" @bind-Value="Model.AutoritaOperativaFirmaFine"
+                                  Label="Autorità Operativa (nome e firma)"
+                                  Variant="Variant.Text" Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                  AdornmentIcon="@Icons.Material.Filled.BorderColor"  
+                                  Placeholder=""
+                                  HelperText="Firma Fine Lavori -  L’area è stata verificata e il lavoro è stato accettato"
+                                  Class="form-line-field w-100 " />
+                </MudItem>
+
+
+
+            </MudGrid>
+
+        </MudItem>
+
+    </MudGrid>
+</MudTabPanel>
+@code {
+    [Parameter] public PermessoLavoroModel Model { get; set; } = new PermessoLavoroModel();
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlyParte3 { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+}

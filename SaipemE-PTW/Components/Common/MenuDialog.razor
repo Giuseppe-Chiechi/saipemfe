@@ -1,0 +1,46 @@
+﻿<MudDialog>
+    <DialogContent >
+        <Menu  />
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Close">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance? MudDialog { get; set; }
+
+    private void Close() => MudDialog?.Close(DialogResult.Ok(true));
+
+    private Task ChangeTitleAsync() => MudDialog.SetTitleAsync($"Current time is: {DateTime.Now}");
+
+    private Task ToggleCloseButtonAsync()
+    {
+        var options = MudDialog.Options with
+        {
+            CloseButton = !(MudDialog.Options.CloseButton ?? false)
+        };
+
+        return MudDialog.SetOptionsAsync(options);
+    }
+
+    private Task ToggleFullWidthAsync()
+    {
+        var options = MudDialog.Options with
+        {
+            FullWidth = !(MudDialog.Options.FullWidth ?? true)
+        };
+
+        return MudDialog.SetOptionsAsync(options);
+    }
+
+    private Task ToggleHeaderAsync()
+    {
+        var options = MudDialog.Options with
+        {
+            NoHeader = !(MudDialog.Options.NoHeader ?? false)
+        };
+
+        return MudDialog.SetOptionsAsync(options);
+    }
+}

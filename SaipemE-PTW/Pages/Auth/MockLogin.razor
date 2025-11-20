@@ -1,0 +1,213 @@
+@page "/mock-login"
+@using SaipemE_PTW.Authentication.Mock
+@inject MockAuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+@* 2025-01-15 - Mock Auth - Pagina di login simulato per test senza Entra ID *@
+@* NOTA: In produzione, questa pagina non sarà necessaria, il login avverrà tramite Entra ID *@
+
+<PageTitle>Login Mock - e-PTW Saipem</PageTitle>
+
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    @* 2025-01-15 - Mock Auth - Mostra messaggi di errore se presenti *@
+
+
+    @_errorMessage
+    <MudButton Variant="Variant.Filled" Color="Color.Secondary" @onclick="() => _errorMessage = string.Empty">Error</MudButton>
+    @*         <button type="button" class="btn-close" @onclick="() => _errorMessage = string.Empty"></button> *@
+
+}
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+
+
+
+<MudGrid Spacing="3">
+    <MudItem xs="12">
+        <MudText Typo="Typo.h3" Class="text-slate-800 font-bold">
+        Login Simulato e-PTW Microsoft Entra ID
+        </MudText>
+        <MudDivider></MudDivider>
+        <MudText Typo="Typo.h4">
+        Ambiente di Test - Mock Authentication
+        </MudText>
+    </MudItem>
+</MudGrid>
+
+
+<MudGrid Spacing="3">
+    <MudItem xs="12">
+        <strong>Modalità Test:</strong> Seleziona un utente dalla lista per simulare l'accesso.
+        In produzione, l'autenticazione avverrà tramite Microsoft Entra ID.
+        <MudDivider></MudDivider>
+    </MudItem>
+</MudGrid>
+
+
+<MudGrid Spacing="3">
+    <MudItem xs="12">
+         <MudText Typo="Typo.h5">
+        Seleziona Utente Test
+       </MudText>
+        <MudSelect @bind-Value="_selectedUserEmail" Label="Seleziona un utente" Required="true" aria-required="true" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+
+            @foreach (var user in MockUserRepository.Users)
+            {
+                <MudSelectItem Value="@user.Email"> @user.Name (@string.Join(", ", user.Roles))</MudSelectItem>
+            }
+        </MudSelect>
+
+    </MudItem>
+
+
+
+</MudGrid>
+
+<MudGrid Spacing="3">
+    <MudItem xs="12">
+        @if (!string.IsNullOrEmpty(_selectedUserEmail))
+        {
+            var selectedUser = MockUserRepository.GetUserByEmail(_selectedUserEmail);
+            if (selectedUser != null)
+            {
+                <MudGrid Spacing="3">
+                    <MudItem xs="12">
+                        Dettagli Utente
+                    </MudItem>
+                    <MudItem xs="4">
+                        <strong>Nome:</strong> @selectedUser.Name
+                    </MudItem>
+                    <MudItem xs="4">
+                        <strong>Email:</strong> @selectedUser.Email
+                    </MudItem>
+                    <MudItem xs="4">
+                        <strong>ID Utente:</strong> @selectedUser.Sub
+                    </MudItem>
+                    <MudItem xs="12">
+                        Ruoli
+                    </MudItem>
+
+                    @foreach (var role in selectedUser.Roles)
+                    {
+                        <MudItem xs="12">
+                            @AppRoles.RoleDescriptions[role]
+                        </MudItem>
+                    }
+
+
+
+                </MudGrid>
+
+
+                @*  <ul class="list-unstyled mb-0 small">
+                            <li><strong>Nome:</strong> @selectedUser.Name</li>
+                            <li><strong>Email:</strong> @selectedUser.Email</li>
+                            <li><strong>ID Utente:</strong> @selectedUser.Sub</li>
+                            <li>
+                                <strong>Ruoli:</strong>
+                                <div class="mt-1">
+                                    @foreach (var role in selectedUser.Roles)
+                                    {
+                                        <span class="badge bg-primary me-1">@AppRoles.RoleDescriptions[role]</span>
+                                    }
+                                </div>
+                            </li>
+                        </ul> *@
+
+            }
+        }
+        <MudDivider></MudDivider>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Spacing="3">
+    <MudItem xs="12">
+
+        <MudButton Disabled="@(string.IsNullOrEmpty(_selectedUserEmail) || _isLoading)" @onclick="HandleLogin" Variant="Variant.Filled" Color="Color.Secondary">
+
+
+            @*   <button class="btn btn-primary btn-lg"
+                @onclick="HandleLogin"
+                disabled="@(string.IsNullOrEmpty(_selectedUserEmail) || _isLoading)"> *@
+            @if (_isLoading)
+            {
+
+                <text>Accesso in corso...</text>
+            }
+            else
+            {
+
+                <text>Accedi con Utente Selezionato</text>
+            }
+            @* </button> *@
+        </MudButton>
+        <MudButton @onclick="NavigateToHome" Variant="Variant.Filled" Color="Color.Primary">Torna alla Home</MudButton>
+
+
+        <MudDivider></MudDivider>
+        Questa funzionalità è disponibile solo in ambiente di sviluppo
+    </MudItem>
+</MudGrid>
+
+
+</MudContainer>
+
+@code {
+    // 2025-01-15 - Mock Auth - Email dell'utente selezionato
+    private string _selectedUserEmail = string.Empty;
+
+    // 2025-01-15 - Mock Auth - Messaggio di errore da mostrare
+    private string _errorMessage = string.Empty;
+
+    // 2025-01-15 - Mock Auth - Flag per indicare operazione in corso
+    private bool _isLoading = false;
+
+    // 2025-01-15 - Mock Auth - URL di ritorno dopo il login (query parameter)
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+
+    // 2025-01-15 - Mock Auth - Gestisce il click sul pulsante di login
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrEmpty(_selectedUserEmail))
+        {
+            _errorMessage = "Seleziona un utente dalla lista.";
+            return;
+        }
+
+        try
+        {
+            _isLoading = true;
+            _errorMessage = string.Empty;
+
+            // 2025-01-15 - Mock Auth - Esegue il login simulato
+            await AuthStateProvider.LoginAsync(_selectedUserEmail);
+
+            // 2025-01-15 - Mock Auth - Attende un momento per simulare il processo di autenticazione
+            await Task.Delay(500);
+
+            // 2025-01-15 - Mock Auth - Reindirizza alla pagina di destinazione o alla home
+            var destination = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
+            Navigation.NavigateTo(destination);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Errore durante il login: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    // 2025-01-15 - Mock Auth - Naviga alla home page
+    private void NavigateToHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

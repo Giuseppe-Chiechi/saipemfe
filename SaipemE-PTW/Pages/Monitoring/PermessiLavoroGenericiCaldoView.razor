@@ -1,0 +1,189 @@
+﻿@page "/monitoring/permessi-lavoro-generici-caldo-view"
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+
+<PageTitle>@_pageTitle</PageTitle>
+
+
+<SaipemE_PTW.Components.Common.Alert Tipo="@AlertTipo" Message="@AlertMessage" Visible="@AlertShow" VisibleChanged="@(v => AlertShow = v)"></SaipemE_PTW.Components.Common.Alert>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+    <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+    <MudGrid Spacing="3" Class="TitleBox">
+        <MudItem>
+
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                @_pageTitle
+            </MudText>
+
+        </MudItem>
+    </MudGrid>
+
+
+
+    <MudGrid Spacing="3">
+        <MudItem xs="12">
+            <MudCard Class="mud-width-full">
+                <MudCardContent>
+
+                    <MudGrid GutterSize="3">
+                        <MudItem Style="min-height:500px">
+
+                            <p>
+                                AL click sul pulsante dedicato, il PdL richiesto sarà aperto sulla Parte del PdL dedicata al Rinnovo se l’utente loggato è un utente con un ruolo tra Autorità Operativa (OA) e Autorità Esecutrice (PA). I campi che dovranno compilare saranno i seguenti:
+
+                                Data Rinnovo Lavori: campo prevalorizzato automaticamente dal sistema indicante la data del Rinnovo giornaliero successivo ma modificabile per permettere l’inserimento di una data personalizzata all’interno dell’intervallo di validità massima;
+
+                                Ora di Inizio Rinnovo Lavori: campo prevalorizzato automaticamente dal sistema indicante l'ora di inizio lavori ma modificabile per permettere l’inserimento di un orario personalizzato all’interno dell’intervallo massimo;
+
+                                Firma Autorità Esecutrice Inizio Rinnovo Lavori: pulsante per la firma applicativa con assunzione di responsabilità dell'Autorità Esecutrice;
+
+                                Firma Autorità Operativa Inizio Rinnovo Lavori: pulsante per la firma applicativa con assunzione di responsabilità dell'Autorità Operativa;
+
+                                Ora di Fine Rinnovo Lavori: campo prevalorizzato automaticamente dal sistema indicante l'ora di fine lavori ma modificabile per permettere l’inserimento di un orario personalizzato all’interno dell’intervallo massimo;
+
+                                Firma Autorità Esecutrice Fine Rinnovo Lavori: pulsante per la firma applicativa con assunzione di responsabilità dell'Autorità Esecutrice;
+
+                                Firma Autorità Operativa Fine Rinnovo Lavori: pulsante per la firma applicativa con assunzione di responsabilità dell'Autorità Operativa;
+
+                                note: campo testuale per l’inserimento di varie note;
+                            </p>
+                            @page "/rinnovi‑lavori"
+                            @using MudBlazor
+
+                            <MudPaper Class="pa-4">
+
+                                <MudTabs Elevation="1" Rounded="true" @bind-ActivePanelIndex="_activeTabIndex">
+                                    <MudTabPanel Text="Quadro A">
+                                        <!-- Contenuto Quadro A -->
+                                        <MudText Typo="Typo.h6">Contenuto Quadro A</MudText>
+                                    </MudTabPanel>
+                                    <MudTabPanel Text="Quadro B">
+                                        <!-- Contenuto Quadro B -->
+                                        <MudText Typo="Typo.h6">Contenuto Quadro B</MudText>
+                                    </MudTabPanel>
+                                    <MudTabPanel Text="Quadro C">
+                                        <!-- Contenuto Quadro C -->
+                                        <MudText Typo="Typo.h6">Contenuto Quadro C</MudText>
+                                    </MudTabPanel>
+                                    <MudTabPanel Text="Quadro E – Rinnovi">
+                                        <!-- Contenuto del tab Rinnovi -->
+                                        <MudGrid Spacing="3" Class="mt-2">
+                                            <MudItem xs="12" sm="6" md="3">
+                                                <MudDatePicker Label="Data inizio – Rinnovo lavori"
+                                                               @bind-Date="_dataInizioRinnovo"
+                                                               DateFormat="dd/MM/yyyy"
+                                                               DisableToolbar="true" />
+                                            </MudItem>
+                                            <MudItem xs="12" sm="6" md="3">
+                                                <MudTimePicker Label="Dalle (hh:mm)"
+                                                               @bind-Time="_oraInizioRinnovo"
+                                                               Format="HH:mm" />
+                                            </MudItem>
+                                            <MudItem xs="12" sm="6" md="3">
+                                                <MudDatePicker Label="Data fine – Rinnovo lavori"
+                                                               @bind-Date="_dataFineRinnovo"
+                                                               DateFormat="dd/MM/yyyy"
+                                                               DisableToolbar="true" />
+                                            </MudItem>
+                                            <MudItem xs="12" sm="6" md="3">
+                                                <MudTimePicker Label="Alle (hh:mm)"
+                                                               @bind-Time="_oraFineRinnovo"
+                                                               Format="HH:mm" />
+                                            </MudItem>
+
+                                            <MudItem xs="12">
+                                                <MudTextField T="string"
+                                                              Label="Modulo controllo ambientale"
+                                                              ReadOnly="true"
+                                                              @bind-Value="_nomeFileModulo" />
+                                                <MudButton Variant="Variant.Outlined" OnClick="SelezionaFile">Seleziona</MudButton>
+                                                <MudButton Variant="Variant.Outlined" OnClick="CaricaFile">Carica</MudButton>
+                                                <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="CancellaFile">Cancella</MudButton>
+                                            </MudItem>
+
+                                            <MudItem xs="12">
+                                                <MudTextField T="string"
+                                                              Label="Note"
+                                                              Lines="4"
+                                                              @bind-Value="_note"
+                                                              Placeholder="Inserisci le note…" />
+                                            </MudItem>
+                                        </MudGrid>
+                                    </MudTabPanel>
+                                </MudTabs>
+
+                            </MudPaper>
+
+                            @code {
+                                private int _activeTabIndex = 3; // 0=QuadroA,1=QuadroB,2=QuadroC,3=QuadroE‑Rinnovi
+
+                                private DateTime? _dataInizioRinnovo;
+                                private TimeSpan? _oraInizioRinnovo;
+                                private DateTime? _dataFineRinnovo;
+                                private TimeSpan? _oraFineRinnovo;
+                                private string _nomeFileModulo = string.Empty;
+                                private string _note = string.Empty;
+
+                                private void SelezionaFile()
+                                {
+                                    // logica per selezione file
+                                }
+
+                                private void CaricaFile()
+                                {
+                                    // logica per upload file
+                                }
+
+                                private void CancellaFile()
+                                {
+                                    _nomeFileModulo = string.Empty;
+                                }
+                            }
+
+
+                        </MudItem>
+                    </MudGrid>
+
+                </MudCardContent>
+            </MudCard>
+
+        </MudItem>
+    </MudGrid>
+
+
+
+</MudContainer>
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? Id { get; set; }
+
+    protected override async Task OnInitializedCoreAsync()
+    {
+        try
+        {
+            _pageTitle = "Dettaglio Permessi Lavoro Generici (Caldo)";
+
+            SetBreadcrumb(
+                 new BreadcrumbItem("⬅ Back", href: "javascript:history.back()"),
+                    new BreadcrumbItem(Localization.GetString("Home.Dashboard"), href: "/"),
+                    new BreadcrumbItem(_pageTitle, href: null, disabled: true)
+                );
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+
+        }
+    }
+
+}
+
+

@@ -1,0 +1,65 @@
+﻿@using SaipemE_PTW.Services.Common
+
+@inject IDialogService DialogService
+
+<AuthorizeView>
+    <Authorized>
+       
+        <MudPaper Width="100%" Class="custom-menu px-1.5 py-3" Elevation="0">
+            <MudNavLink class="block" href="/">
+                <img src="/img/Logo.svg" />
+            </MudNavLink>
+            <MudNavMenu Class="custom-navmenu">
+
+
+                <MudText Typo="Typo.h6" Class="px-4 bg-orange text-white">E-PTW</MudText>
+                <MudDivider Class="my-2" />
+
+                @*  <MudTooltip Text="@Localization.GetString("Home.Dashboard")"> *@
+                <MudNavLink Href="/" Class="custom-navlink" Match="NavLinkMatch.All"><MudIcon Icon="@Icons.Material.Filled.Dashboard" Title="@Localization.GetString("Home.Dashboard")" /> @Localization.GetString("Home.Dashboard")</MudNavLink>
+                @*  </MudTooltip> *@
+
+
+                <MudNavLink OnClick="OpenDialogAsync"><MudIcon Icon="@Icons.Material.Filled.VerifiedUser" Title="Menu" /> Menu</MudNavLink>
+
+
+            </MudNavMenu>
+        </MudPaper>
+
+    </Authorized>
+    <NotAuthorized>
+        
+
+
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [Inject] private ILocalizationService Localization { get; set; } = default!;
+    [Inject] private SaipemE_PTW.Services.ILanguageService LanguageService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        LanguageService.LanguageChanged += OnLanguageChanged;
+
+       
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions()
+        {
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true
+        };
+
+        return DialogService.ShowAsync<Components.Common.MenuDialog>("Menu", options);
+    }
+}

@@ -1,0 +1,396 @@
+﻿@page "/"
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@attribute [Authorize]
+
+@using SaipemE_PTW.Services.Common
+
+@using SaipemE_PTW.Authentication.Mock
+
+<PageTitle>@Localization.GetString("SiteName")</PageTitle>
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+
+
+
+    <MudGrid Spacing="3">
+        <MudItem>
+
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                @Localization.GetString("Home.Dashboard")
+            </MudText>
+
+        </MudItem>
+    </MudGrid>
+
+
+    @* <AuthorizeView Roles="@(UserRoleHelper.ToCode(UserRole.AutoritaEsecutrice))">
+        <Authorized>
+            <MudButton Color="Color.Primary">Azione riservata a PA</MudButton>
+        </Authorized>
+        <NotAuthorized>
+            <MudText Typo="Typo.caption">Non hai il ruolo necessario.</MudText>
+        </NotAuthorized>
+    </AuthorizeView> *@
+
+
+    <SaipemE_PTW.Components.Common.Menu></SaipemE_PTW.Components.Common.Menu>
+
+    <MudGrid Spacing="3">
+
+      @*    <MudItem xs="12">
+        <div class="top-row ps-3 navbar navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="">SaipemE-PTW</a>
+                <div class="ms-auto">
+                   
+                    @if (MockAuthConfig.UseMockAuthentication)
+                    {
+                        <MockLoginDisplay />
+                    }
+                    else
+                    {
+                        <LoginDisplay />
+                    }
+                </div>
+                <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+            <nav class="nav flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
+
+                <AuthorizeView>
+                    <Authorized>
+                        
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="user-info">
+                                <span class="bi bi-person-badge-fill" aria-hidden="true"></span> Info Utente
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+
+               
+                <AuthorizeView Roles="SuperOwner,ADMIN">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="admin/dashboard">
+                                <span class="bi bi-speedometer2" aria-hidden="true"></span> Dashboard Admin
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </nav>
+        </div>
+        </MudItem> *@
+
+
+
+
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Class="stat-card">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Personale Attivo</MudText>
+                    <MudText Typo="Typo.subtitle2">Persone autorizzate oggi</MudText>
+                    <MudText Typo="Typo.h4">
+                        <MudGrid>
+                            <MudItem xs="6" md="6">@_dashboardStats?.ActivePersonnel</MudItem>
+                            <MudItem xs="6" md="6" Class="d-flex justify-end"><MudIcon Size="Size.Large" Color="Color.Secondary" Icon="@Icons.Material.Filled.Diversity1" Title="Favorite" /></MudItem>
+                        </MudGrid>
+
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Class="stat-card">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Permessi Attivi</MudText>
+                    <MudText Typo="Typo.subtitle2">Attualmente in corso</MudText>
+                    <MudText Typo="Typo.h4">
+
+                        <MudGrid>
+                            <MudItem xs="6" md="6">@_dashboardStats?.ActivePermits</MudItem>
+                            <MudItem xs="6" md="6" Class="d-flex justify-end"><MudIcon Size="Size.Large" Color="Color.Secondary" Icon="@Icons.Material.Filled.Feed" Title="Favorite" /></MudItem>
+                        </MudGrid>
+
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Class="stat-card">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Permessi in Attesa</MudText>
+                    <MudText Typo="Typo.subtitle2">Da approvare</MudText>
+                    <MudText Typo="Typo.h4">
+
+                        <MudGrid>
+                            <MudItem xs="6" md="6">@_dashboardStats?.PendingPermits</MudItem>
+                            <MudItem xs="6" md="6" Class="d-flex justify-end"><MudIcon Size="Size.Large" Color="Color.Secondary" Icon="@Icons.Material.Filled.Alarm" Title="Favorite" /></MudItem>
+                        </MudGrid>
+
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard Class="stat-card">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Potenziali Conflitti</MudText>
+                    <MudText Typo="Typo.subtitle2">Interferenze rilevate</MudText>
+                    <MudText Typo="Typo.h4" Class="text-danger">
+
+                        <MudGrid>
+                            <MudItem xs="6" md="6">@_dashboardStats?.PotentialConflicts</MudItem>
+                            <MudItem xs="6" md="6" Class="d-flex justify-end"><MudIcon Size="Size.Large" Color="Color.Warning" Icon="@Icons.Material.Filled.Warning" Title="Favorite" /></MudItem>
+                        </MudGrid>
+
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+
+        <MudItem xs="12">
+            <MudCard Class="mud-width-full">
+                <MudCardContent>
+
+                    <MudText Typo="Typo.h6">Andamento Storico</MudText>
+                    <MudText Typo="Typo.subtitle2" Class="mb-4">Metriche degli ultimi periodi</MudText>
+
+                    @if (IsLoading)
+                    {
+                        <SaipemE_PTW.Components.Common.LoadingComponent />
+                    }
+                    else if (_historicalData != null)
+                    {
+                        <MudGrid Class="mud-width-full">
+
+                            <MudItem xs="12" Class="mb-4 d-flex justify-end">
+                                <MudButtonGroup Color="Color.Primary" Variant="Variant.Text">
+                                    <MudButton Size="Size.Small" Class="@GetButtonClass(0)" OnClick="@(() => SelectPeriod(0))">7 giorni</MudButton>
+                                    <MudButton Size="Size.Small" Class="@GetButtonClass(1)" OnClick="@(() => SelectPeriod(1))">1 mese</MudButton>
+                                    <MudButton Size="Size.Small" Class="@GetButtonClass(2)" OnClick="@(() => SelectPeriod(2))">2 mesi</MudButton>
+                                </MudButtonGroup>
+                            </MudItem>
+
+
+                            <MudItem xs="12">
+                                <div style="width: 100%;">
+                                    <MudChart ChartType="ChartType.Line"
+                                              Width="100%"
+                                              Height="350"
+                                              ChartSeries="@lineSeries"
+                                              XAxisLabels="@xLabels" />
+                                </div>
+                            </MudItem>
+                        </MudGrid>
+                    }
+
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+
+
+
+
+        @*  <MudChart ChartType="ChartType.Pie" 
+                                                  InputData="@_historicalData.Data" 
+                                                  LegendPosition="@LegendPosicion" 
+                                                  InputLabels="@_historicalData.Labels" 
+                                                  Width="100%" 
+                                                  Height="250px"
+                                                  aria-label="@_historicalData.AccessibleDescription">
+                                        </MudChart> *@
+        @* Altri box in griglia sottostante - Data: 2025-01-19 *@
+        @*   <MudItem xs="12" sm="6" md="6">
+            <MudCard Class="stat-card">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Distribuzione per Area</MudText>
+                    <MudText Typo="Typo.subtitle2">Personale attivo nell'impianto</MudText>
+                    <MudText Typo="Typo.body1">
+
+                        <MudGrid>
+                            <MudItem xs="12" sm="12">
+                                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+                                    @if (_areaDistributionData != null)
+                                    {
+                                        <MudChart ChartType="ChartType.Pie"
+                                                  InputData="@_areaDistributionData.Data"
+                                                  LegendPosition="@LegendPosicion"
+                                                  InputLabels="@_areaDistributionData.Labels"
+                                                  Width="100%"
+                                                  Height="200px"
+                                                  aria-label="@_areaDistributionData.AccessibleDescription">
+                                        </MudChart>
+                                    }
+                                    else
+                                    {
+                                        <SaipemE_PTW.Components.Common.LoadingComponent />
+                                    }
+                                </MudPaper>
+                            </MudItem>
+
+                        </MudGrid>
+
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <MudCard Class="stat-card">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Pianificazione Settimanale</MudText>
+                    <MudText Typo="Typo.subtitle2">Permessi di lavoro programmati</MudText>
+                    <MudText Typo="Typo.body1">
+
+                        <MudGrid>
+                            <MudItem xs="12" sm="12">
+                                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+                                    @if (_weeklyPlanningData != null)
+                                    {
+                                        <MudChart ChartType="ChartType.Pie"
+                                                  InputData="@_weeklyPlanningData.Data"
+                                                  LegendPosition="@LegendPosicion"
+                                                  InputLabels="@_weeklyPlanningData.Labels"
+                                                  Width="100%"
+                                                  Height="200px"
+                                                  aria-label="@_weeklyPlanningData.AccessibleDescription">
+                                        </MudChart>
+                                    }
+                                    else
+                                    {
+                                        <SaipemE_PTW.Components.Common.LoadingComponent />
+                                    }
+                                </MudPaper>
+                            </MudItem>
+
+                        </MudGrid>
+
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem> *@
+        @*   <MudItem xs="12" sm="6" md="6">
+            <MudCard Class="stat-card">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Distribuzione Certificazioni</MudText>
+                    <MudText Typo="Typo.subtitle2">Competenze del personale</MudText>
+                    <MudText Typo="Typo.body1">
+
+                        <MudGrid>
+                            <MudItem xs="12" sm="12">
+                                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+                                    @if (_certificationData != null)
+                                    {
+                                        <MudChart ChartType="ChartType.Pie"
+                                                  InputData="@_certificationData.Data"
+                                                  LegendPosition="@LegendPosicion"
+                                                  InputLabels="@_certificationData.Labels"
+                                                  Width="100%"
+                                                  Height="200px"
+                                                  aria-label="@_certificationData.AccessibleDescription">
+                                        </MudChart>
+                                    }
+                                    else
+                                    {
+                                        <SaipemE_PTW.Components.Common.LoadingComponent />
+                                    }
+                                </MudPaper>
+                            </MudItem>
+
+                        </MudGrid>
+
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <MudCard Class="stat-card">
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Trend Conflitti</MudText>
+                    <MudText Typo="Typo.subtitle2">Andamento delle interferenze rilevate</MudText>
+                    <MudText Typo="Typo.body1">
+
+                        <MudGrid>
+                            <MudItem xs="12" sm="12">
+                                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+                                    @if (_conflictsTrendData != null)
+                                    {
+                                        <MudChart ChartType="ChartType.Pie"
+                                                  InputData="@_conflictsTrendData.Data"
+                                                  LegendPosition="@LegendPosicion"
+                                                  InputLabels="@_conflictsTrendData.Labels"
+                                                  Width="100%"
+                                                  Height="200px"
+                                                  aria-label="@_conflictsTrendData.AccessibleDescription">
+                                        </MudChart>
+                                    }
+                                    else
+                                    {
+                                        <SaipemE_PTW.Components.Common.LoadingComponent />
+                                    }
+                                </MudPaper>
+                            </MudItem>
+
+                        </MudGrid>
+
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem> *@
+    </MudGrid>
+</MudContainer>
+
+
+
+@* 2025-01-13 - EntraId - Attributo opzionale per richiedere l'autenticazione su questa pagina *@
+@* Rimuovi il commento per rendere obbligatoria l'autenticazione: @attribute [Authorize] *@
+
+@* <PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<p>Welcome to your new app.</p>
+
+
+<AuthorizeView>
+    <Authorized>
+        <div class="alert alert-success mt-4">
+            <h4>✓ Autenticato correttamente!</h4>
+      <p>Ciao <strong>@context.User.Identity?.Name</strong>, hai effettuato l'accesso con successo.</p>
+     <p><small>Email: @context.User.FindFirst("preferred_username")?.Value</small></p>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="alert alert-info mt-4">
+       <h4>Benvenuto!</h4>
+            <p>Per accedere a tutte le funzionalità dell'applicazione, effettua il login con il tuo account Microsoft.</p>
+      <a href="authentication/login" class="btn btn-primary">Accedi ora</a>
+        </div>
+    </NotAuthorized>
+</AuthorizeView> *@
+
+
+
+@code {
+    // private bool collapseNavMenu = true;
+
+    // private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    // private void ToggleNavMenu()
+    // {
+    //     collapseNavMenu = !collapseNavMenu;
+    // }
+}
+

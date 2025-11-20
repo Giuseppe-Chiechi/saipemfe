@@ -1,0 +1,146 @@
+@using SaipemE_PTW.Authentication.Mock
+@inject MockAuthenticationStateProvider AuthStateProvider
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+@* 2025-01-15 - Mock Auth - Componente per mostrare le informazioni dell'utente autenticato *@
+@* Sostituisce o integra il LoginDisplay esistente in modalità mock *@
+
+
+<AuthorizeView>
+    <Authorized>
+        @* 2025-01-15 - Mock Auth - Contenuto per utente autenticato *@
+        <MudGrid Spacing="3">
+            <MudItem>
+               
+                <MudButton itemid="userMenuDropdown"  Color="Color.Success">@context.User.Identity?.Name MOKE</MudButton>
+
+
+                       @*  <button class="btn btn-outline-light btn-sm dropdown-toggle d-flex align-items-center gap-2"
+                                type="button"
+                                id="userMenuDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                            <span>@context.User.Identity?.Name</span>
+
+                            <span class="badge bg-warning text-dark">MOCK</span>
+                        </button> *@
+
+    <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+    <ActivatorContent>
+        <MudIconButton Icon="@Icons.Material.Filled.Person" Color="Color.Inherit" />
+    </ActivatorContent>
+    <ChildContent>
+        @* 2025-01-15 - Mock Auth - Informazioni utente *@
+        <MudMenuItem Disabled="true">
+            <div class="d-flex flex-column">
+                <MudText Typo="Typo.body1"><strong>@context.User.Identity?.Name</strong></MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                    @context.User.FindFirst("preferred_username")?.Value
+                </MudText>
+            </div>
+        </MudMenuItem>
+        
+        <MudDivider />
+
+        @* 2025-01-15 - Mock Auth - Mostra i ruoli dell'utente *@
+        <MudMenuItem Disabled="true">
+            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                <strong>Ruoli Assegnati:</strong>
+            </MudText>
+        </MudMenuItem>
+      @*    <MudSelect T="UserRole" @bind-Value="ruoloUser" Label="Account di test (ruolo)" Required="true" aria-required="true" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+                            @foreach (var ruolo in AuthStateProvider.GetUserRoles())
+        {
+                              
+            <MudSelectItem Value="@((UserRole)ruolo.Id)">@ruolo.Nome</MudSelectItem>
+        }
+    </MudSelect> *@
+
+        @foreach (var role in AuthStateProvider.GetUserRoles())
+        {
+            <MudMenuItem Disabled="true">
+            
+                    @AppRoles.RoleDescriptions.GetValueOrDefault(role, role)
+               
+            </MudMenuItem>
+        }
+
+        <MudDivider />
+
+        @* 2025-01-15 - Mock Auth - Pulsante di logout *@
+        <MudMenuItem OnClick="HandleLogout" IconColor="Color.Error">
+            
+                <MudIcon Icon="@Icons.Material.Filled.Logout" Class="me-2" Color="Color.Error" />
+                <MudText Color="Color.Error">Disconnetti</MudText>
+         
+        </MudMenuItem>
+    </ChildContent>
+</MudMenu>
+
+                        @* <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userMenuDropdown">
+                           
+                            <li>
+                                <div class="dropdown-header">
+                                    <strong>@context.User.Identity?.Name</strong><br />
+                                    <small class="text-muted">@context.User.FindFirst("preferred_username")?.Value</small>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+
+                           
+                            <li>
+                                <div class="dropdown-header">
+                                    <small class="text-muted fw-bold">Ruoli Assegnati:</small>
+                                </div>
+                            </li>
+                            @foreach (var role in AuthStateProvider.GetUserRoles())
+                            {
+                                <li>
+                                    <span class="dropdown-item-text">
+                                        <span class="badge bg-primary w-100">
+                                            @AppRoles.RoleDescriptions.GetValueOrDefault(role, role)
+                                        </span>
+                                    </span>
+                                </li>
+                            }
+
+                            <li><hr class="dropdown-divider"></li>
+
+                          
+                            <li>
+                                <button class="dropdown-item text-danger" @onclick="HandleLogout">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    Disconnetti
+                                </button>
+                            </li>
+                        </ul>
+                     *@
+            </MudItem>
+        </MudGrid>
+    </Authorized>
+    <NotAuthorized>
+
+        <MudGrid Spacing="3">
+            <MudItem>
+                @* 2025-01-15 - Mock Auth - Pulsante di login per utenti non autenticati *@
+                <MudButton Href="/mock-login" Variant="Variant.Filled" Color="Color.Secondary">Accedi (Mock)</MudButton>
+
+               @*  <a href="/mock-login" class="btn btn-primary btn-sm">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Accedi (Mock)
+                </a> *@
+            </MudItem>
+        </MudGrid>
+
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    // 2025-01-15 - Mock Auth - Gestisce il logout dell'utente
+    private async Task HandleLogout()
+    {
+        await AuthStateProvider.LogoutAsync();
+    }
+}

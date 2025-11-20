@@ -1,0 +1,63 @@
+﻿@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@using Microsoft.AspNetCore.Components
+@typeparam TItem
+
+
+    <MudGrid Class="mt-3 mb-3">
+
+        @foreach (var item in Items)
+        {
+            if (item is null) continue;
+
+            var value = GetItemValue?.Invoke(item) ?? "";
+            var label = GetItemLabel?.Invoke(item) ?? "";
+
+            <MudItem xs="12" sm="6" md="4">
+
+
+            <MudCheckBox T="bool" Disabled="@_isReadOnlyCheckBox"
+                             Label="@label"
+                             Value="@(SelectedValues?.Contains(value) == true)"
+                             ValueChanged="@( (bool newValue) => OnCheckedChanged(value, newValue) )"
+                             Dense="true" />
+
+            </MudItem>
+        }
+
+    </MudGrid>
+
+
+
+@code {
+
+
+    [Parameter] public IEnumerable<TItem> Items { get; set; } = new List<TItem>();
+    [Parameter] public List<string> SelectedValues { get; set; } = new();
+    [Parameter] public Func<TItem, string> GetItemValue { get; set; } = x => x?.ToString() ?? "";
+    [Parameter] public Func<TItem, string> GetItemLabel { get; set; } = x => x?.ToString() ?? "";
+    [Parameter] public EventCallback<List<string>> SelectedValuesChanged { get; set; }
+    [Parameter] public bool _isReadOnlyCheckBox { get; set; }
+
+  
+
+    private async Task OnCheckedChanged(string value, bool isChecked)
+    {
+        if (isChecked)
+        {
+            if (!SelectedValues.Contains(value))
+                SelectedValues.Add(value);
+        }
+        else
+        {
+            SelectedValues.Remove(value);
+        }
+
+        await SelectedValuesChanged.InvokeAsync(SelectedValues);
+    }
+
+    protected override void OnParametersSet()
+    {
+        SelectedValues ??= new();
+        Items ??= new List<TItem>();
+    }
+}

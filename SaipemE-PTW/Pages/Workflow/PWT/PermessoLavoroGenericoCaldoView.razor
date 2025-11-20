@@ -1,0 +1,293 @@
+﻿@page "/workflow/permesso-lavoro-generico-caldo-view"
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+@inject IPermessoLavoroService PermessiService
+@using SaipemE_PTW.Components.Workflow
+@using SaipemE_PTW.Components.Workflow.Detail
+@using SaipemE_PTW.Shared.Models.Auth
+@using SaipemE_PTW.Validators.Workflow.PermessiLavoro
+@using System.Text.Json
+
+
+<PageTitle>@_pageTitle</PageTitle>
+
+
+
+
+<SaipemE_PTW.Components.Common.Alert Tipo="@AlertTipo" Message="@AlertMessage" Visible="@AlertShow" VisibleChanged="@(v => AlertShow = v)"></SaipemE_PTW.Components.Common.Alert>
+
+
+
+
+
+<MudMessageBox @ref="_mudMessageBox" Title="Attenzione" CancelText="Cancel">
+    <MessageContent>
+        Vuoi confermare l'operazione?
+    </MessageContent>
+    <YesButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Success">Conferma!</MudButton>
+    </YesButton>
+</MudMessageBox>
+
+
+
+
+<MudForm @ref="_form1">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+
+        <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+
+        <MudGrid Spacing="3" Class="TitleBox">
+            <MudItem>
+                <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                    @_pageTitle
+                </MudText>
+            </MudItem>
+        </MudGrid>
+
+
+
+
+
+        <MudItem xs="12">
+
+
+            <MudCard Class="mud-width-full mb-4">
+                <MudCardContent>
+
+                    @if (Id != null && _model._timeline != null)
+                    {
+                        <SaipemE_PTW.Components.Common.Timeline Steps="@_model._timeline"></SaipemE_PTW.Components.Common.Timeline>
+                    }
+
+                    <DetailPermessoLavoro _isReadOnly="@_isReadOnly" @bind-Model="_model" />
+                </MudCardContent>
+            </MudCard>
+
+            <MudTabs Elevation="2" Rounded="true" 
+                ApplyEffectsToContainer="true" PanelClass="pa-6 mud-width-full"
+                     ActivePanelIndexChanged="OnTabChanged">
+
+                <SaipemE_PTW.Components.Workflow.Detail.Parte1.Parte1 _isReadOnly="@_isReadOnly" @bind-Model="_model" />
+
+
+                @if (Id != null && !(userRole.Equals(UserRole.AutoritaRichiedente)
+                                || userRole.Equals(UserRole.AutoritaEsecutrice)))
+                {
+
+                    <SaipemE_PTW.Components.Workflow.Detail.Parte2.Parte2 _isReadOnly="@_isReadOnly" @bind-Model="_model" />
+
+                }
+
+                @if (Id != null && !(userRole.Equals(UserRole.AutoritaRichiedente)
+                                || userRole.Equals(UserRole.AutoritaEsecutrice)
+                                || userRole.Equals(UserRole.AutoritaEmittente)
+                                || userRole.Equals(UserRole.PTWCoordinator)))
+                {
+                    <SaipemE_PTW.Components.Workflow.Detail.CSE.CSE _isReadOnly="@_isReadOnly" @bind-Model="_model" />  
+                  
+                }
+
+                @if (Id != null && !(userRole.Equals(UserRole.AutoritaRichiedente)
+                                || userRole.Equals(UserRole.AutoritaEsecutrice)
+                                || userRole.Equals(UserRole.AutoritaEmittente)
+                                || userRole.Equals(UserRole.PersonaAutorizzataTestGas)
+                                || userRole.Equals(UserRole.CoordinatoreInEsecuzioneCSE)
+                                || userRole.Equals(UserRole.PTWCoordinator)))
+                {
+
+                    <SaipemE_PTW.Components.Workflow.Detail.Parte3.Parte3 _isReadOnly="@_isReadOnly" @bind-Model="_model" />
+
+                    
+
+                }
+
+
+
+                @if (Id != null && (userRole.Equals(UserRole.AutoritaEsecutrice)
+                                || userRole.Equals(UserRole.AutoritaOperativa)))
+                {
+                    <SaipemE_PTW.Components.Workflow.Detail.Rinnovo.Rinnovo _isReadOnly="@_isReadOnly" @bind-Model="_model" />
+                    
+                }
+
+
+                @if (Id != null && (userRole.Equals(UserRole.AutoritaEsecutrice)
+                                || userRole.Equals(UserRole.AutoritaOperativa)
+                                || userRole.Equals(UserRole.PTWCoordinator)))
+                {
+                    <SaipemE_PTW.Components.Workflow.Detail.Sospensione.Sospensione _isReadOnly="@_isReadOnly" @bind-Model="_model" />
+                    
+                }
+
+                @if (Id != null && userRole.Equals(UserRole.PTWCoordinator))
+                {
+
+                    <SaipemE_PTW.Components.Workflow.Detail.Riattivazione.Riattivazione _isReadOnly="@_isReadOnly" @bind-Model="_model" />
+
+                }
+
+                @if (Id != null && (userRole.Equals(UserRole.AutoritaEsecutrice)
+                                || userRole.Equals(UserRole.AutoritaOperativa)
+                                || userRole.Equals(UserRole.PTWCoordinator)))
+                {
+
+                    <SaipemE_PTW.Components.Workflow.Detail.Chiusura.Chiusura _isReadOnly="@_isReadOnly" @bind-Model="_model" />
+
+                }
+
+
+
+
+            </MudTabs>
+
+            <!-- TAB -->
+            <MudGrid GutterSize="3" Class="mt-4">
+                <MudItem xs="12">
+                    <MudExpansionPanels MultiExpansion="true">
+
+                        <SaipemE_PTW.Components.Workflow.Detail.Allegati.AllegatiPanel _isReadOnly="@_isReadOnly"
+                                                                                @bind-Model="_model" />
+
+                        <SaipemE_PTW.Components.Workflow.Detail.Certificati.CertificatiPanel _isReadOnly="@_isReadOnly"
+                                                                                      @bind-Model="_model" />
+
+                    </MudExpansionPanels>
+                </MudItem>
+            </MudGrid>
+
+
+            <!-- BOTTONI -->
+            <MudCard Class="mud-width-full mt-4">
+                <MudCardContent>
+                    <MudGrid GutterSize="3">
+                        <MudItem xs="12" sm="6">
+                            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="float:left" OverrideStyles="false">
+
+                                <MudButton Disabled="@_isReadOnly" OnClick="SubmitAnnulla" StartIcon="@Icons.Material.Filled.CancelPresentation" Color="Color.Default" Variant="Variant.Filled">Esci</MudButton>
+
+                                <MudButton Disabled="@_isReadOnly" OnClick="SubmitStampa" StartIcon="@Icons.Material.Filled.Print" Color="Color.Primary" Variant="Variant.Filled">Stampa</MudButton>
+                                <MudButton Disabled="@_isReadOnly" OnClick="SubmitSalvaBozze" StartIcon="@Icons.Material.Filled.Save" Color="Color.Tertiary" Variant="Variant.Filled">Salva in bozza</MudButton>
+                            </MudButtonGroup>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="float:right" OverrideStyles="false">
+
+
+                                @if (!userRole.Equals(UserRole.AutoritaRichiedente) &&
+                                                                !(tabActive.Equals(TabPermessiLavoro.Chiusura) ||
+                                                                tabActive.Equals(TabPermessiLavoro.Riattivazione)
+                                                                || tabActive.Equals(TabPermessiLavoro.Sospensione)
+                                                                || tabActive.Equals(TabPermessiLavoro.Rinnovo)))
+                                {
+                                    <MudButton Disabled="@_isReadOnly" OnClick="SubmitRigetta" StartIcon="@Icons.Material.Filled.Save" Color="Color.Secondary" Variant="Variant.Filled">Rigetta</MudButton>
+                                }
+                                <MudButton Disabled="@_isReadOnly" OnClick="SubmitFirma" StartIcon="@Icons.Material.Filled.AssignmentTurnedIn" Color="Color.Warning" Variant="Variant.Filled">Firma</MudButton>
+                                <MudButton Disabled="@_isReadOnly" OnClick="SubmitInoltro" StartIcon="@Icons.Material.Filled.ForwardToInbox" Color="Color.Success" Variant="Variant.Filled">Inoltra</MudButton>
+                            </MudButtonGroup>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+
+
+        </MudItem>
+
+
+
+    </MudContainer>
+</MudForm>
+
+
+@code {
+
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? Id { get; set; }
+
+
+
+    int activeIndex = 0;
+    TabPermessiLavoro tabActive = TabPermessiLavoro.Parte1;
+
+    void OnTabChanged(int index)
+    {
+        activeIndex = index;
+        tabActive = (TabPermessiLavoro)index;
+    }
+
+
+
+
+
+    public enum TabPermessiLavoro
+    {
+        Parte1 = 0,
+        Parte2 = 1,
+        Parte3 = 2,
+        CSE = 3,
+        Rinnovo = 4,
+        Sospensione = 5,
+        Riattivazione = 6,
+        Chiusura = 7
+    }
+
+    // private CronologiaPermessoLavoro? _cronologiaSelezionata;
+
+    // private async Task OpenCronologiaAsync()
+    // {
+    //     var options = new MudBlazor.DialogOptions
+    //     {
+    //         CloseOnEscapeKey = true,
+    //         MaxWidth = MudBlazor.MaxWidth.Large,
+    //         FullWidth = true,
+    //         CloseButton = true,
+    //     };
+
+    //     var dialog = DialogService.Show<CronologiaPermessoLavoroDialog>("Cronologia", options);
+    //     var result = await dialog.Result;
+
+    //     if (!result.Canceled && result.Data is CronologiaPermessoLavoro selected)
+    //     {
+    //         _cronologiaSelezionata = selected;
+    //         ApplyCronologiaSelection(selected);
+    //         StateHasChanged();
+    //     }
+    // }
+
+    // // Mappatura dei campi dal record selezionato verso il componente padre.
+    // // Personalizza questa funzione quando specificherai i campi da riempire.
+    // private void ApplyCronologiaSelection(CronologiaPermessoLavoro selected)
+    // {
+    //     // Esempio di mappature possibili (commentate finché non confermi i target):
+    //     // _model.AutoritaEsecutriceNome = selected.Nome;
+    //     // _model.AutoritaEsecutriceCognome = selected.Cognome;
+    //     // _model.AutoritaEsecutriceFirma = $"{selected.Nome} {selected.Cognome}";
+    //     // _model.AutoritaEsecutriceData = selected.Data;
+    //     // _model.AutoritaEsecutriceOra = selected.Ora;
+    //     // etc.
+    // }
+}
+
+@* <style>
+    .mud-error-text {
+        font-size: small;
+        font-weight: bold;
+    }
+
+    .me-auto {
+        margin-inline-end: auto !important;
+        font-size: small;
+        font-weight: bold;
+    }
+</style> *@
+
+<style>
+    th.mud-table-cell {
+        background-color: antiquewhite;
+    }
+</style>

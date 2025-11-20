@@ -1,0 +1,132 @@
+@* CHIAMATE API CENTRALIZZATE STEP0; *@
+page "/_example/http"
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@using SaipemE_PTW.Shared.Http
+@inject SaipemE_PTW.Services.Http.ApiService Api
+@inject SaipemE_PTW.Services.Http.MicroserviceService Micro
+@inject SaipemE_PTW.Services.Http.DurableFunctionsService Durable
+@* @inject ILogger<SaipemE_PTW.Pages.Test.HttpExample> Logger *@
+
+<!-- Data: 2025-11-05 - Pagina dimostrativa chiamate HTTP centralizzate. -->
+<PageTitle>HTTP Example</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+    <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+    <MudGrid Spacing="3" Class="TitleBox">
+        <MudItem>
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                Demo chiamate HttpClient centralizzato (API / Microservizi / Durable)
+            </MudText>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Class="mt-4">
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="p-3" Elevation="1">
+                <MudText Typo="Typo.h6">API</MudText>
+                <MudStack Spacing="1">
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CallApiGet" aria-label="Esegui GET API">GET</MudButton>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CallApiPost" aria-label="Esegui POST API">POST</MudButton>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CallApiPut" aria-label="Esegui PUT API">PUT</MudButton>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CallApiDelete" aria-label="Esegui DELETE API">DELETE</MudButton>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CallApiPatch" aria-label="Esegui PATCH API">PATCH</MudButton>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CallApiHead" aria-label="Esegui HEAD API">HEAD</MudButton>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="CallApiOptions" aria-label="Esegui OPTIONS API">OPTIONS</MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="p-3" Elevation="1">
+                <MudText Typo="Typo.h6">Microservizio</MudText>
+                <MudStack Spacing="1">
+                    <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="CallMicroGet" aria-label="Esegui GET Microservizio">GET</MudButton>
+                    <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="CallMicroPost" aria-label="Esegui POST Microservizio">POST</MudButton>
+                    <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="CallMicroPut" aria-label="Esegui PUT Microservizio">PUT</MudButton>
+                    <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="CallMicroDelete" aria-label="Esegui DELETE Microservizio">DELETE</MudButton>
+                    <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="CallMicroPatch" aria-label="Esegui PATCH Microservizio">PATCH</MudButton>
+                    <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="CallMicroHead" aria-label="Esegui HEAD Microservizio">HEAD</MudButton>
+                    <MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="CallMicroOptions" aria-label="Esegui OPTIONS Microservizio">OPTIONS</MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="p-3" Elevation="1">
+                <MudText Typo="Typo.h6">Durable Functions</MudText>
+                <MudStack Spacing="1">
+                    <MudButton Color="Color.Tertiary" Variant="Variant.Filled" OnClick="CallDurablePing" aria-label="Esegui GET Durable">GET</MudButton>
+                    <MudButton Color="Color.Tertiary" Variant="Variant.Filled" OnClick="CallDurableStart" aria-label="Avvia orchestrazione Durable">POST (Start)</MudButton>
+                    <MudButton Color="Color.Tertiary" Variant="Variant.Filled" OnClick="CallDurableOptions" aria-label="Esegui OPTIONS Durable">OPTIONS</MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Class="mt-4">
+        <MudItem xs="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.subtitle1">Risultato</MudText>
+                    <MudText Typo="Typo.body2" aria-live="polite">@_result</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private string _result = string.Empty;
+
+    protected override Task OnInitializedCoreAsync()
+    {
+        try
+        {
+            SetBreadcrumb(
+                new BreadcrumbItem("? Back", href: "javascript:history.back()"),
+                new BreadcrumbItem(Localization.GetString("Home.Dashboard"), href: "/"),
+                new BreadcrumbItem("HTTP Example", href: null, disabled: true)
+            );
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, ex.Message);
+        }
+        return Task.CompletedTask;
+    }
+
+    // Data: 2025-11-05 - Helper per mostrare risultato in modo sicuro
+    private void Show<T>(HttpResult<T> res)
+    {
+        _result = res.Success ? System.Text.Json.JsonSerializer.Serialize(res.Data) : $"Errore: {(int)res.StatusCode} {res.Message}";
+        StateHasChanged();
+    }
+
+    private async Task CallApiGet() => Show(await Api.GetPingAsync());
+    private async Task CallApiPost() => Show(await Api.PostEchoAsync(new { message = "hello" }));
+    private async Task CallApiPut() => Show(await Api.PutResourceAsync("123", new { name = "item" }));
+    private async Task CallApiDelete() => Show(await Api.DeleteResourceAsync("123"));
+    private async Task CallApiPatch() => Show(await Api.PatchResourceAsync("123", new { description = "patched" }));
+    private async Task CallApiHead() => Show(await Api.HeadResourcesAsync());
+    private async Task CallApiOptions() => Show(await Api.OptionsResourcesAsync());
+
+    private async Task CallMicroGet() => Show(await Micro.GetStatusAsync());
+    private async Task CallMicroPost() => Show(await Micro.PostWorkAsync(new { op = "start" }));
+    private async Task CallMicroPut() => Show(await Micro.PutWorkAsync("job-1", new { state = "running" }));
+    private async Task CallMicroDelete() => Show(await Micro.DeleteWorkAsync("job-1"));
+    private async Task CallMicroPatch() => Show(await Micro.PatchWorkAsync("job-1", new { progress = 50 }));
+    private async Task CallMicroHead() => Show(await Micro.HeadWorkAsync());
+    private async Task CallMicroOptions() => Show(await Micro.OptionsWorkAsync());
+
+    private async Task CallDurablePing() => Show(await Durable.GetPingAsync());
+    private async Task CallDurableStart()
+    {
+        var start = await Durable.StartOrchestrationAsync(new { input = "demo" });
+        if (start.Success && start.Data?.StatusQueryGetUri is not null)
+        {
+            var status = await Durable.GetStatusAsync(start.Data.StatusQueryGetUri);
+            Show(status);
+        }
+        else Show(start);
+    }
+    private async Task CallDurableOptions() => Show(await Durable.OptionsPingAsync());
+}

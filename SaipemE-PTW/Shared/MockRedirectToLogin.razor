@@ -1,0 +1,13 @@
+@* 2025-01-15 - Mock Auth - Versione mock del componente di redirect per il login *@
+@* Reindirizza alla pagina di mock login invece che alla pagina di autenticazione Entra ID *@
+@inject NavigationManager Navigation
+
+@code {
+    // 2025-01-15 - Mock Auth - OnInitialized reindirizza automaticamente al mock login
+    // NOTA: In produzione, sostituire con il redirect standard a /authentication/login
+    protected override void OnInitialized()
+  {
+        // 2025-01-15 - Mock Auth - Costruisce l'URL con returnUrl per tornare alla pagina originale
+        Navigation.NavigateTo($"/mock-login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+    }
+}

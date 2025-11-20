@@ -1,0 +1,111 @@
+﻿@using SaipemE_PTW.Shared.Models.PWT
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+<MudTabPanel Text="Rinnovo" ToolTip="Rinnovo">
+    <MudGrid Class="mt-4">
+        <MudItem xs="12">
+
+            <MudGrid Class="mb-4">
+                <MudItem xs="12">
+
+                    <MudTable T="ListaRinnovoLavoro" Items="Model.ListaRinnovoLavoro"
+                              Bordered="true" Striped="true"
+                              Dense="true" Hover="true" Class="w-100">
+                        <HeaderContent>
+                            <MudTh>Data inizio – Rinnovo lavori</MudTh>
+                            <MudTh>Data fine – Rinnovo lavori</MudTh>
+                            <MudTh>Autorizzante rinnovi</MudTh>
+                            <MudTh>Modulo controllo ambientale</MudTh>
+                            <MudTh>Note</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Data inizio">@context.DataInizio</MudTd>
+                            <MudTd DataLabel="Data fine">@context.DataFine</MudTd>
+                            <MudTd DataLabel="Autorizante">@context.Autorizzante</MudTd>
+                            <MudTd DataLabel="Modulo">@context.Modulo</MudTd>
+                            <MudTd DataLabel="Note">@context.Note</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+
+                </MudItem>
+            </MudGrid>
+
+
+            <MudGrid Class="mb-8">
+                <MudItem>
+
+                    <MudDatePicker Required Disabled="@_isReadOnlyRinnovo" Label="Data rinnovo lavori (*):"
+                                   @bind-Date="Model.DataRinnovoLavoro" />
+
+
+                </MudItem>
+            </MudGrid>
+
+
+            <MudField Label="Inizio Rinnovo" Variant="Variant.Outlined">
+                <MudGrid Class="mb-3 mt-4">
+
+                <MudItem xs="12" sm="2">
+                        <MudTimePicker Disabled="@_isReadOnlyRinnovo" Label="Ora inizio rinnovo (*):" @bind-Time="Model.OraInizioRinnovo" />
+                </MudItem>
+
+                <MudItem xs="12" sm="5">
+                    <MudTextField Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                      AdornmentIcon="@Icons.Material.Filled.BorderColor" Disabled="@_isReadOnlyRinnovo" Label="Firma Autorità Esecutrice Inizio Rinnovo Lavori" @bind-Value="Model.FirmaAutoritaEsecutriceInizioRinnovoLavori" />
+                </MudItem>
+
+                <MudItem xs="12" sm="5">
+                    <MudTextField Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                      AdornmentIcon="@Icons.Material.Filled.BorderColor" Disabled="@_isReadOnlyRinnovo" Label="Firma Autorità Operativa Inizio Rinnovo Lavori" @bind-Value="Model.FirmaAutoritaOperativaInizioRinnovoLavori" />
+                </MudItem>
+             
+                
+                </MudGrid>
+            </MudField>
+
+            <MudField Label="Fine Rinnovo" Variant="Variant.Outlined" Class="mb-3 mt-4 ">
+                <MudGrid Class="mb-3 mt-4">
+
+
+
+
+                <MudItem xs="12" sm="2">
+                        <MudTimePicker Disabled="@_isReadOnlyRinnovo" Label="Ora fine rinnovo (*):" @bind-Time="Model.OraFineRinnovo" />
+                </MudItem>
+
+                <MudItem xs="12" sm="5">
+                    <MudTextField Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                      AdornmentIcon="@Icons.Material.Filled.BorderColor" Disabled="@_isReadOnlyRinnovo" Label="Firma Autorità Esecutrice Fine Rinnovo Lavori" @bind-Value="Model.FirmaAutoritaEsecutriceFineRinnovoLavori" />
+                </MudItem>
+
+                <MudItem xs="12" sm="5">
+                    <MudTextField Adornment="Adornment.End" AdornmentColor="Color.Info"
+                                      AdornmentIcon="@Icons.Material.Filled.BorderColor" Disabled="@_isReadOnlyRinnovo" Label="Firma Autorità Operativa Fine Rinnovo Lavori" @bind-Value="Model.FirmaAutoritaOperativaFineRinnovoLavori" />
+                </MudItem>
+
+                <MudItem xs="12" sm="12">
+                        <MudTextField Disabled="@_isReadOnlyRinnovo" Label="Note" @bind-Value="Model.NoteRinnovoLavori" />
+                </MudItem>
+
+                
+
+
+            </MudGrid>
+            </MudField>
+
+            <MudGrid Class="mb-3 justify-end">
+                <MudItem>
+                    <MudButton Disabled="@_isReadOnlyRinnovo" StartIcon="@Icons.Material.Filled.AssignmentTurnedIn" Color="Color.Success" Variant="Variant.Filled">Conferma</MudButton>
+                </MudItem>
+            </MudGrid>
+
+        </MudItem>
+
+    </MudGrid>
+</MudTabPanel>
+@code {
+    [Parameter] public PermessoLavoroModel Model { get; set; } = new PermessoLavoroModel();
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlyRinnovo { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+}

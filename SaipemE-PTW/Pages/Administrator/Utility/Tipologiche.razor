@@ -1,0 +1,216 @@
+﻿@page "/tipologiche"
+@using SaipemE_PTW.Shared.Models.Auth
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+
+<PageTitle>@Localization.GetString("SiteName")</PageTitle>
+
+
+<SaipemE_PTW.Components.Common.Alert Tipo="@AlertTipo" Message="@AlertMessage" Visible="@AlertShow" VisibleChanged="@(v => AlertShow = v)"></SaipemE_PTW.Components.Common.Alert>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+    <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+    <MudGrid Spacing="3" Class="TitleBox">
+        <MudItem>
+
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                Tipologiche
+            </MudText>
+
+        </MudItem>
+    </MudGrid>
+
+
+
+    <MudItem xs="12">
+        <MudCard Class="mud-width-full">
+
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-4">
+                Ruoli
+            </MudText>
+            <MudCardContent>
+
+
+                <ul class="listTipo">
+                    @foreach (var tipo in UserRoleMapper.GetAll())
+                    {
+                        <li>
+                            @tipo.Id - <b>@tipo.Nome</b> <small>(@tipo.Codice)</small><br />
+                            @tipo.Descrizione
+
+                        </li>
+                    }
+                </ul>
+
+
+
+
+
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudCard Class="mud-width-full">
+
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-4">
+                Stati Permessi di lavoro
+            </MudText>
+            <MudCardContent>
+
+
+
+
+                <ul class="listTipo">
+                    @foreach (var tipo in TipoStatoPermessoLavoroMapper.GetAll())
+                    {
+                        <li>
+                            @tipo.Id - <b>@tipo.Nome</b> <small>(@tipo.Codice)</small><br />
+                            @tipo.Descrizione
+
+                        </li>
+                    }
+                </ul>
+
+
+
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudCard Class="mud-width-full">
+
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-4">
+                Tipi Permessi di lavoro
+            </MudText>
+            <MudCardContent>
+
+                <ul class="listTipo">
+                    @foreach (var tipo in TipoLavoroMapper.GetAll())
+                    {
+                        <li>
+                            @tipo.Id - <b>@tipo.Nome</b> <small>(@tipo.Codice)</small><br />
+                            @tipo.Descrizione
+
+                        </li>
+                    }
+                </ul>
+
+
+
+
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudCard Class="mud-width-full">
+
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-4">
+                Tipi Cerificati
+            </MudText>
+            <MudCardContent>
+
+                <ul class="listTipo">
+                    @foreach (var tipo in TipoCertificatoMapper.GetAll())
+                    {
+                        <li>
+                            @tipo.Id - <b>@tipo.Nome</b> <small>(@tipo.Codice)</small><br />
+                            @tipo.Descrizione
+
+                        </li>
+                    }
+                </ul>
+
+
+
+
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudCard Class="mud-width-full">
+
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-4">
+                Tipi Attività
+            </MudText>
+            <MudCardContent>
+
+                <ul class="listTipo">
+                    @foreach (var tipo in TipoAttivitaMapper.GetAll())
+                    {
+                        <li>
+                            @tipo.Id - <b>@tipo.Nome</b> <small>(@tipo.Codice)</small><br />
+                            @tipo.Descrizione
+
+                        </li>
+                    }
+                </ul>
+
+
+
+
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+
+    <MudItem xs="12">
+        <MudCard Class="mud-width-full">
+
+            <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-4">
+                Tipi Allegati
+            </MudText>
+            <MudCardContent>
+
+               
+
+
+
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+
+</MudContainer>
+@code {
+
+    protected override async Task OnInitializedCoreAsync()
+    {
+
+        try
+        {
+            SetBreadcrumb(
+                 new BreadcrumbItem("⬅ Back", href: "javascript:history.back()"),
+                    new BreadcrumbItem(Localization.GetString("Home.Dashboard"), href: "/"),
+                    new BreadcrumbItem("Ruoli utenti interni", href: null, disabled: true)
+                );
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, ex.Message);
+        }
+        finally
+        {
+            await Task.CompletedTask;
+        }
+    }
+
+}
+
+<style>
+    .listTipo {
+        width: 90%;
+        padding: 16px;
+    }
+
+        .listTipo li {
+            display: block;
+            width: 100%;
+            border-bottom: 1px dotted #ccc
+        }
+</style>

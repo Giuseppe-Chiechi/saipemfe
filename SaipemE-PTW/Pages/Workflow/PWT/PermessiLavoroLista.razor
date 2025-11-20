@@ -1,0 +1,222 @@
+﻿@page "/workflow/permessi-lavoro-list"
+@using System.Globalization
+@using SaipemE_PTW.Components.Workflow.List
+@using SaipemE_PTW.Services.Workflow.PWT
+
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@inject IPermessoLavoroService PermessiService
+
+<PageTitle>@Localization.GetString("SiteName")</PageTitle>
+
+<SaipemE_PTW.Components.Common.Alert Tipo="@AlertTipo" Message="@AlertMessage" Visible="@AlertShow" VisibleChanged="@(v => AlertShow = v)"></SaipemE_PTW.Components.Common.Alert>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mx-auto px-2" Style="overflow-x: hidden;">
+
+    <MudBreadcrumbs Items="_BreadcrumbItems"></MudBreadcrumbs>
+
+    <MudGrid Spacing="3" Class="TitleBox">
+        <MudItem>
+            <MudText Typo="Typo.h4" Class="text-slate-800 font-bold">
+                Lista dei Permessi/Certificati Aperti
+            </MudText>
+        </MudItem>
+    </MudGrid>
+
+    <ListaPermessiLavoro @ref="_listaComponentRef"
+                         ServerReload="ServerReload"
+                         CultureValue="cultureValue"
+                         ConvertFunc="convertFunc"
+                         SearchStato="Seleziona Stato"
+                         SearchStatoChanged="@(v => searchStato = v)"
+                         SearchImpresaEsecutrice="Seleziona Impresa"
+                         SearchImpresaEsecutriceChanged="@(v => searchImpresaEsecutrice = v)"
+                         OnSearch="OnSearch"
+                         OnReset="OnReset"
+                         OnViewClick="HandleClick"
+                         Stato="Chiuso" 
+                         Pagina="workflow" 
+                         OnSospensioneClick="OpenSospensioneDialog" />
+
+</MudContainer>
+
+@code {
+    // ✅ Riferimento al componente figlio
+    private ListaPermessiLavoro? _listaComponentRef;
+
+    private CultureInfo cultureValue { get; set; } = new CultureInfo("it-IT");
+    private Func<CultureInfo, string> convertFunc = ci => ci?.DisplayName ?? string.Empty;
+
+    private string? searchStato = string.Empty;
+    private string? searchImpresaEsecutrice = string.Empty;
+    private string? searchString = null;
+    private IEnumerable<PermessoLavoroModel> pagedData = Enumerable.Empty<PermessoLavoroModel>();
+    private int totalItems;
+
+    protected override async Task OnInitializedCoreAsync()
+    {
+        try
+        {
+            SetBreadcrumb(
+                new BreadcrumbItem("⬅ Back", href: "javascript:history.back()"),
+                new BreadcrumbItem(Localization.GetString("Home.Dashboard"), href: "/"),
+                new BreadcrumbItem("Permessi Lavoro", href: null, disabled: true)
+            );
+        }
+        catch (Exception ex)
+        {
+            ShowErrorAlert($"Errore durante l'inizializzazione: {ex.Message}");
+        }
+    }
+
+    private async Task OnReset()
+    {
+        searchString = null;
+        searchStato = null;
+        searchImpresaEsecutrice = null;
+
+        // ✅ Usa il riferimento al componente figlio
+        if (_listaComponentRef != null)
+        {
+            await _listaComponentRef.ReloadDataAsync();
+        }
+    }
+
+    private async Task OnSearch(string text)
+    {
+        searchString = text;
+
+        // ✅ Il reload è già gestito dal componente figlio
+        // Non serve fare nulla qui se il componente figlio chiama già ReloadDataAsync
+    }
+
+    #region Sospensione Dialog
+    private async Task OpenSospensioneDialog(PermessoLavoroModel row)
+    {
+        var options = new MudBlazor.DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MudBlazor.MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var parameters = new MudBlazor.DialogParameters
+        {
+            ["Pdl"] = row.pdl,
+            ["PermessoId"] = row.id
+        };
+
+        var dialogRef = DialogService.Show<SospensioneDialog>($"Richiesta Sospensione {row.pdl}", parameters, options);
+        var result = await dialogRef.Result;
+
+        if (!result.Canceled)
+        {
+            // Ricarica i dati dopo la sospensione
+            if (_listaComponentRef != null)
+            {
+                await _listaComponentRef.ReloadDataAsync();
+            }
+        }
+    }
+    #endregion
+
+    private async Task<TableData<PermessoLavoroModel>> ServerReload(TableState state, CancellationToken token)
+    {
+        var data = await PermessiService.GetPermessiAsync(token);
+
+        // Filtra per ruolo
+        data = userRole switch
+        {
+            Shared.Models.Auth.UserRole.AutoritaRichiedente => data.Where(c =>
+                c.Stato.Nome.Equals("In Lavorazione RA") ||
+                c.Stato.Nome.Contains("Rigettato") ||
+                c.Stato.Nome.Contains("Chiuso") ||
+                c.Stato.Nome.Contains("Riattivato") ||
+                c.Stato.Nome.Contains("Rinnovato") ||
+                c.Stato.Nome.Contains("Autorizzato")),
+
+            Shared.Models.Auth.UserRole.AutoritaEsecutrice => data.Where(c =>
+                c.Stato.Nome.Equals("In Lavorazione PA") ||
+                c.Stato.Nome.Contains("Rigettato") ||
+                c.Stato.Nome.Contains("Chiuso") ||
+                c.Stato.Nome.Contains("Riattivato") ||
+                c.Stato.Nome.Contains("Rinnovato") ||
+                c.Stato.Nome.Contains("Autorizzato")),
+
+            Shared.Models.Auth.UserRole.PTWCoordinator => data.Where(c =>
+                c.Stato.Nome.Equals("In Lavorazione PTWC") ||
+                c.Stato.Nome.Contains("Rigettato") ||
+                c.Stato.Nome.Contains("Chiuso") ||
+                c.Stato.Nome.Contains("Riattivato") ||
+                c.Stato.Nome.Contains("Rinnovato") ||
+                c.Stato.Nome.Contains("Autorizzato")),
+
+            Shared.Models.Auth.UserRole.AutoritaEmittente => data.Where(c =>
+                c.Stato.Nome.Equals("In Lavorazione IA") ||
+                c.Stato.Nome.Contains("Rigettato") ||
+                c.Stato.Nome.Contains("Chiuso") ||
+                c.Stato.Nome.Contains("Riattivato") ||
+                c.Stato.Nome.Contains("Rinnovato") ||
+                c.Stato.Nome.Contains("Autorizzato")),
+
+            Shared.Models.Auth.UserRole.CoordinatoreInEsecuzioneCSE => data.Where(c =>
+                c.Stato.Nome.Equals("In Lavorazione CSE") ||
+                c.Stato.Nome.Contains("Rigettato") ||
+                c.Stato.Nome.Contains("Chiuso") ||
+                c.Stato.Nome.Contains("Riattivato") ||
+                c.Stato.Nome.Contains("Rinnovato") ||
+                c.Stato.Nome.Contains("Autorizzato")),
+
+            Shared.Models.Auth.UserRole.PersonaAutorizzataTestGas => data.Where(c =>
+                c.Stato.Nome.Equals("In Lavorazione AGT") ||
+                c.Stato.Nome.Contains("Rigettato") ||
+                c.Stato.Nome.Contains("Chiuso") ||
+                c.Stato.Nome.Contains("Riattivato") ||
+                c.Stato.Nome.Contains("Rinnovato") ||
+                c.Stato.Nome.Contains("Autorizzato")),
+
+            Shared.Models.Auth.UserRole.AutoritaOperativa => data.Where(c =>
+                c.Stato.Nome.Equals("In Approvazione OA") ||
+                c.Stato.Nome.Contains("Rigettato") ||
+                c.Stato.Nome.Contains("Chiuso") ||
+                c.Stato.Nome.Contains("Riattivato") ||
+                c.Stato.Nome.Contains("Rinnovato") ||
+                c.Stato.Nome.Contains("Autorizzato")),
+
+            _ => data // AmministratoreSistema, SuperOwner vedono tutto
+        };
+
+        // Applica filtro di ricerca
+        if (!string.IsNullOrWhiteSpace(searchString))
+        {
+            data = data.Where(x =>
+                (x.pdl?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.DescrizioneAttivita?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.AutoritaEsecutriceImpresa?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (x.ValiditaAreaLavoro?.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                $"{x.id}".Contains(searchString)
+            );
+        }
+
+        totalItems = data.Count();
+
+        // Ordinamento
+        data = state.SortLabel switch
+        {
+            "PDL" => data.OrderByDirection(state.SortDirection, o => o.pdl),
+            "DataInizioLavoro" => data.OrderByDirection(state.SortDirection, o => o.ValiditaDataInizio),
+            "DescrizioneAttivita" => data.OrderByDirection(state.SortDirection, o => o.DescrizioneAttivita),
+            "ImpresaEsecuzione" => data.OrderByDirection(state.SortDirection, o => o.AutoritaEsecutriceImpresa),
+            "AreaLavoro" => data.OrderByDirection(state.SortDirection, o => o.ValiditaAreaLavoro),
+            "Stato" => data.OrderByDirection(state.SortDirection, o => o.Stato.Nome),
+            _ => data
+        };
+
+        pagedData = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<PermessoLavoroModel> { TotalItems = totalItems, Items = pagedData };
+    }
+
+    private void HandleClick(int? id)
+    {
+        Navigation.NavigateTo($"/workflow/permesso-lavoro-generico-caldo-view?id={id}");
+    }
+}

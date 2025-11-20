@@ -1,0 +1,74 @@
+@* 2025-01-13 - EntraId - Pagina che gestisce tutti i callback di autenticazione Microsoft Entra ID *@
+@* RemoteAuthenticatorView è il componente che gestisce login, logout, register e profilo *@
+@page "/authentication/{action}"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+<RemoteAuthenticatorView Action="@Action">
+    <LoggingIn>
+        @* 2025-01-13 - EntraId - Messaggio mostrato durante il processo di login *@
+   <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <div class="text-center">
+     <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Caricamento...</span>
+  </div>
+   <p class="mt-3">Accesso in corso...</p>
+     </div>
+        </div>
+    </LoggingIn>
+    <CompletingLoggingIn>
+  @* 2025-01-13 - EntraId - Messaggio mostrato quando il login sta per completarsi *@
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+         <div class="text-center">
+        <div class="spinner-border text-success" role="status">
+ <span class="visually-hidden">Caricamento...</span>
+                </div>
+       <p class="mt-3">Completamento accesso...</p>
+            </div>
+        </div>
+    </CompletingLoggingIn>
+ <LogOut>
+        @* 2025-01-13 - EntraId - Messaggio mostrato durante il logout *@
+ <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+       <div class="text-center">
+         <div class="spinner-border text-warning" role="status">
+     <span class="visually-hidden">Caricamento...</span>
+       </div>
+                <p class="mt-3">Disconnessione in corso...</p>
+            </div>
+        </div>
+    </LogOut>
+    <CompletingLogOut>
+        @* 2025-01-13 - EntraId - Messaggio mostrato quando il logout sta per completarsi *@
+        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="text-center">
+   <div class="spinner-border text-info" role="status">
+           <span class="visually-hidden">Caricamento...</span>
+     </div>
+    <p class="mt-3">Completamento disconnessione...</p>
+            </div>
+        </div>
+  </CompletingLogOut>
+    <LogInFailed>
+    @* 2025-01-13 - EntraId - Messaggio di errore quando il login fallisce *@
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Errore durante l'autenticazione</h4>
+        <p>Si è verificato un problema durante il processo di autenticazione. Riprova.</p>
+      <hr>
+            <a href="/" class="btn btn-primary">Torna alla home</a>
+        </div>
+    </LogInFailed>
+    <LogOutFailed>
+        @* 2025-01-13 - EntraId - Messaggio di errore quando il logout fallisce *@
+        <div class="alert alert-warning" role="alert">
+      <h4 class="alert-heading">Errore durante la disconnessione</h4>
+            <p>Si è verificato un problema durante la disconnessione. Riprova.</p>
+            <hr>
+      <a href="/" class="btn btn-primary">Torna alla home</a>
+        </div>
+    </LogOutFailed>
+</RemoteAuthenticatorView>
+
+@code {
+    // 2025-01-13 - EntraId - Parameter che riceve l'azione di autenticazione dall'URL (login, logout, etc.)
+  [Parameter] public string? Action { get; set; }
+}

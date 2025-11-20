@@ -1,0 +1,65 @@
+﻿@using MudBlazor
+@using SaipemE_PTW.Shared.Models.PWT
+
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="2">
+            <MudGrid>
+                <MudItem xs="12" sm="6" >
+                    <MudDatePicker Label="Data test" PickerVariant="PickerVariant.Inline" Time="true" />
+                </MudItem>
+           
+                <MudItem xs="12" sm="6">
+                    <MudTimePicker Label="Ora test" PickerVariant="PickerVariant.Inline"  />
+                </MudItem>
+            </MudGrid>
+
+             <MudGrid>
+                @foreach (var item in TipoGasMapper.GetAll())
+                {
+                    <MudItem xs="12" sm="6">
+                        <MudTextField T="string" Label="@item.Nome" />
+                    </MudItem>
+                }
+            </MudGrid>
+
+            <MudGrid>
+                <MudItem xs="12" sm="12">
+                    <MudTextField T="string"  Label="Altro..." />
+                </MudItem>
+            </MudGrid>
+
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Default" StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Text" OnClick="Cancel">Annulla</MudButton>
+        <MudButton Color="Color.Success" StartIcon="@Icons.Material.Filled.Save" Variant="Variant.Filled" OnClick="Confirm">Conferma</MudButton>
+
+
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public IMudDialogInstance MudDialog { get; set; } = default!;
+     [Parameter] public string? Pdl { get; set; }
+     [Parameter] public int PermessoId { get; set; }
+    // [Parameter] public PermessoLavoroModel Model { get; set; }
+
+    private string _text = string.Empty;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Confirm()
+        => MudDialog.Close(DialogResult.Ok(new GasTestDialogResult
+        {
+            // permessoLavoroModel = Model
+        }));
+
+    public sealed class GasTestDialogResult
+    {
+        // public PermessoLavoroModel permessoLavoroModel { get; set; }
+        public string? Pdl { get; set; }
+        public int PermessoId { get; set; }
+        public string? Note { get; set; }
+    }
+}

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>SaipemE_PTW.Shared</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\Administrator\**" />
+    <Compile Remove="Models\Monitoring\**" />
+    <EmbeddedResource Remove="Models\Administrator\**" />
+    <EmbeddedResource Remove="Models\Monitoring\**" />
+    <None Remove="Models\Administrator\**" />
+    <None Remove="Models\Monitoring\**" />
+  </ItemGroup>
+
+</Project>

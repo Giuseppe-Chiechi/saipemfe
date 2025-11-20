@@ -1,0 +1,25 @@
+﻿
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">Benvenuto nel supporto online!</MudText>
+        <MudText>@path Qui puoi inserire tutte le informazioni utili all'utente.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Close">Chiudi</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+
+    void Close() => MudDialog?.Close();
+    private string path = string.Empty;
+    protected override async Task OnInitializedCoreAsync()
+    {
+        var uri = Navigation.Uri; // URL completo, es: https://localhost:5001/monitoring/general-hot/list
+         path = new Uri(uri).AbsolutePath;
+        await Task.CompletedTask;
+    }
+}

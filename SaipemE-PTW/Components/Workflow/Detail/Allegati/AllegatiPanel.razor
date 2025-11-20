@@ -1,0 +1,238 @@
+﻿@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@using SaipemE_PTW.Components.Forms
+@using SaipemE_PTW.Shared.Http
+@using SaipemE_PTW.Shared.Models.PWT
+@inject SaipemE_PTW.Services.Http.ApiService Api
+
+@if (Model != null)
+{
+    <MudExpansionPanel Text="Allegati">
+
+    @if (_loading)
+    {
+        <SaipemE_PTW.Components.Common.LoadingComponent />
+    }
+    else
+    {
+
+            <SaipemE_PTW.Components.Forms.MudCheckBoxList _isReadOnlyCheckBox="@_isReadOnlyAllegati"
+                                                      Items="TipoAllegatiMapper.GetAll()"
+                                                      SelectedValues="@Model.TipoAllegati"
+                                                      SelectedValuesChanged="@(vals => Model.TipoAllegati = vals)"
+                                                      GetItemValue="@(x => x.Nome)"
+                                                      GetItemLabel="@(x => x.Nome)" />
+
+        @* <MudGrid Class="mt-3 mb-3">
+        @foreach (var item in _itemsAttachment)
+        {
+           <MudItem xs="12" sm="6" md="4">
+
+            <MudCheckBox T="bool" Disabled="@_isReadOnly"
+                         Label="@item.Name"
+                         Value="@(Model.AttachmentType?.Any(x => x.Id == item.Id) == true)"
+                         ValueChanged="@( (bool newValue) => OnCheckedChanged(item, newValue) )"
+                         Dense="true" />
+
+            </MudItem>
+        }
+
+        </MudGrid> *@
+
+
+
+    }
+
+
+
+    <MudGrid Class="md-4">
+        <MudItem xs="12">
+            @if (!string.IsNullOrEmpty(_allegatiError))
+            {
+                <MudText Typo="Typo.caption" Color="Color.Error">@_allegatiError</MudText>
+            }
+        </MudItem>
+
+        <MudItem xs="12">
+
+                <MudTextField Disabled="@_isReadOnlyAllegati" Label="Altro (specificare)" @bind-Value="Model.AllegatiAltroDescrizione" Color="Color.Primary" />
+        </MudItem>
+
+
+    </MudGrid>
+
+    <MudGrid Class="mb-3 mt-3 justify-end">
+        <MudItem Xs="12">
+            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="float:left" OverrideStyles="false">
+                    <MudButton Disabled="@_isReadOnlyAllegati" OnClick="OpenAggiungiAllegatoDialog" StartIcon="@Icons.Material.Filled.PostAdd" Color="Color.Secondary" Variant="Variant.Filled">Aggiungi allegato</MudButton>
+                    <MudButton Disabled="@_isReadOnlyAllegati" StartIcon="@Icons.Material.Filled.Download" Color="Color.Default" Variant="Variant.Filled">Scarica tutti</MudButton>
+            </MudButtonGroup>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Class="mb-3 ">
+        <MudItem Xs="12">
+
+            <MudTable Items="@Model.Allegati" Hover="true" Bordered="true" Striped="true" Elevation="0" Dense="true"
+                      Class="w-100">
+                <HeaderContent>
+                    <MudTh>Titolo</MudTh>
+                    <MudTh>Tipologia</MudTh>
+                    <MudTh>Nome File</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Titolo</MudTd>
+                    <MudTd>@context.Tipologia</MudTd>
+                    <MudTd>@context.NomeFile</MudTd>
+                    <MudTd>
+                        <MudButtonGroup Variant="Variant.Filled">
+                            <MudTooltip Text=@($"Download {context.NomeFile}")>
+                                <MudIconButton Size="Size.Large"
+                                               Icon="@Icons.Material.Filled.Download"
+                                               Color="Color.Secondary"
+                                               aria-label="Download" />
+                            </MudTooltip>
+
+                                <MudTooltip Disabled="_isReadOnlyAllegati" Text=@($"Rimuovi {context.NomeFile}")>
+                                <MudIconButton Size="Size.Large" Icon="@Icons.Material.Filled.Close" Color="Color.Info" aria-label="Rimuovi" />
+                            </MudTooltip>
+
+
+                        </MudButtonGroup>
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>No records found.</MudText>
+                </NoRecordsContent>
+            </MudTable>
+
+
+        </MudItem>
+    </MudGrid>
+
+</MudExpansionPanel>
+}
+@code {
+    [Parameter] public PermessoLavoroModel? Model { get; set; }
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public bool _isReadOnlyAllegati { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+
+    private List<AttachmentTypeDto> _itemsAttachment = new();
+    private string? _allegatiError = String.Empty;
+
+
+    protected override async Task OnInitializedCoreAsync()
+    {
+        //await LoadData();
+        _loading = false;
+        await Task.CompletedTask;
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+
+            var res = await Api.GetAttachmentTypesAsync(_lang);
+            if (res.Success && res.Data is not null)
+                _itemsAttachment = res.Data.ToList();
+            else
+                _itemsAttachment.Clear();
+        }
+        catch (Exception ex) 
+        {
+            Logger.Error(ex, "Errore caricamento AttachmentTypes");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        // Inizializza la lista Allegati se null
+        if (Model != null && Model.Allegati == null)
+        {
+            Model.Allegati = new List<Allegati>();
+        }
+    }
+
+    private async Task OpenAggiungiAllegatoDialog()
+    {
+        // Validazione: verifica che Model sia inizializzato
+        if (Model == null)
+        {
+            _allegatiError = "Errore: Model non inizializzato";
+            StateHasChanged();
+            return;
+        }
+
+        // Assicurati che la lista Allegati sia inizializzata
+        Model.Allegati ??= new List<Allegati>();
+
+        var options = new MudBlazor.DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MudBlazor.MaxWidth.Medium,
+            FullWidth = true,
+            CloseButton = true,
+
+        };
+
+        var parameters = new DialogParameters
+{
+ { "_itemsAttachment", _itemsAttachment } // 'items' è la tua variabile da passare (es. lista, DTO, ecc.)
+};
+
+
+
+        var dialog = await DialogService.ShowAsync<SaipemE_PTW.Components.Workflow.Detail.Allegati.AggiungiAllegatoDialog>(
+                "Aggiungi Allegato",
+                parameters,
+                options
+            );
+
+        // var dialog = DialogService.Show<SaipemE_PTW.Components.Workflow.Detail.Allegati.AggiungiAllegatoDialog>("Aggiungi Allegato", parameters,options);
+        var result = await dialog.Result;
+
+
+        if (result != null && !result.Canceled && result.Data is SaipemE_PTW.Components.Workflow.Detail.Allegati.AggiungiAllegatoDialog.AllegatoDialogResult allegatoData)
+        {
+            // Aggiungi il nuovo allegato alla lista
+            Model.Allegati.Add(new Allegati
+            {
+                Tipologia = allegatoData.Tipologia,
+                Titolo = allegatoData.Titolo,
+                NomeFile = allegatoData.NomeFile
+            });
+
+            // Notifica il componente padre del cambiamento
+            await ModelChanged.InvokeAsync(Model);
+
+            // Aggiorna l'interfaccia
+            StateHasChanged();
+        }
+    }
+
+    public List<AttachmentTypeDto> SelectedValues { get; set; } = new();
+    private async Task OnCheckedChanged(AttachmentTypeDto value, bool isChecked)
+    {
+        if (isChecked)
+        {
+            if (!SelectedValues.Contains(value))
+                Model?.AttachmentType?.Add(value);
+            
+        }
+        else
+        {
+            Model?.AttachmentType?.Remove(value);
+            //SelectedValues.Remove(value);
+        }
+        await Task.CompletedTask;
+        //await SelectedValuesChanged.InvokeAsync(SelectedValues);
+    }
+}

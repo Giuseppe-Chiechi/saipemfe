@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>SaipemE_PTW.Services</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Activity\**" />
+    <Compile Remove="Logger\**" />
+    <Compile Remove="Monitoring\**" />
+    <EmbeddedResource Remove="Activity\**" />
+    <EmbeddedResource Remove="Logger\**" />
+    <EmbeddedResource Remove="Monitoring\**" />
+    <None Remove="Activity\**" />
+    <None Remove="Logger\**" />
+    <None Remove="Monitoring\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Auth\CustomAuthExtensions.cs" />
+    <Compile Remove="Auth\CustomAuthStateProvider.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SaipemE-PTW.Shared\SaipemE-PTW.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.0" />
+    <PackageReference Include="Microsoft.JSInterop" Version="9.0.11" />
+    <PackageReference Include="Polly" Version="8.6.4" />
+    <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+  </ItemGroup>
+
+</Project>

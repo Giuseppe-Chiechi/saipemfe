@@ -1,0 +1,222 @@
+﻿@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using SaipemE_PTW.Shared.Models
+@using SaipemE_PTW.Shared.Models.Auth
+@implements IDisposable
+
+@* <MudContainer Class="px-4 sm:px-6 lg:px-8 box-header-saipem"> *@
+<MudContainer Class="px-4 sm:px-6 lg:px-8 ">
+    <MudGrid Justify="Justify.FlexEnd">
+        <MudItem>
+            <MudStack  Spacing="2" AlignItems="AlignItems.End">
+                <MudTooltip Text="Menu utente">
+                    <MudMenu  AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopRight">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Text" Class="mud-appbar-user-btn" Color="Color.Inherit">
+                                @* Data: 2025-10-20 - Avatar con iniziale utente (fallback sicuro) *@
+                                <MudAvatar Size="Size.Medium" Color="Color.Secondary">@avatarInitial</MudAvatar>
+                                <MudText Class="ml-2 truncate" Typo="Typo.body2">
+                                    @* Data: 2025-10-20 - Nome Cognome / Ruolo leggibile *@
+                                    @displayName
+                                    @* @(isAuthenticated ? $"{displayName} / {displayRole}" : "Ospite / Non autenticato") *@
+                                </MudText>
+                                <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" Class="ml-1" />
+                            </MudButton>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <MudList T="object" Dense="true">
+                                <MudListItem>
+                                    <MudText Typo="Typo.subtitle1">@displayName</MudText>
+                                    <MudText Typo="Typo.caption" Class="italic">
+                                        @*  @displayRole *@
+                                        @(isAuthenticated ? $"{displayRole}" : "Ospite / Non autenticato")
+                                    </MudText>
+                                </MudListItem>
+                                <MudDivider />
+                                <MudTooltip Text="Vai alle impostazioni">
+                                    <MudListItem Disabled="@(isAuthenticated == false)">
+                                        <MudNavLink Href="/settings">@Localization.GetString("Settings.User")</MudNavLink>
+                                    </MudListItem>
+                                </MudTooltip>
+                                <MudTooltip Text="Esci dall'applicazione">
+                                    <MudListItem>
+                                        <MudNavLink Href="/logout">@Localization.GetString("Settings.SignOut")</MudNavLink>
+                                    </MudListItem>
+                                </MudTooltip>
+                            </MudList>
+                        </ChildContent>
+                    </MudMenu>
+                </MudTooltip>
+            </MudStack>
+        </MudItem>
+
+        <MudItem>
+            <MudStack Direction="Row" Spacing="2" AlignItems="AlignItems.End">
+                <MudTooltip Text="Cambia lingua">
+                    <SaipemE_PTW.Components.Common.LanguageSelector />
+                </MudTooltip>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+
+@code {
+
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    // Data: 2025-10-20 - Provider stato autenticazione per aggiornamento UI su login/logout
+    [Inject] AuthenticationStateProvider AuthProvider { get; set; } = default!;
+    // Data: 2025-10-20 - Logger per tracciare errori
+    // [Inject] ILogger<MudHeader> Logger { get; set; } = default!;
+    // Data: 2025-10-20 - Stato auth cascaded (per leggere ClaimsPrincipal)
+    // [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
+
+
+    private bool SidebarOpen { get; set; } = false;
+    private bool hasNotifications { get; set; } = false;
+
+    // Data: 2025-10-20 - Stato utente per UI
+    private bool isAuthenticated = false;
+    private string displayName = "Ospite";
+    private string displayRole = "Non autenticato";
+    private string avatarInitial = "U";
+
+    protected override async Task OnInitializedCoreAsync()
+    {
+        // Data: 2025-10-20 - Carica utente e sottoscrivi il cambio stato auth
+        try
+        {
+            await LoadUserAsync();
+
+            // Sottoscrivo l'evento AuthenticationStateChanged per aggiornare la UI quando cambia lo stato di autenticazione
+            AuthProvider.AuthenticationStateChanged += OnAuthStateChanged;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, ex.Message);
+        }
+    }
+
+    // Data: 2025-10-20 - Handler cambio stato autenticazione
+    private async void OnAuthStateChanged(Task<AuthenticationState> task)
+    {
+        try
+        {
+            // attendo lo stato aggiornato fornito dall'evento
+            var state = await task;
+            // aggiorno i campi locali leggendo i claim dal nuovo AuthenticationState
+            var user = state.User;
+            isAuthenticated = user.Identity?.IsAuthenticated == true;
+
+            if (!isAuthenticated)
+            {
+                displayName = "Ospite";
+                displayRole = "Non autenticato";
+                avatarInitial = "U";
+            }
+            else
+            {
+                var given = user.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty;
+                var surname = user.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty;
+                var email = user.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+                var role = user.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+
+                var full = $"{given} {surname}".Trim();
+                displayName = string.IsNullOrWhiteSpace(full) ? (email ?? "Utente") : full;
+
+                if (UserRoleHelper.TryParse(role, out var r))
+                    displayRole = UserRoleHelper.ToDisplayName(r);
+                else
+                    displayRole = string.IsNullOrWhiteSpace(role) ? "utente" : role;
+
+                avatarInitial = ExtractInitial(displayName ?? email ?? "U");
+            }
+
+            // Richiedo re-render sul thread UI
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, ex.Message);
+        }
+    }
+
+   
+    private async Task LoadUserAsync()
+    {
+        try
+        {
+            // rimuovo chiamata ridondante a StateHasChanged all'inizio
+            var state = await AuthStateTask;
+            var user = state.User;
+            isAuthenticated = user.Identity?.IsAuthenticated == true;
+
+            if (!isAuthenticated)
+            {
+                displayName = "Ospite";
+                displayRole = "Non autenticato";
+                avatarInitial = "U";
+                return;
+            }
+
+            var given = user.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty;
+            var surname = user.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty;
+            var email = user.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+            var role = user.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+
+            var full = $"{given} {surname}".Trim();
+            displayName = string.IsNullOrWhiteSpace(full) ? (email ?? "Utente") : full;
+
+         
+            if (UserRoleHelper.TryParse(role, out var r))
+                displayRole = UserRoleHelper.ToDisplayName(r);
+            else
+                displayRole = string.IsNullOrWhiteSpace(role) ? "utente" : role;
+
+            avatarInitial = ExtractInitial(displayName ?? email ?? "U");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, ex.Message);
+            // Fallback sicuro
+            isAuthenticated = false;
+            displayName = "Ospite";
+            displayRole = "Non autenticato";
+            avatarInitial = "U";
+        }
+    }
+
+    // Data: 2025-10-20 - Estrae iniziale per avatar con fallback
+    private static string ExtractInitial(string source)
+    {
+        try
+        {
+            var s = (source ?? "U").Trim();
+            return string.IsNullOrEmpty(s) ? "U" : char.ToUpperInvariant(s[0]).ToString();
+        }
+        catch { return "U"; }
+    }
+
+    void ToggleSidebar()
+    {
+        SidebarOpen = !SidebarOpen;
+    }
+
+    void ToggleNotifications()
+    {
+        hasNotifications = !hasNotifications;
+    }
+
+    // Data: 2025-10-20 - Cleanup sottoscrizione evento per evitare leak
+    public override void Dispose()
+    {
+        try
+        {
+            AuthProvider.AuthenticationStateChanged -= OnAuthStateChanged;
+        }
+        catch { /* no-op */ }
+
+        base.Dispose();
+    }
+}

@@ -1,0 +1,71 @@
+﻿@using SaipemE_PTW.Shared.Models.Auth
+@using SaipemE_PTW.Shared.Models.Menu
+@using SaipemE_PTW.Utilities
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+<MudGrid Class="my-4 MenuBase">
+
+    @if (Cards is null || Cards.Count ==0)
+    {
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Class="text-center my-6">Menu non disponibile.</MudText>
+        </MudItem>
+    }
+    else
+    {
+        @foreach (var card in Cards)
+        {
+            <MudItem xs="12" sm="@Columns" Style="padding-top:0px;">
+                <MudCard Class="stat-card" Style="min-height:650px">
+                    <MudCardContent>
+                        <MudItem xs="12" Class="d-flex justify-center MenuBaseIcon">
+                            <MudIcon Icon="@IconMapper.GetFilledIcon(card.Icon)" />
+                        </MudItem>
+                        <MudText Typo="Typo.h6" Style="font-weight:bold">@card.Title</MudText>
+                        @foreach (var a in (card.Sections ?? new List<MenuSection>()))
+                        {
+                            <MudText Typo="Typo.subtitle2" Class="font-weight-bold mb-1 mt-3">@a.Header</MudText>
+                            @foreach (var item in (a.Items ?? new List<MenuItem>()))
+                            {
+                                bool visible = true;
+                                switch (userRole)
+                                {
+                                    case UserRole.SuperOwner:
+                                    case UserRole.AutoritaRichiedente:
+                                        break;
+                                    default:
+                                        if (item.Text.Contains("Nuovo", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            visible = false;
+                                        }
+                                        //visible = !string.Equals(item.Link, "/leave", StringComparison.OrdinalIgnoreCase);
+                                        break;
+                                }
+                                if (visible)
+                                { 
+                                    <MudLink Href="@item.Link" title="@item.Descrizione">
+                                        @if (!string.IsNullOrEmpty(item.Icon))
+                                        {
+                                            <MudIcon Icon="@IconMapper.GetFilledIcon(item.Icon)" />
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.Counter))
+                                        {
+                                            <MudChip T="string" Color="Color.Error" Size="Size.Small">@item.Counter</MudChip>
+                                        }
+                                        @((MarkupString)item.Text)
+                                       @*  @item.Text *@
+                                    </MudLink>
+                                 } 
+                            }
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    }
+</MudGrid>
+
+@code {
+    // La lista è popolata nel code-behind (Menu.razor.cs).
+}
+

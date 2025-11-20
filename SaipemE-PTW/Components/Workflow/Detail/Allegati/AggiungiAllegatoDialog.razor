@@ -1,0 +1,221 @@
+@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@using MudBlazor
+@using SaipemE_PTW.Shared.Http
+@using SaipemE_PTW.Shared.Models.PWT
+@inject SaipemE_PTW.Services.Http.ApiService Api
+
+<MudDialog>
+    <DialogContent>
+        <MudStack Spacing="3">
+          
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+                    @_errorMessage
+                </MudAlert>
+            }
+
+            <MudGrid Class="mb-3 ">
+
+                <MudItem xs="12" sm="4">
+
+                   @*  @if (_itemsAttachment != null)
+                    { *@
+                        
+                            <MudSelect T="string"
+                                       @bind-Value="_tipologia"
+                               HelperText="Tipologia" 
+                                       Variant="Variant.Outlined"
+                                       Required="true"
+                                       RequiredError="La tipologia è obbligatoria">
+                            @foreach (var tipo in TipoAllegatiMapper.GetAll())
+                                {
+                                <MudSelectItem Value="@tipo.Nome">@tipo.Nome</MudSelectItem>
+                                }
+                            </MudSelect>
+                        
+                        
+                   @*  }
+                    else
+                    {
+                        
+                        <SaipemE_PTW.Components.Common.LoadingComponent />
+                    } *@
+
+
+                </MudItem>
+              
+                <MudItem xs="12" sm="4">
+                    <MudTextField @bind-Value="_titolo"
+                                  
+                                  HelperText="Titollo"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="Il titolo file è obbligatorio"
+                                  FullWidth="true" />
+                </MudItem>
+                </MudGrid>
+           
+                <MudItem xs="12" sm="4">
+                  
+                    
+                    <MudFileUpload T="IReadOnlyList<IBrowserFile>" >
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                                Seleziona allegati
+                            </MudButton>
+                        </ActivatorContent>
+                        <SelectedTemplate>
+                            @if (context != null)
+                            {
+                                _files = context;
+                                @foreach (var file in context)
+                                {
+                                    <MudText>@file.Name</MudText>
+                                }
+                            }
+                            else
+                            {
+                                <MudText>No Files</MudText>
+                            }
+                        </SelectedTemplate>
+                    </MudFileUpload>
+                  
+                </MudItem>
+
+            
+           @*  <MudGrid Class="mt-3">
+               
+                    @if (!string.IsNullOrEmpty(_nomeFile))
+                    {
+                    <MudItem xs="12" Class="w-100">
+                        File selezionato: @_nomeFile
+                        <MudDivider />
+                    </MudItem>
+                    }
+                
+            </MudGrid> *@
+            <MudGrid Class="mt-3">
+                @* <MudItem xs="12" Class="mt-4">
+                    <MudStack Direction="Row" Spacing="2">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ConfirmUpload">Conferma</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Default">Esci</MudButton>
+                    </MudStack>
+                </MudItem> *@
+
+              @*   @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <MudItem xs="12" Class="mt-2">
+                        <MudAlert Dense="true">
+                        
+                            @_errorMessage
+                        </MudAlert>
+                    </MudItem>
+                } *@
+            </MudGrid>
+
+
+
+
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Default" Variant="Variant.Text" OnClick="Cancel">Annulla</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Confirm">Conferma</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter] 
+    public List<AttachmentTypeDto>? _itemsAttachment  { get; set; } 
+
+    private string? _tipologia;
+    private string? _titolo;
+    private string? _nomeFile;
+    private string? _errorMessage;
+
+   
+
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Confirm()
+    {
+        var fileSelezionati = _files.FirstOrDefault();
+        if (fileSelezionati != null)
+            _nomeFile = fileSelezionati.Name;
+
+        // Validazione
+        _errorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(_tipologia))
+        {
+            _errorMessage = "La tipologia è obbligatoria";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_titolo))
+        {
+            _errorMessage = "Il titolo è obbligatorio";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_nomeFile))
+        {
+            _errorMessage = "Il  file è obbligatorio";
+            return;
+        }
+
+
+        _errorMessage = $"L'allegato di processo è stato caricato. Nome file allegato: {_nomeFile}";
+        Task.Delay(11500);
+        // Chiudi il dialog e ritorna i dati
+       
+
+        MudDialog.Close(DialogResult.Ok(new AllegatoDialogResult
+        {
+            Tipologia = _tipologia,
+            Titolo = _titolo,
+            NomeFile = _nomeFile
+        }));
+    }
+
+    public sealed class AllegatoDialogResult
+    {
+        public string Tipologia { get; set; } = string.Empty;
+        public string Titolo { get; set; } = string.Empty;
+        public string NomeFile { get; set; } = string.Empty;
+    }
+
+
+    // private async Task SelectFile()
+    // {
+    //     // var files = await fileUploadService.PickFilesAsync(1); // Implementa tu questo servizio se vuoi
+    //     // if (files?.Any() == true)
+    //     // {
+    //     //     file = files.First();
+    //     //     FileName = file.Name;
+    //     // }
+      
+    //     _nomeFile = "Test File name";
+    // }
+
+   
+}
+
+
+@code
+{
+    IReadOnlyList<IBrowserFile> _files = new List<IBrowserFile>();
+
+    private void UploadFiles(IBrowserFile file)
+    {
+        // _files.Add(file);
+        //TODO upload the files to the server
+    }
+}

@@ -1,0 +1,73 @@
+﻿<MudDialog>
+    <DialogContent>
+
+      
+
+        <MudDataGrid T="string"
+                     Items="@moduliFinti"
+                     Striped="true"
+                     Bordered="true"
+                     Class="pa-4">
+
+            <ToolBarContent>
+               @*  <MudText Typo="Typo.h6">Certificato</MudText> *@
+
+                <MudSpacer />
+                <MudTextField T="string"
+                              Placeholder="Cerca modulo..."
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search"
+                              IconSize="Size.Medium"
+                              Class="mt-0" />
+            </ToolBarContent>
+
+            <Columns>
+                <PropertyColumn Property="x => x" Title="Tipo" />
+                <PropertyColumn Property="x => x" Title="Certificato" />
+
+                <TemplateColumn Title="Seleziona" Filterable="false" Style="width:100px">
+                    <CellTemplate>
+                        <MudButton OnClick="@(() => Seleziona(context.Item))"
+                                   Variant="Variant.Outlined"
+                                   Color="Color.Secondary" StartIcon="@Icons.Material.Filled.AddCircle"
+                                   Size="Size.Small">
+
+                        </MudButton>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+
+            <PagerContent>
+                <MudDataGridPager T="string" />
+            </PagerContent>
+        </MudDataGrid>
+
+
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Secondary" OnClick="() => MudDialog.Cancel()">Annulla</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+   
+
+    [Parameter] public List<string>? TipoCertificati { get; set; }
+
+    [CascadingParameter]
+    private IMudDialogInstance? MudDialog { get; set; }
+
+    private List<string> moduliFinti = new()
+    {
+        "Esempio.certificato.1",
+        "Esempio.certificato.2",
+        "Esempio.certificato.3"
+    };
+
+    private void Seleziona(string modulo)
+    {
+        
+        MudDialog?.Close(DialogResult.Ok(modulo));
+    }
+}

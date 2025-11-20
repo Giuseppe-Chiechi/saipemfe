@@ -1,0 +1,107 @@
+﻿@using System.Threading
+@using MudBlazor
+@using SaipemE_PTW.Shared.Models.PWT
+@using static MudBlazor.CategoryTypes
+@inject IDialogService DialogService
+
+
+<MudText Typo="Typo.h6" Align="Align.Center" Class="mb-4 " Style="background-color:#efe3d5">
+    Certificati collegati
+</MudText>
+
+<MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled">
+
+    <MudTooltip Text="Cerca Certificati Esistenti" Style="width:auto">
+        <MudIconButton Disabled="_isReadOnlyCertificato" OnClick="ApriDialogCollega" Icon="@Icons.Material.Filled.Search" />
+    </MudTooltip>
+
+    <MudTooltip Text="Crea Certificato" Style="width:auto">
+        <MudIconButton Disabled="_isReadOnlyCertificato" OnClick="ApriDialogCrea" Icon="@Icons.Material.Filled.Add" />
+    </MudTooltip>
+</MudButtonGroup>
+
+<MudTable Items="@Model?.ListaCertificatiPresenti" Dense Class="mb-4 mt-4" Style="90%">
+    <HeaderContent>
+        <MudTh Style="background-color:#f7f2ec">Tipo</MudTh>
+        <MudTh Style="background-color:#f7f2ec">Certificato</MudTh>
+        <MudTh Style="background-color:#f7f2ec; width:15%">Rimuovi</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>
+            <MudLink Href="#">Tipo</MudLink>
+        </MudTd>
+        <MudTd>
+            <MudLink Href="#">@context</MudLink>
+        </MudTd>
+        <MudTd>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@(() => RimuoviModulo(context))" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    [Parameter] public PermessoLavoroModel? Model { get; set; }
+    [Parameter] public bool _isReadOnlyCertificato { get; set; }
+
+    private List<string> moduliElettrici = new();
+    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
+
+    private async Task ApriDialogCollega()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+       
+        var parameters = new DialogParameters
+        {
+
+        };
+
+        var dialog = await DialogService.ShowAsync<CertificatoSearchDialog>(
+                "Seleziona Certificato",
+                parameters,
+                options
+            );
+        
+        
+        //var dialog = DialogService.Show<CertificatoSearchDialog>("Seleziona Certificato", options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled && result.Data is string modulo)
+        {
+            Model?.ListaCertificatiPresenti?.Add(modulo);
+            moduliElettrici.Add(modulo);
+        }
+    }
+
+    private async Task ApriDialogCrea()
+    {
+        var parameters = new DialogParameters
+        {
+            { "Messaggio", "Seleziona il tipo per creare un nuovo certificato" }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<CertificatoConfermaDialog>(
+                 "Aggiungi Certificato",
+                 parameters,
+                 options
+             );
+
+        var result = await dialog.Result;
+
+        // var dialog = DialogService.Show<CertificatoConfermaDialog>("Aggiungi Certificato", parameters, options);
+        // var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            var nuovoModulo = $"Esempio.certificato.{(moduliElettrici.Count + 1):D5}";
+            Model?.ListaCertificatiPresenti?.Add(nuovoModulo);
+        }
+    }
+
+    private void RimuoviModulo(string modulo)
+    {
+        Model?.ListaCertificatiPresenti?.Remove(modulo);
+    }
+}
+

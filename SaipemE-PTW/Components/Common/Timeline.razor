@@ -1,0 +1,38 @@
+﻿@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+
+@using SaipemE_PTW.Shared.Models
+@using SaipemE_PTW.Shared.Models.PWT
+<div class="timeline-container">
+    @if (Steps != null)
+    {
+
+
+        for (int i = 0; i < Steps.Count; i++)
+        {
+            <div class="timeline-step @(Steps[i].Active == "active-step" ? "active-step" : "")">
+                <div class="timeline-title">
+                    @Steps[i].Title
+                    @if (!string.IsNullOrWhiteSpace(Steps[i].Bozza))
+                    {
+                        <MudChip T="string" Variant="Variant.Text" Color="Color.Warning" Class="chip-bozza">Bozza</MudChip>
+                    }
+                </div>
+                <div class="timeline-date">@Steps[i].Date</div>
+            </div>
+
+            @* Freccia solo se non è l'ultimo *@
+            @*  @if (i < Steps.Count - 1)
+        {
+            <div class="timeline-arrow">➔</div>
+        } *@
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public List<TimelineItem>? Steps { get; set; }
+    [Parameter] public TipoPDL tipoPDL { get; set; }
+   
+
+}
