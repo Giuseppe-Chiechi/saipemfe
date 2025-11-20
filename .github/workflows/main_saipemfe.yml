@@ -16,18 +16,25 @@ jobs:
       contents: read #This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      - name: Set up .NET 9 SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.x'
 
+      - name: Restore NuGet packages
+        run: dotnet restore SaipemE-PTW.sln
+        working-directory: SaipemE-PTW
+
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build SaipemE-PTW.sln --configuration Release --no-restore
+        working-directory: SaipemE-PTW
 
       - name: dotnet publish
-        run: dotnet publish SaipemE-PTW/SaipemE-PTW.sln -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish SaipemE-PTW.sln -c Release -o "${{env.DOTNET_ROOT}}/myapp" --no-build
+        working-directory: SaipemE-PTW
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -52,6 +59,4 @@ jobs:
           app-name: 'saipemfe'
           slot-name: 'Production'
           package: .
-
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4C35B67F8159477E8DFD4FBB7A75D97B }}
-
