@@ -74,3 +74,4 @@ public static class AppRoles
         { Anonymous, "Anonymous" }
     };
 }
+//todo: rimuovere i ruoli non usati nell'applicazione mock
