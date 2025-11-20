@@ -27,7 +27,7 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish src/E-PTW.FE/SaipemE-PTW/SaipemE-PTW.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish SaipemE-PTW/SaipemE-PTW.sln -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -54,3 +54,4 @@ jobs:
           package: .
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4C35B67F8159477E8DFD4FBB7A75D97B }}
+
