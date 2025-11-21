@@ -10,11 +10,11 @@ using System.Text.Json;
 
 
 namespace SaipemE_PTW.Pages.Workflow.Certificati.IsolamentoFontiEnergetico
-{
+{.
     public partial class Detail : CommonComponentBase
     {
 
-        private IsolamentoFontiEnergetico _modelCertificato = new();
+        private SaipemE_PTW.Shared.Models.Certificati.IsolamentoFontiEnergetico _modelCertificato = new();
         private PermessoLavoroModel _model = new();
         private sealed class PermissiDemoComponent { }
 
