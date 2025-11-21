@@ -364,8 +364,8 @@
             <MudItem xs="12">
                 <MudField Label="Caratteristiche della Strumentazione Radiante" Variant="Variant.Outlined">
                     <MudGrid Class="mt-4">
-                         <MudItem xs="12" md="9">
-                        Tavola di Decadimento Allegata?
+                        <MudItem xs="12" md="9">
+                            Tavola di Decadimento Allegata?
                         </MudItem>
                         <MudItem xs="12" md="3">
                             <MudToggleGroup Disabled="@_isReadOnlyParte1" T="int"
@@ -393,7 +393,7 @@
                                         <MudTable Items="@Isotopi" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="4">
 
 
-                                           
+
 
 
                                             <HeaderContent>
@@ -758,7 +758,7 @@
             </MudField>
         </MudItem>
 
-
+        <!-- Certificato d'Isolamento da Fonti Energetiche  -->
         <MudItem xs="12">
             <MudField Label="Certificato d'Isolamento da Fonti Energetiche" Variant="Variant.Outlined">
 
@@ -806,7 +806,7 @@
 
                     <MudGrid Class="mb-4 mt-4" Style="padding:24px">
                         <MudItem xs="12" Class="d-flex flex-column" Style="background-color:#ebebeb;padding:10px">
-                            <SaipemE_PTW.Components.Workflow.Certificati.CertificatoIsolamentoEnergetico></SaipemE_PTW.Components.Workflow.Certificati.CertificatoIsolamentoEnergetico>
+                            <SaipemE_PTW.Components.Workflow.Certificati.IsolamentoFontiEnergetico.List @bind-Model="@Model"></SaipemE_PTW.Components.Workflow.Certificati.IsolamentoFontiEnergetico.List>
                         </MudItem>
                     </MudGrid>
                 }

@@ -178,6 +178,7 @@ namespace SaipemE_PTW.Shared.Models.PWT
         public string? AutorizzanteSospensione { get; set; }
         public string? MotivoSospensione { get; set; }
         public DateTime? DataInizioSospensione { get; set; }
+        public TimeSpan? OraInizioSospensione { get; set; }
         public List<ListaSospensione>? ListaSospensione { get; set; }
 
         #endregion
@@ -223,6 +224,7 @@ namespace SaipemE_PTW.Shared.Models.PWT
         #endregion
     }
 
+   
 
     //public class PWTmodel
     //{

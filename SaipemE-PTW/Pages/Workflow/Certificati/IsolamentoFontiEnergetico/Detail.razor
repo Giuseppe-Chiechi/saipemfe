@@ -1,4 +1,5 @@
-﻿@page "/workflow/radiographic/detail"
+﻿@page "/workflow/certificate/energy-source-isolation/detail/{Id:int}/{Certificate:int}"
+@* @page "/workflow/certificate/energy-source-isolation/detail/{Id:int}" *@
 @inherits SaipemE_PTW.Components.Base.CommonComponentBase
 @implements IDisposable
 @inject IPermessoLavoroService PermessiService
@@ -48,43 +49,40 @@
 
                     @if (Id != null && _model._timeline != null)
                     {
-                        <SaipemE_PTW.Components.Common.Timeline tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" Steps="@_model._timeline"></SaipemE_PTW.Components.Common.Timeline>
+                        <SaipemE_PTW.Components.Common.Timeline tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" Steps="@_model._timeline"></SaipemE_PTW.Components.Common.Timeline>
                     }
 
-                    <DataDetail @bind-Model="_model" tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" pageTitle="@_pageTitle" />
+                    <SaipemE_PTW.Components.Workflow.Certificati.IsolamentoFontiEnergetico.Detail.DataDetail tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" @bind-Model="_model" pageTitle="@_pageTitle" /> 
+                   @*  <DataDetail tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" @bind-Model="_model" pageTitle="@_pageTitle" /> *@
                 </MudCardContent>
             </MudCard>
-
-
- @if (Id != null)
-            {
 
             <MudTabs Elevation="2" Rounded="true"
                      ApplyEffectsToContainer="true" PanelClass="pa-6 mud-width-full"
                      ActivePanelIndexChanged="OnTabChanged">
 
-                <SaipemE_PTW.Components.Workflow.Detail.Parte1.Parte1 tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyParte1="@_isReadOnlyParte1" @bind-Model="_model" />
+                <SaipemE_PTW.Components.Workflow.Detail.Parte1.Parte1 tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyParte1="@_isReadOnlyParte1" @bind-Model="_model" />
 
 
                 @if (Id != null && !(userRole.Equals(UserRole.AutoritaRichiedente)
-                                || userRole.Equals(UserRole.AutoritaEsecutrice)
+                                || userRole.Equals(UserRole.AutoritaEsecutrice) 
                                 || userRole.Equals(UserRole.EspertoQualificatoEQ)
                                 || userRole.Equals(UserRole.AmministratoreSistema)
-                                ))
+                ))
                 {
 
-                    <SaipemE_PTW.Components.Workflow.Detail.Parte2.Parte2 tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyParte2="@_isReadOnlyParte2" @bind-Model="_model" />
+                    <SaipemE_PTW.Components.Workflow.Detail.Parte2.Parte2 tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyParte2="@_isReadOnlyParte2" @bind-Model="_model" />
 
                 }
 
                 @if (Id != null && !(userRole.Equals(UserRole.AutoritaRichiedente)
                                 || userRole.Equals(UserRole.AutoritaEsecutrice)
                                 || userRole.Equals(UserRole.AutoritaEmittente)
-                                || userRole.Equals(UserRole.PTWCoordinator)
-                                || userRole.Equals(UserRole.EspertoQualificatoEQ)
+                                || userRole.Equals(UserRole.PTWCoordinator) 
+                                || userRole.Equals(UserRole.EspertoQualificatoEQ) 
                                 || userRole.Equals(UserRole.AmministratoreSistema)))
                 {
-                    <SaipemE_PTW.Components.Workflow.Detail.CSE.CSE tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyParteCSE="@_isReadOnlyParteCSE" @bind-Model="_model" />
+                    <SaipemE_PTW.Components.Workflow.Detail.CSE.CSE tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyParteCSE="@_isReadOnlyParteCSE" @bind-Model="_model" />
 
                 }
 
@@ -97,7 +95,7 @@
                                 || userRole.Equals(UserRole.EspertoQualificatoEQ)))
                 {
 
-                    <SaipemE_PTW.Components.Workflow.Detail.Parte3.Parte3 tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyParte3="@_isReadOnlyParte3" @bind-Model="_model" />
+                    <SaipemE_PTW.Components.Workflow.Detail.Parte3.Parte3 tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyParte3="@_isReadOnlyParte3" @bind-Model="_model" />
 
 
 
@@ -105,43 +103,43 @@
 
 
 
-                @if (Id != null && (userRole.Equals(UserRole.AutoritaEsecutrice)
+               @*  @if (Id != null && (userRole.Equals(UserRole.AutoritaEsecutrice)
                                 || userRole.Equals(UserRole.AutoritaOperativa)
                                 || userRole.Equals(UserRole.SuperOwner)
                                 || userRole.Equals(UserRole.Visitatore)))
                 {
-                    <SaipemE_PTW.Components.Workflow.Detail.Rinnovo.Rinnovo tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyRinnovo="@_isReadOnlyRinnovo" @bind-Model="_model" />
+                    <SaipemE_PTW.Components.Workflow.Detail.Rinnovo.Rinnovo tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyRinnovo="@_isReadOnlyRinnovo" @bind-Model="_model" />
 
-                }
+                } *@
 
 
-                @if (Id != null && (userRole.Equals(UserRole.AutoritaEsecutrice)
+               @*  @if (Id != null && (userRole.Equals(UserRole.AutoritaEsecutrice)
                                 || userRole.Equals(UserRole.AutoritaOperativa)
                                 || userRole.Equals(UserRole.PTWCoordinator)
                                 || userRole.Equals(UserRole.SuperOwner)
                                 || userRole.Equals(UserRole.Visitatore)))
                 {
-                    <SaipemE_PTW.Components.Workflow.Detail.Sospensione.Sospensione tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlySospensione="@_isReadOnlySospensione" @bind-Model="_model" />
+                    <SaipemE_PTW.Components.Workflow.Detail.Sospensione.Sospensione tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlySospensione="@_isReadOnlySospensione" @bind-Model="_model" />
 
-                }
+                } *@
 
-                @if (Id != null && (userRole.Equals(UserRole.PTWCoordinator)
-                                || userRole.Equals(UserRole.SuperOwner)
+              @*   @if (Id != null && (userRole.Equals(UserRole.PTWCoordinator) 
+                || userRole.Equals(UserRole.SuperOwner) 
                                 || userRole.Equals(UserRole.Visitatore)))
                 {
 
-                    <SaipemE_PTW.Components.Workflow.Detail.Riattivazione.Riattivazione tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyRiattivazione="@_isReadOnlyRiattivazione" @bind-Model="_model" />
+                    <SaipemE_PTW.Components.Workflow.Detail.Riattivazione.Riattivazione tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyRiattivazione="@_isReadOnlyRiattivazione" @bind-Model="_model" />
 
-                }
+                } *@
 
                 @if (Id != null && (userRole.Equals(UserRole.AutoritaEsecutrice)
                                 || userRole.Equals(UserRole.AutoritaOperativa)
-
-                                || userRole.Equals(UserRole.SuperOwner)
+                                
+                                || userRole.Equals(UserRole.SuperOwner) 
                                 || userRole.Equals(UserRole.Visitatore)))
                 {
 
-                    <SaipemE_PTW.Components.Workflow.Detail.Chiusura.Chiusura tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyChiusura="@_isReadOnlyChiusura" @bind-Model="_model" />
+                    <SaipemE_PTW.Components.Workflow.Detail.Chiusura.Chiusura tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyChiusura="@_isReadOnlyChiusura" @bind-Model="_model" />
 
                 }
 
@@ -155,35 +153,35 @@
                 <MudItem xs="12">
                     <MudExpansionPanels MultiExpansion="true">
 
-                        <SaipemE_PTW.Components.Workflow.Detail.Allegati.AllegatiPanel tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyAllegati="@_isReadOnlyAllegati"
+                        <SaipemE_PTW.Components.Workflow.Detail.Allegati.AllegatiPanel tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyAllegati="@_isReadOnlyAllegati"
                                                                                        @bind-Model="_model" />
 
-                        <SaipemE_PTW.Components.Workflow.Detail.Certificati.CertificatiPanel tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyCertificati="@_isReadOnlyCertificati"
+                        <SaipemE_PTW.Components.Workflow.Detail.Certificati.CertificatiPanel tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyCertificati="@_isReadOnlyCertificati"
                                                                                              @bind-Model="_model" />
-                        <SaipemE_PTW.Components.Workflow.Detail.GasTest.GasTestPanel tipoPDL="TipoPDL.PermessoLavoroAttivitaRadiografica" _isReadOnlyGasTest="@_isReadOnlyGasTest"
-                                                                                     @bind-Model="_model" />
-
+                        <SaipemE_PTW.Components.Workflow.Detail.GasTest.GasTestPanel tipoPDL="TipoPDL.PermessoLavoroGenericoCaldo" _isReadOnlyGasTest="@_isReadOnlyGasTest"
+                                                                                     @bind-Model="_model"  />
+                   
                     </MudExpansionPanels>
                 </MudItem>
             </MudGrid>
 
 
-            <!-- BOTTONI OPERATIVI -->
+            <!-- BOTTONI -->
             <MudCard Class="mud-width-full mt-4">
                 <MudCardContent>
-                    <MudGrid >
+                    <MudGrid Class="mt-4">
                         <MudItem xs="12" sm="6">
                             <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="float:left" OverrideStyles="false">
 
-                                <MudButton OnClick="SubmitAnnulla" StartIcon="@Icons.Material.Filled.CancelPresentation" Color="Color.Default" Variant="Variant.Filled">Esci</MudButton>
+                                <MudButton  OnClick="SubmitAnnulla" StartIcon="@Icons.Material.Filled.CancelPresentation" Color="Color.Default" Variant="Variant.Filled">Esci</MudButton>
 
-                                <MudButton OnClick="SubmitStampa" StartIcon="@Icons.Material.Filled.Print" Color="Color.Primary" Variant="Variant.Filled">Stampa</MudButton>
+                                <MudButton  OnClick="SubmitStampa" StartIcon="@Icons.Material.Filled.Print" Color="Color.Primary" Variant="Variant.Filled">Stampa</MudButton>
                                 <MudButton Disabled="@_isReadOnly" OnClick="SubmitSalvaBozze" StartIcon="@Icons.Material.Filled.Save" Color="Color.Tertiary" Variant="Variant.Filled">Salva in bozza</MudButton>
                             </MudButtonGroup>
                         </MudItem>
 
                         <MudItem xs="12" sm="6">
-                            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="float:right" OverrideStyles="false">
+                            <MudButtonGroup  Color="Color.Primary" Variant="Variant.Filled" Style="float:right" OverrideStyles="false">
 
 
                                 @if (!userRole.Equals(UserRole.AutoritaRichiedente) &&
@@ -193,7 +191,7 @@
                                                                 || tabActive.Equals(TipoTabPWT.Rinnovo)
                                                                 || userRole.Equals(UserRole.Visitatore)))
                                 {
-                                    <MudButton Disabled="@_isReadOnly" OnClick="SubmitRigetta" StartIcon="@Icons.Material.Filled.Save" Color="Color.Secondary" Variant="Variant.Filled">Rigetta</MudButton>
+                                    <MudButton Disabled="@_isReadOnly"  OnClick="SubmitRigetta" StartIcon="@Icons.Material.Filled.Save" Color="Color.Secondary" Variant="Variant.Filled">Rigetta</MudButton>
                                 }
                                 <MudButton Disabled="@_isReadOnly" OnClick="SubmitFirma" StartIcon="@Icons.Material.Filled.AssignmentTurnedIn" Color="Color.Warning" Variant="Variant.Filled">Firma</MudButton>
                                 <MudButton Disabled="@_isReadOnly" OnClick="SubmitInoltro" StartIcon="@Icons.Material.Filled.ForwardToInbox" Color="Color.Success" Variant="Variant.Filled">Inoltra</MudButton>
@@ -203,30 +201,6 @@
                 </MudCardContent>
             </MudCard>
 
-              }
-            else
-            {
-                <MudCard Class="mud-width-full mt-4">
-                    <MudCardContent>
-                        <MudGrid >
-                            <MudItem xs="12" sm="6">
-                                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="float:left" OverrideStyles="false">
-
-                                    <MudButton OnClick="SubmitAnnulla" StartIcon="@Icons.Material.Filled.CancelPresentation" Color="Color.Info" Variant="Variant.Filled">Esci</MudButton>
-
-
-                                </MudButtonGroup>
-                            </MudItem>
-
-                            <MudItem xs="12" sm="6">
-                                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="float:right" OverrideStyles="false">
-                                    <MudButton Disabled="@_isReadOnly" OnClick="SubmitCrea" StartIcon="@Icons.Material.Filled.Save" Color="Color.Success" Variant="Variant.Filled">Apri Permesso di Lavoro</MudButton>
-                                </MudButtonGroup>
-                            </MudItem>
-                        </MudGrid>
-                    </MudCardContent>
-                </MudCard>
-            }
 
         </MudItem>
 
@@ -242,6 +216,10 @@
     [Parameter]
     [SupplyParameterFromQuery]
     public int? Id { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? Certificate { get; set; }
 
 
 }

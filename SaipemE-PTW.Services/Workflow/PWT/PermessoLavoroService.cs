@@ -81,70 +81,72 @@ new PermessoLavoroModel
 id = 8,
 pdl = "PDL-2025-0008",
 Certificato = "00000008",
-Stato = new TipoStatoPermessoLavoroDto{ Id=8,Nome="In Approvazione OA" },
+Stato = new TipoStatoPermessoLavoroDto{ Id=8,Nome="Aperto RA" },
 Sito = "Ravenna",
 DataInizioLavori = now,
 Parte = new TipoParteDto{Id=3, Nome="Parte 3"},
 DataFineLavori = DateTime.Now.AddDays(30),
 Tipo = new TipoPDLDto{Id=1,Nome ="Permesso di Lavoro Generico (Caldo)"},
+    #endregion
+
+    #region Parte 1               
+//    ValiditaDataInizio = now.AddDays(1),
+//ValiditaOraInizio = new TimeSpan(9, 0, 0),
+//ValiditaDataFine = now.AddDays(2),
+//ValiditaOraFine = new TimeSpan(17, 30, 0),
+//ValiditaAreaLavoro = "Unit B - Area 7",
+//ValiditaApparecchiatura = "EX-220",
+//AllegatiAltroDescrizione = "Disegni aggiornati",
+//DescrizioneAttivita = "Sostituzione tupo idraulico",
+//TipoLavoroAltroDescrizione = "Utilizzo piattaforma elevabile",
+//AutoritaRichiedenteNome = "Anna",
+//AutoritaRichiedenteCognome = "Verdi",
+//AutoritaRichiedenteImpresa = "Impresa Gamma",
+//AutoritaRichiedenteData = now,
+//AutoritaRichiedenteOra = new TimeSpan(10, 0, 0),
+//AutoritaRichiedenteFirma = "AV-Hash",
+//AutoritaEsecutriceNome = "Luigi",
+//AutoritaEsecutriceCognome = "Bianchi",
+//AutoritaEsecutriceImpresa = "Impresa Delta",
+//AutoritaEsecutriceData = now.AddDays(1),
+//AutoritaEsecutriceOra = new TimeSpan(9, 0, 0),
+//AutoritaEsecutriceSubAppaltatore = true,
+//AutoritaEsecutriceFornitore = false,
+//AutoritaEsecutriceFirma = "PN-Hash",
+//AttrezzaturaAltro = "Linea vita",
+//AttrezzaturaAntiscintilla = "N/A",
+//TipoAttrezzature = new List<string> { "Autogru", "Carrelli elevatori" },
+//TipoMisurePrecauzione = new List<string> { "Rilevazione gas in continuo (LEL, O2, H2S, etc.)", "Uso di materiale anti scintilla" },
+//TipoAllegati = new List<string> { "Scheda POS","SWC", "Altro..." },//GETTA
+//AttachmentType = new List<AttachmentTypeDto>
+//{
+//    new AttachmentTypeDto
+//    {
+//        Id = 1,
+//        Code = "Layout"
+//    },
+//    new AttachmentTypeDto
+//    {
+//        Id = 4,
+//        Code = "SWC"
+//    },
+//},
+//TipoCertificati = new List<string> { "Spazio confinato", "N.A." },
+//TipoAttivita = new List<string> { "Meccanica" },
+//TipoLavoro = new List<string> { "SollevaMenti" },
+//TipoAutoritaRichiedente = new List<string> { "SubAppaltatore" },
+//TipoAutoritaEsecutrice = new List<string> { "Fornitore" },
+//TipoDPI = new List<string> { "Maschera con filtri", "Visiera", "Guanti" },
+//ProdottiChimiciUtilizzati = string.Empty,
+//AltroProdotti = string.Empty,
+//Prescrizioni = "Area transennata",
+//AltriDPI = "Scarpe antinfortunistiche",
+//ProtezioneCollettiva = "Reti di protezione",
 #endregion
 
-                    
-ValiditaDataInizio = now.AddDays(1),
-ValiditaOraInizio = new TimeSpan(9, 0, 0),
-ValiditaDataFine = now.AddDays(2),
-ValiditaOraFine = new TimeSpan(17, 30, 0),
-ValiditaAreaLavoro = "Unit B - Area 7",
-ValiditaApparecchiatura = "EX-220",
-AllegatiAltroDescrizione = "Disegni aggiornati",
-DescrizioneAttivita = "Sostituzione tupo idraulico",
-TipoLavoroAltroDescrizione = "Utilizzo piattaforma elevabile",
-AutoritaRichiedenteNome = "Anna",
-AutoritaRichiedenteCognome = "Verdi",
-AutoritaRichiedenteImpresa = "Impresa Gamma",
-AutoritaRichiedenteData = now,
-AutoritaRichiedenteOra = new TimeSpan(10, 0, 0),
-AutoritaRichiedenteFirma = "AV-Hash",
-AutoritaEsecutriceNome = "Luigi",
-AutoritaEsecutriceCognome = "Bianchi",
-AutoritaEsecutriceImpresa = "Impresa Delta",
-AutoritaEsecutriceData = now.AddDays(1),
-AutoritaEsecutriceOra = new TimeSpan(9, 0, 0),
-AutoritaEsecutriceSubAppaltatore = true,
-AutoritaEsecutriceFornitore = false,
-AutoritaEsecutriceFirma = "PN-Hash",
-AttrezzaturaAltro = "Linea vita",
-AttrezzaturaAntiscintilla = "N/A",
-TipoAttrezzature = new List<string> { "Autogru", "Carrelli elevatori" },
-TipoMisurePrecauzione = new List<string> { "Rilevazione gas in continuo (LEL, O2, H2S, etc.)", "Uso di materiale anti scintilla" },
-TipoAllegati = new List<string> { "Scheda POS","SWC", "Altro..." },//GETTA
-AttachmentType = new List<AttachmentTypeDto>
-{
-    new AttachmentTypeDto
-    {
-        Id = 1,
-        Code = "Layout"
-    },
-    new AttachmentTypeDto
-    {
-        Id = 4,
-        Code = "SWC"
-    },
-},
-TipoCertificati = new List<string> { "Spazio confinato", "N.A." },
-TipoAttivita = new List<string> { "Meccanica" },
-TipoLavoro = new List<string> { "SollevaMenti" },
-TipoAutoritaRichiedente = new List<string> { "SubAppaltatore" },
-TipoAutoritaEsecutrice = new List<string> { "Fornitore" },
-TipoDPI = new List<string> { "Maschera con filtri", "Visiera", "Guanti" },
-ProdottiChimiciUtilizzati = string.Empty,
-AltroProdotti = string.Empty,
-Prescrizioni = "Area transennata",
-AltriDPI = "Scarpe antinfortunistiche",
-ProtezioneCollettiva = "Reti di protezione",
 
-#region Rinnovo
-DataRinnovoLavoro = now,
+    #region Rinnovo
+    DataRinnovoLavoro = now,
 OraInizioRinnovo = new TimeSpan(8, 0, 0),
 OraFineRinnovo = new TimeSpan(8, 0, 0),
 FirmaAutoritaEsecutriceInizioRinnovoLavori = "Nome cognome esempio",
@@ -219,13 +221,13 @@ new GasTest
 _timeline = new()
 {
 new() { Title = "In Lavorazione RA", Date = "02/10/2025", Active = "", Bozza = "" },
-new() { Title = "In Lavorazione PA", Date = "05/10/2025", Active = "", Bozza = "" },
-new() { Title = "In Lavorazione IA", Date = "13/10/2025", Active = "", Bozza = "" },
-new() { Title = "In Lavorazione PTWC", Date = "20/10/2025", Active = "", Bozza = "" },
-new() { Title = "In Lavorazione CSE", Date = "24/10/2025", Active = "", Bozza = "" },
-new() { Title = "In Lavorazione AGT", Date = "28/10/2025", Active = "", Bozza = "" },
-new() { Title = "In Approvazione PA", Date = "03/11/2025", Active = "", Bozza = "" },
-new() { Title = "In Approvazione OA", Date = "23/11/2025", Active = "active-step", Bozza = "Bozza" },
+//new() { Title = "In Lavorazione PA", Date = "05/10/2025", Active = "", Bozza = "" },
+//new() { Title = "In Lavorazione IA", Date = "13/10/2025", Active = "", Bozza = "" },
+//new() { Title = "In Lavorazione PTWC", Date = "20/10/2025", Active = "", Bozza = "" },
+//new() { Title = "In Lavorazione CSE", Date = "24/10/2025", Active = "", Bozza = "" },
+//new() { Title = "In Lavorazione AGT", Date = "28/10/2025", Active = "", Bozza = "" },
+//new() { Title = "In Approvazione PA", Date = "03/11/2025", Active = "", Bozza = "" },
+//new() { Title = "In Approvazione OA", Date = "23/11/2025", Active = "active-step", Bozza = "Bozza" },
 
 }
 },

@@ -23,9 +23,9 @@
 
             <Columns>
                 
-                <PropertyColumn Property="x => x" Title="Certificato" />
+                <PropertyColumn Property="x => x" Title="Certificato" Style="width:90%" />
 
-                <TemplateColumn Title="Seleziona" Filterable="false" Style="width:100px">
+                <TemplateColumn Title="" Filterable="false">
                     <CellTemplate>
                         <MudButton OnClick="@(() => Seleziona(context.Item))"
                                    Variant="Variant.Outlined"

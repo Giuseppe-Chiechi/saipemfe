@@ -26,7 +26,7 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.CaldoGenerico
         string? jsonOutput;
         private string? _allegatiError;
 
-        private MudMessageBox _mudMessageBox;
+        private MudMessageBox _mudMessageBox = new MudMessageBox();
         private bool _isInline = true;
 
         #region VERIFICA SUI CAMPI READONLY IN BASE RUOLO, STATO
@@ -213,6 +213,37 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.CaldoGenerico
             // assicuro valori utili al render anche qui
             await Task.CompletedTask;
 
+        }
+        private async Task SubmitCrea()
+        {
+            var confirm = await OpenDialogAsync(_topCenter);
+            if (confirm)
+            {
+                try
+                {
+                    //chiamata ai servizi
+
+                    Id = 8;
+                    Navigation.NavigateTo($"/{_localArea}/{_sublocalArea}/detail?id=8");
+                    await LoadData();
+                    //AlertShow = true;
+                    //AlertMessage = "Creazione Permesso di lavoro avvenuto correttamente!";
+                    //AlertTipo = "Success";
+
+                }
+                catch (Exception ex)
+                {
+                    AlertShow = true;
+                    AlertMessage = ex.Message;
+                    AlertTipo = "Error";
+                }
+                finally
+                {
+                    StateHasChanged();
+                }
+                //chiamata ai servizi ecc. ecc.
+
+            }
         }
         private async Task SubmitSalvaBozze()
         {

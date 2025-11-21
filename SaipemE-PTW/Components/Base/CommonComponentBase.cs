@@ -400,6 +400,7 @@ namespace SaipemE_PTW.Components.Base
             Navigation.NavigateTo($"/{_localArea}/{_sublocalArea}/detail?id={id}");
         }
 
+
         //protected bool IsInRole(UserRole role)
         //{
         //    return currentUser?.IsInRole(role) ?? false;
