@@ -12,19 +12,45 @@ else
 {
     <MudField Label="Dettaglio permesso lavoro" Variant="Variant.Outlined" Class="mb-3 mt-4">
         <MudGrid Class="mt-4">
-        <MudItem xs="12">
-                         
+            <MudItem xs="12">
+
 
                 <MudGrid Class="mb-3">
 
+                    @if (Model.id != null)
+                    {
+                        <MudItem xs="12" sm="3">
+                            <MudTextField class="text-orange" Label="Nr. permesso (PdL):" Disabled="true" Value="@Model.pdl" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="3">
+                            <MudTextField Label="Certificato:" Disabled="true" Value="@Model.Certificato" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="3">
+                            <MudTextField Label="Data inizio lavori:" Disabled="true" Value="@($"{Model?.DataInizioLavori}")" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="3">
+                            <MudTextField Label="Data fine lavori:" Disabled="true" Value="@($"{Model?.DataFineLavori}")" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            @{
+                                var Stato = Model?.Stato?.Nome ?? "Nuovo permesso";
+                            }
+                            <MudTextField Label="Stato del PdL (*):" Value="@Stato" Disabled="true" />
+                        </MudItem>
+                    }
+
+                    
 
                     <MudItem xs="12" sm="4">
+                        @{
+                            var Sito = Model?.Sito ?? "Ravenna";
+                        }
 
-                             <MudTextField class="text-orange" Label="Nr. permesso (PdL):" Disabled="true" Value="@Model.pdl"  /> 
-                    </MudItem>
-
-                    <MudItem xs="12" sm="4">
-                        <MudTextField Label="Certificato:" Disabled="true" Value="@Model.Certificato" />
+                        <MudTextField Label="Sito (*):" Disabled="true" Value="@Sito" />
                     </MudItem>
 
                     <MudItem xs="12" sm="4">
@@ -32,7 +58,7 @@ else
                             var Tipo = Model?.Tipo?.Nome ?? pageTitle;
                             //var Tipo = pageTitle;
                         }
-                        @if(Model?.id == null)
+                        @if (Model?.id == null)
                         {
                             SelectedUrl = Tipo;
 
@@ -42,8 +68,8 @@ else
                                        Placeholder="Seleziona" Label="Tipo Permesso di Lavoro"
                                        Dense="true"
                                        Clearable="true">
-                                      
-                                
+
+
                                 @foreach (var state in TipoPDLMapper.GetAll())
                                 {
                                     var url = state.Url + "detail";
@@ -55,48 +81,33 @@ else
                         {
                             <MudTextField Disabled="true" Label="Tipo:" Value="@Tipo" />
                         }
-                       
 
-                        
+
+
                     </MudItem>
 
-                    <MudItem xs="12" sm="3">
-                        @{
-                            var Stato = Model?.Stato?.Nome ?? "Nuovo permesso";
-                        }
-                        <MudTextField Label="Stato del PdL (*):" Value="@Stato" Disabled="true" />
-                    </MudItem>
 
-                    <MudItem xs="12" sm="3">
-                        @{
-                            var Sito = Model?.Sito ?? "Ravenna";
-                        }
 
-                        <MudTextField Label="Sito (*):" Disabled="true" Value="@Sito" />
-                    </MudItem>
-                    <MudItem xs="12" sm="3">
-                        <MudTextField Label="Data inizio lavori:" Disabled="true" Value="@($"{Model?.DataInizioLavori}")" />
-                    </MudItem>
 
-                    <MudItem xs="12" sm="3">
-                        <MudTextField Label="Data fine lavori:" Disabled="true" Value="@($"{Model?.DataFineLavori}")" />
-                    </MudItem>
+
                 </MudGrid>
+                @if (Model.id != null)
+                {
+                    <MudGrid Class="mb-3 justify-end">
+                        <MudItem>
+                            <MudButton Variant="Variant.Filled"
+                                       StartIcon="@Icons.Material.Filled.PendingActions"
+                                       Size="Size.Small"
+                                       Color="Color.Default"
+                                       OnClick="OpenCronologiaAsync">
+                                Cronologia
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                }
 
-                <MudGrid Class="mb-3 justify-end">
-                    <MudItem>
-                        <MudButton Variant="Variant.Filled"
-                                   StartIcon="@Icons.Material.Filled.PendingActions"
-                                   Size="Size.Small"
-                                   Color="Color.Default"
-                                   OnClick="OpenCronologiaAsync">
-                            Cronologia
-                        </MudButton>
-                    </MudItem>
-                </MudGrid>
-         
-        </MudItem>
-    </MudGrid>
+            </MudItem>
+        </MudGrid>
     </MudField>
 }
 
@@ -157,7 +168,7 @@ else
         // etc.
     }
 
-   
+
 
     private void OnUrlSelected()
     {
@@ -165,6 +176,6 @@ else
             Navigation.NavigateTo(SelectedUrl);
     }
 
-   
 
-    }
+
+}

@@ -1,38 +1,39 @@
 ﻿@inherits SaipemE_PTW.Components.Base.CommonComponentBase
 
-@using static MudBlazor.CategoryTypes
 
 
 
 <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-4 " Style="background-color:#efe3d5">
-    Certificati collegati
+    Certificati isolamento fonti energetiche collegati
 </MudText>
 
 <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled">
 
     <MudTooltip Text="Cerca Certificati Esistenti" Style="width:auto">
-        <MudIconButton Disabled="_isReadOnlyCertificato" OnClick="ApriDialogCollega" Icon="@Icons.Material.Filled.Search" />
+        <MudIconButton OnClick="ApriDialogCollega" Icon="@Icons.Material.Filled.Search" />
     </MudTooltip>
 
     <MudTooltip Text="Crea Certificato" Style="width:auto">
-        <MudIconButton Disabled="_isReadOnlyCertificato" OnClick="ApriDialogCrea" Icon="@Icons.Material.Filled.Add" />
+        <MudIconButton OnClick="ApriDialogCrea" Icon="@Icons.Material.Filled.Add" />
     </MudTooltip>
 </MudButtonGroup>
 
-<MudTable Items="@Model?.ListaCertificatiPresenti" Dense Class="mb-4 mt-4" >
 
+
+
+<MudTable Items="@moduliElettrici" Dense Class="mb-4 mt-4" Style="90%">
     <HeaderContent>
-         <MudTh Style="background-color:#f7f2ec">Tipo</MudTh>
-        <MudTh Style="background-color:#f7f2ec">Certificato</MudTh>
+        <MudTh Style="background-color:#f7f2ec">Tipo</MudTh>
+        <MudTh Style="background-color:#f7f2ec">Certificato numero</MudTh>
         <MudTh Style="background-color:#f7f2ec; width:100px"></MudTh>
     </HeaderContent>
-
     <RowTemplate>
         <MudTd>
-            Tipo Certificato
+           Isolamento Fonti Energetiche
+          
         </MudTd>
         <MudTd>
-            @context
+           @context
         </MudTd>
         <MudTd>
 
@@ -48,40 +49,38 @@
 
             </MudButtonGroup>
 
-            
         </MudTd>
     </RowTemplate>
 </MudTable>
 
-@code {
-    [Parameter] public PermessoLavoroModel? Model { get; set; }
-    [Parameter] public bool _isReadOnlyCertificato { get; set; }
 
+
+
+@code {
+    [Parameter] public PermessoLavoroModel Model { get; set; } = new PermessoLavoroModel();
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    
     private List<string> moduliElettrici = new();
-    private readonly DialogOptions _maxWidth = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
 
     private async Task ApriDialogCollega()
     {
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
-       
+
         var parameters = new DialogParameters
         {
 
         };
+        var dialog = await DialogService.ShowAsync<SearchDialog>(
+                 "Seleziona Certificato",
+                 parameters,
+                 options
+             );
 
-        var dialog = await DialogService.ShowAsync<CertificatoSearchDialog>(
-                "Seleziona Certificato",
-                parameters,
-                options
-            );
-        
-        
-        //var dialog = DialogService.Show<CertificatoSearchDialog>("Seleziona Certificato", options);
+        //var dialog = DialogService.Show<CertificatoIsolamentoEnergeticoSearchDialog>("Seleziona Modulo", options);
         var result = await dialog.Result;
 
         if (result != null && !result.Canceled && result.Data is string modulo)
         {
-            Model?.ListaCertificatiPresenti?.Add(modulo);
             moduliElettrici.Add(modulo);
         }
     }
@@ -90,37 +89,35 @@
     {
         var parameters = new DialogParameters
         {
-            { "Messaggio", "Seleziona il tipo per creare un nuovo certificato" }
+            { "Messaggio", "Vuoi creare un nuovo Certificato di Isolamento Fonti Energetiche?" }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
 
-        var dialog = await DialogService.ShowAsync<CertificatoConfermaDialog>(
-                 "Aggiungi Certificato",
+
+        var dialog = await DialogService.ShowAsync<AddDialog>(
+                 "Conferma creazione",
                  parameters,
                  options
              );
 
+        //var dialog = DialogService.Show<CertificatoIsolamentoEnergeticoConfermaDialog>("Conferma creazione", parameters, options);
         var result = await dialog.Result;
-
-        // var dialog = DialogService.Show<CertificatoConfermaDialog>("Aggiungi Certificato", parameters, options);
-        // var result = await dialog.Result;
 
         if (result != null && !result.Canceled)
         {
-            var nuovoModulo = $"Esempio.certificato.{(moduliElettrici.Count + 1):D5}";
-            Model?.ListaCertificatiPresenti?.Add(nuovoModulo);
+            var nuovoModulo = $"MOD.ELETT.RM.LIV.2025.{(moduliElettrici.Count + 1):D5}";
+            moduliElettrici.Add(nuovoModulo);
         }
     }
 
     private void RimuoviModulo(string modulo)
     {
-        Model?.ListaCertificatiPresenti?.Remove(modulo);
+        moduliElettrici.Remove(modulo);
     }
 
     void NavigateToDetail(int idCertificato)
     {
-        // Navigation.NavigateTo($"/workflow/certificate/energy-source-isolation/detail/{idCertificato}");
         Navigation.NavigateTo($"/workflow/certificate/energy-source-isolation/detail/{Model.id}/{idCertificato}");
     }
 }

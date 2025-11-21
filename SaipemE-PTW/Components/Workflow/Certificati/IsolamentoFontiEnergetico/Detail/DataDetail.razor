@@ -1,0 +1,143 @@
+﻿@inherits SaipemE_PTW.Components.Base.CommonComponentBase
+@implements IDisposable
+@using SaipemE_PTW.Components.Workflow.Detail
+@using SaipemE_PTW.Shared.Models.PWT
+
+
+<MudField Label="Dati Certificato Isolamento Energetico" Variant="Variant.Outlined" Class="mb-3 mt-4">
+        <MudGrid Class="mt-4">
+            <MudItem xs="12">
+
+
+                <MudGrid Class="mb-3">
+
+
+                    <MudItem xs="12" sm="4">
+                        <MudTextField class="text-orange" Label="Nr. permesso (PdL):" Disabled="true" Value="@Model.pdl" />
+                    </MudItem>
+
+                    <MudItem xs="12" sm="4">
+                        <MudTextField Label="Certificato:" Disabled="true" Value="@Model.Certificato" />
+                    </MudItem>
+
+                    <MudItem xs="12" sm="4">
+                        @{
+                            var Tipo = Model?.Tipo?.Nome ?? pageTitle;
+                            //var Tipo = pageTitle;
+                        }
+                        
+                       <MudTextField Disabled="true" Label="Tipo Certificato:" Value="@Tipo" />
+                        
+
+
+
+                    </MudItem>
+
+                    <MudItem xs="12" sm="3">
+                        @{
+                            var Stato = Model?.Stato?.Nome ?? "Nuovo permesso";
+                        }
+                        <MudTextField Label="Stato del PdL (*):" Value="@Stato" Disabled="true" />
+                    </MudItem>
+
+                    <MudItem xs="12" sm="3">
+                        @{
+                            var Sito = Model?.Sito ?? "Ravenna";
+                        }
+
+                        <MudTextField Label="Sito (*):" Disabled="true" Value="@Sito" />
+                    </MudItem>
+                    <MudItem xs="12" sm="3">
+                        <MudTextField Label="Data inizio lavori:" Disabled="true" Value="@($"{Model?.DataInizioLavori}")" />
+                    </MudItem>
+
+                    <MudItem xs="12" sm="3">
+                        <MudTextField Label="Data fine lavori:" Disabled="true" Value="@($"{Model?.DataFineLavori}")" />
+                    </MudItem>
+                </MudGrid>
+
+                <MudGrid Class="mb-3 justify-end">
+                    <MudItem>
+                        <MudButton Variant="Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.PendingActions"
+                                   Size="Size.Small"
+                                   Color="Color.Default"
+                                   OnClick="OpenCronologiaAsync">
+                            Cronologia
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+
+            </MudItem>
+        </MudGrid>
+    </MudField>
+
+
+
+@code {
+
+    [Parameter] public PermessoLavoroModel? Model { get; set; }
+    [Parameter] public EventCallback<PermessoLavoroModel> ModelChanged { get; set; }
+    [Parameter] public string? pageTitle { get; set; }
+    [Parameter] public TipoPDL TipoPDL { get; set; }
+
+    private string? SelectedUrl;
+
+    private CronologiaPermessoLavoro? _cronologiaSelezionata;
+
+    private async Task OpenCronologiaAsync()
+    {
+        var options = new MudBlazor.DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MudBlazor.MaxWidth.Large,
+            FullWidth = true,
+            CloseButton = true,
+        };
+
+        var parameters = new DialogParameters
+        {
+            //_isReadOnlyCronologia = true
+        };
+
+        var dialog = await DialogService.ShowAsync<CronologiaDialog>(
+                "Cronologia",
+                parameters,
+                options
+            );
+
+        //var dialog = DialogService.Show<CronologiaDialog>("Cronologia", options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled && result.Data is CronologiaPermessoLavoro selected)
+        {
+            _cronologiaSelezionata = selected;
+            ApplyCronologiaSelection(selected);
+            StateHasChanged();
+        }
+    }
+
+    // Mappatura dei campi dal record selezionato verso il componente padre.
+    // Personalizza questa funzione quando specificherai i campi da riempire.
+    private void ApplyCronologiaSelection(CronologiaPermessoLavoro selected)
+    {
+        // Esempio di mappature possibili (commentate finché non confermi i target):
+        // _model.AutoritaEsecutriceNome = selected.Nome;
+        // _model.AutoritaEsecutriceCognome = selected.Cognome;
+        // _model.AutoritaEsecutriceFirma = $"{selected.Nome} {selected.Cognome}";
+        // _model.AutoritaEsecutriceData = selected.Data;
+        // _model.AutoritaEsecutriceOra = selected.Ora;
+        // etc.
+    }
+
+
+
+    private void OnUrlSelected()
+    {
+        if (!string.IsNullOrWhiteSpace(SelectedUrl))
+            Navigation.NavigateTo(SelectedUrl);
+    }
+
+
+
+}

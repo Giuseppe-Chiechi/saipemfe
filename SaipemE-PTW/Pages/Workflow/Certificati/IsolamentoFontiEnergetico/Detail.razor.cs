@@ -3,22 +3,18 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using SaipemE_PTW.Components.Base;
 using SaipemE_PTW.Shared.Models.Auth;
+using SaipemE_PTW.Shared.Models.Certificati;
 using SaipemE_PTW.Shared.Models.PWT;
-using SaipemE_PTW.Validators.Workflow.PWT.CaldoGenerico;
-using Serilog;
 using System.Data;
 using System.Text.Json;
 
 
-
-namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
+namespace SaipemE_PTW.Pages.Workflow.Certificati.IsolamentoFontiEnergetico
 {
     public partial class Detail : CommonComponentBase
     {
-        //LOGGER
-        //[Inject]
-        //private IDialogService DialogService { get; set; }
 
+        private IsolamentoFontiEnergetico _modelCertificato = new();
         private PermessoLavoroModel _model = new();
         private sealed class PermissiDemoComponent { }
 
@@ -27,7 +23,7 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
         string? jsonOutput;
         private string? _allegatiError;
 
-        private MudMessageBox _mudMessageBox;
+        private MudMessageBox _mudMessageBox = new MudMessageBox();
         private bool _isInline = true;
 
         #region VERIFICA SUI CAMPI READONLY IN BASE RUOLO, STATO
@@ -35,10 +31,7 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
         private bool _isReadOnlyParte2 = true;
         private bool _isReadOnlyParte3 = true;
         private bool _isReadOnlyParteCSE = true;
-        private bool _isReadOnlyRinnovo = false;
-        private bool _isReadOnlySospensione = false;
         private bool _isReadOnlyChiusura = false;
-        private bool _isReadOnlyRiattivazione = false;
         private bool _isReadOnlyAllegati = false;
         private bool _isReadOnlyCertificati = false;
         private bool _isReadOnlyGasTest = false;
@@ -56,8 +49,8 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
             {
                 case UserRole.AutoritaRichiedente:
                     _isReadOnlyParte1 = false;
-
-                    break;
+                    
+                break;
                 case UserRole.EspertoQualificatoEQ:
                 case UserRole.AutoritaEsecutrice:
                     _isReadOnlyParte1 = false;
@@ -91,10 +84,7 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
                     _isReadOnlyParte2 = false;
                     _isReadOnlyParte3 = false;
                     _isReadOnlyParteCSE = false;
-                    _isReadOnlyRinnovo = false;
-                    _isReadOnlySospensione = false;
                     _isReadOnlyChiusura = false;
-                    _isReadOnlyRiattivazione = false;
                     _isReadOnlyAllegati = false;
                     _isReadOnlyCertificati = false;
                     _isReadOnlyGasTest = false;
@@ -105,10 +95,10 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
                     _isReadOnlyParte2 = true;
                     _isReadOnlyParte3 = true;
                     _isReadOnlyParteCSE = true;
-                    _isReadOnlyRinnovo = true;
-                    _isReadOnlySospensione = true;
+
+
                     _isReadOnlyChiusura = true;
-                    _isReadOnlyRiattivazione = true;
+
                     _isReadOnlyAllegati = true;
                     _isReadOnlyCertificati = true;
                     _isReadOnlyGasTest = true;
@@ -119,7 +109,7 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
 
             }
 
-
+           
             await Task.CompletedTask;
         }
 
@@ -139,14 +129,7 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
                 await LoadData();
                 await isReadOnly();
 
-                if (Id != null)
-                {
-                    _pageTitle = "Permesso di lavoro per Attività Radiografica : " + _model.pdl + " " + _model.Sito;
-                }
-                else
-                {
-                    _pageTitle = "Permesso di lavoro per Attività Radiografica ";
-                }
+                _pageTitle = "Certificato di Isolamento Energetico: " + Certificate;
 
                 var listUrl = "/" + _localArea + "/" + _sublocalArea + "/list";
                 SetBreadcrumb(
@@ -214,38 +197,6 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
             // assicuro valori utili al render anche qui
             await Task.CompletedTask;
 
-        }
-
-        private async Task SubmitCrea()
-        {
-            var confirm = await OpenDialogAsync(_topCenter);
-            if (confirm)
-            {
-                try
-                {
-                    //chiamata ai servizi
-
-                    Id = 8;
-                    Navigation.NavigateTo($"/{_localArea}/{_sublocalArea}/detail?id=8");
-                    await LoadData();
-                    //AlertShow = true;
-                    //AlertMessage = "Creazione Permesso di lavoro avvenuto correttamente!";
-                    //AlertTipo = "Success";
-
-                }
-                catch (Exception ex)
-                {
-                    AlertShow = true;
-                    AlertMessage = ex.Message;
-                    AlertTipo = "Error";
-                }
-                finally
-                {
-                    StateHasChanged();
-                }
-                //chiamata ai servizi ecc. ecc.
-
-            }
         }
         private async Task SubmitSalvaBozze()
         {
@@ -517,9 +468,10 @@ namespace SaipemE_PTW.Pages.Workflow.PWT.Radiografica
             tabActive = (TipoTabPWT)index;
         }
 
-        
+      
 
 
 
     }
+
 }
