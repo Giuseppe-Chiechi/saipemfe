@@ -17,16 +17,16 @@ namespace SaipemE_PTW.Shared.Models.PWT
 
     public enum TipoGas
     {
-        [Display(Name = "%Oxygen", ShortName = "", Description = "")]
+        [Display(Name = "%Oxygen", ShortName = "", Description = "OSSIGENO (O2) 19 - 21%")]
         Oxygen = 1,
 
-        [Display(Name = "%LEL", ShortName = "", Description = "")]
+        [Display(Name = "%LEL", ShortName = "", Description = "COMBUSTIBILE (LEL): presenza di combustibile rilevato nella misurazione")]
         LEL = 2,
 
-        [Display(Name = "H2S(ppm)", ShortName = "", Description = "")]
+        [Display(Name = "H2S(ppm)", ShortName = "", Description = "ANIDRIDE SOLFROSA (H2S) ppm")]
         H2S = 3,
 
-        [Display(Name = "CO(ppm)", ShortName = "", Description = "")]
+        [Display(Name = "CO(ppm)", ShortName = "", Description = "MONOSSIDO DI CARBONIO (CO)")]
         CO = 4
     }
 

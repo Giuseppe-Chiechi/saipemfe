@@ -45,12 +45,16 @@
 
                     </MudItem>
 
-                    <MudItem xs="12" sm="5">
+                    <MudItem xs="12" sm="3">
+                        <MudTimePicker Disabled="@_isReadOnlySospensione" Label="Ora inizio turno" @bind-Value="Model.OraInizioSospensione" />
+                    </MudItem>
+
+                    <MudItem xs="12" sm="3">
                         <MudTextField Disabled="@_isReadOnlySospensione" Label="Motivo sospensione" @bind-Value="Model.MotivoSospensione" />
                     </MudItem>
 
 
-                    <MudItem xs="12" sm="4">
+                    <MudItem xs="12" sm="3">
                         <MudTextField Disabled="@_isReadOnlySospensione" Label="Autorizzante" @bind-Value="Model.AutorizzanteSospensione" />
                     </MudItem>
 
