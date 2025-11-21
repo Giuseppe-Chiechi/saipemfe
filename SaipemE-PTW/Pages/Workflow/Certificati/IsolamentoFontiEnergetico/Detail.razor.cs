@@ -10,7 +10,7 @@ using System.Text.Json;
 
 
 namespace SaipemE_PTW.Pages.Workflow.Certificati.IsolamentoFontiEnergetico
-{.
+{
     public partial class Detail : CommonComponentBase
     {
 
